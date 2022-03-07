@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "882966238110",
+    "project_id": "unicorn-store-9a65e",
+    "storage_bucket": "unicorn-store-9a65e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:882966238110:android:c4650685743b7b6b37fc8f",
+        "android_client_info": {
+          "package_name": "com.example.unicorn_store"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "882966238110-5a8q7n4cdsipophgfouik22lrm4b7snt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjY_EqDtinGu4omuculXNeX-cN0d9spjc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "882966238110-5a8q7n4cdsipophgfouik22lrm4b7snt.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
