@@ -11,14 +11,14 @@ const kDefaultNavigationDrawerTitleColor=Color(0xFFDDDDDD);
 const kDefaultSecondaryButtonColor=Color(0xFF1F99CF);
 const kDefaultParagraphTextFontColor=Color(0xFF666666);
 
-//Base Url for Api
-//const kDefaultBaseUrl="http://192.168.1.9/bics_front";
+   //Base Url for Api
+   const kDefaultBaseUrl="http://192.168.1.9/bics_front";
 
- const kDefaultBaseUrl="http://mum01.beaminnovate.com/bics_front";
+   //const kDefaultBaseUrl="http://mum01.beaminnovate.com/bics_front";
 
-  // const imageDefaultURL ="http://192.168.1.9/shop.unicornstore.in";
+   const imageDefaultURL ="http://192.168.1.9/shop.unicornstore.in";
 
-  const imageDefaultURL ="http://mum01.beaminnovate.com/shop.unicornstore.in";
+   //const imageDefaultURL ="http://mum01.beaminnovate.com/shop.unicornstore.in";
 
-  const imageSecondUrl="/uploads/images/medium/";
-  const imageThirdUrl="/uploads/images/thumbnails/";
+   const imageSecondUrl="/uploads/images/medium/";
+   const imageThirdUrl="/uploads/images/thumbnails/";
