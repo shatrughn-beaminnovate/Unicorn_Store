@@ -1,8 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:unicorn_store/Business_Logic/bloc/login%20and%20signup/authentication/authentication_bloc.dart';
-import 'package:unicorn_store/Data/Models/Login%20and%20Signup/Forgot%20Password/forgot_password_response.dart';
-import 'package:unicorn_store/Data/Models/Login%20and%20Signup/Forgot%20Password/response_data.dart';
 import 'package:unicorn_store/Data/Models/Login%20and%20Signup/Register/register_data.dart';
 import 'package:unicorn_store/Data/Models/Login%20and%20Signup/Register/register_response.dart';
 import 'package:unicorn_store/Data/Repositories/login%20and%20signup/login_details_repository.dart';

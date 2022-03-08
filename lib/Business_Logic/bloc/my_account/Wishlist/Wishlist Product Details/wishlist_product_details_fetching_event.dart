@@ -9,25 +9,39 @@ abstract class WishlistProductDetailsFetchingEvent extends Equatable {
 
 class LoadWishlistProductDetailsApiFetch
     extends WishlistProductDetailsFetchingEvent {
-  final String customerId;
+ 
   final String token;
 
   const LoadWishlistProductDetailsApiFetch(
-      {required this.customerId, required this.token});
+      { required this.token});
 
   @override
-  List<Object> get props => [customerId, token];
+  List<Object> get props => [token];
 }
 
 class AddOrDeleteProductFromWishlistEvent
     extends WishlistProductDetailsFetchingEvent {
-  final String customerId;
+ 
   final String productId;
   final String token;
 
   const AddOrDeleteProductFromWishlistEvent(
-      {required this.customerId, required this.productId, required this.token});
+      { required this.productId, required this.token});
 
   @override
-  List<Object> get props => [customerId, productId, token];
+  List<Object> get props => [ productId, token];
+}
+
+//This event only insert product to wishlist
+class AddProductToWishlistEvent
+    extends WishlistProductDetailsFetchingEvent {
+ 
+  final String productId;
+  final String token;
+
+  const AddProductToWishlistEvent(
+      { required this.productId, required this.token});
+
+  @override
+  List<Object> get props => [ productId, token];
 }

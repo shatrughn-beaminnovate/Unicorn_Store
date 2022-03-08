@@ -19,24 +19,54 @@ class WishlistProductDetailsFetchingBloc extends Bloc<
         emit(WishlistProductDetailsFetchingLoading());
 
         final _wishlistProductDetails = await _wishlistProductDetailsRepository
-            .getWishlistProductDetails(event.customerId, event.token);
+            .getWishlistProductDetails(event.token);
 
-        emit(WishlistProductDetailsFetchingLoaded(_wishlistProductDetails));
+        if (_wishlistProductDetails.data!.isEmpty) {
+          emit(const WishlistProductDetailsFetchingError(
+              "No Products Added in Wishlist."));
+        } else {
+          emit(WishlistProductDetailsFetchingLoaded(_wishlistProductDetails));
+        }
       } catch (e) {
         emit(WishlistProductDetailsFetchingError(e.toString()));
       }
     });
 
-
     on<AddOrDeleteProductFromWishlistEvent>((event, emit) async {
       try {
         emit(WishlistProductDetailsFetchingLoading());
 
-        final _addOrRemoveProductFromWishlist = await _wishlistProductDetailsRepository
-            .addOrDeleteWishlistProduct(event.customerId, event.productId, event.token);
+        final _addOrRemoveProductFromWishlist =
+            await _wishlistProductDetailsRepository.addOrDeleteWishlistProduct(
+                event.productId, event.token);
 
-        emit(AddOrRemoveProductFromWishlistSuccess(_addOrRemoveProductFromWishlist));
+        final _wishlistProductDetails = await _wishlistProductDetailsRepository
+            .getWishlistProductDetails(event.token);
 
+        if (_wishlistProductDetails.data!.isEmpty) {
+          emit(const WishlistProductDetailsFetchingError(
+              "No Products Added in Wishlist."));
+          emit(AddOrRemoveProductFromWishlistSuccess(
+              _addOrRemoveProductFromWishlist, _wishlistProductDetails));
+        } else {
+          emit(AddOrRemoveProductFromWishlistSuccess(
+              _addOrRemoveProductFromWishlist, _wishlistProductDetails));
+        }
+      } catch (e) {
+        emit(WishlistProductDetailsFetchingError(e.toString()));
+      }
+    });
+
+    //Add product to wishlist event
+    on<AddProductToWishlistEvent>((event, emit) async {
+      try {
+        emit(WishlistProductDetailsFetchingLoading());
+
+        final _addOrRemoveProductFromWishlist =
+            await _wishlistProductDetailsRepository.addProductToWishlist(
+                event.productId, event.token);
+
+        emit(AddProductToWishlistSuccess(_addOrRemoveProductFromWishlist));
       } catch (e) {
         emit(WishlistProductDetailsFetchingError(e.toString()));
       }

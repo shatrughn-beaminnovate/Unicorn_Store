@@ -4,9 +4,9 @@ part 'product_add_delete_response.g.dart';
 
 @JsonSerializable()
 class ProductAddDeleteResponse {
-  final ProductAddDeleteData? productAddDeleteData;
+  final ProductAddDeleteData? data;
 
-  ProductAddDeleteResponse(this.productAddDeleteData);
+  ProductAddDeleteResponse(this.data);
 
   factory ProductAddDeleteResponse.fromJson(
           Map<String, dynamic> productAddDeleteData) =>
@@ -15,6 +15,6 @@ class ProductAddDeleteResponse {
 
   @override
   String toString() {
-    return 'ProductAddDeleteResponse(productAddDeleteData: $productAddDeleteData,)';
+    return 'ProductAddDeleteResponse(productAddDeleteData: $data,)';
   }
 }

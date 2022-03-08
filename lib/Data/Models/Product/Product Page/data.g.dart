@@ -49,6 +49,7 @@ Product _$ProductFromJson(Map<String, dynamic> json) => Product(
       json['types_enabled'] as int?,
       json['emi_options'] as String?,
       json['discount'] as int?,
+      json['wishlist'] as bool?,
     );
 
 Map<String, dynamic> _$ProductToJson(Product instance) => <String, dynamic>{
@@ -92,4 +93,5 @@ Map<String, dynamic> _$ProductToJson(Product instance) => <String, dynamic>{
       'emi_options': instance.emiOptions,
       'discount': instance.discount,
       'images': instance.images,
+      'wishlist': instance.wishlist,
     };

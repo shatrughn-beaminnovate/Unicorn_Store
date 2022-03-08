@@ -41,10 +41,7 @@ final Map<String, WidgetBuilder> routes = {
   AddToCartPage.id: (context) => const AddToCartPage(),
   StudentOfferScreen.id: (context) => const StudentOfferScreen(),
   SignUpForm.id: (context) => const SignUpForm(),
-  ProductDetailsScreen.id: (context) =>  BlocProvider.value(
-        value:   BlocProvider.of<AuthenticationBloc>(context),
-        child: const ProductDetailsScreen(),
-      ),
+  ProductDetailsScreen.id: (context) =>   ProductDetailsScreen(),
   ContactPage.id: (context) => const ContactPage(),
   TextFile.id: (context) => const TextFile(),
   AccountInformationPage.id: (context) => const AccountInformationPage(),

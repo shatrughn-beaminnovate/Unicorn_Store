@@ -24,8 +24,17 @@ class WishlistProductDetailsFetchingLoaded
 class AddOrRemoveProductFromWishlistSuccess
     extends WishlistProductDetailsFetchingState {
   final ProductAddDeleteResponse? productAddDeleteResponse;
+  final WishlistDetails? wishlistDetails;
 
-  const AddOrRemoveProductFromWishlistSuccess(this.productAddDeleteResponse);
+  const AddOrRemoveProductFromWishlistSuccess(
+      this.productAddDeleteResponse, this.wishlistDetails);
+}
+
+//Add Product to wishlist
+class AddProductToWishlistSuccess extends WishlistProductDetailsFetchingState {
+  final ProductAddDeleteResponse? productAddDeleteResponse;
+
+  const AddProductToWishlistSuccess(this.productAddDeleteResponse);
 }
 
 class WishlistProductDetailsFetchingError

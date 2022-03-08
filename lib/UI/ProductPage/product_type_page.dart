@@ -2,13 +2,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:selectable_container/selectable_container.dart';
 import 'package:unicorn_store/Business_Logic/bloc/login%20and%20signup/authentication/authentication_bloc.dart';
 import 'package:unicorn_store/Business_Logic/bloc/my_account/Wishlist/Wishlist%20Product%20Details/wishlist_product_details_fetching_bloc.dart';
 import 'package:unicorn_store/Business_Logic/bloc/product/product%20page%20details/product_page_details_bloc.dart';
 import 'package:unicorn_store/Business_Logic/bloc/product/product_details_api_fetch_bloc.dart';
 import 'package:unicorn_store/Data/Models/Login%20and%20Signup/Login/login_data.dart';
-import 'package:unicorn_store/Data/Models/Product/Product%20Page/product_page_details.dart';
 import 'package:unicorn_store/Data/Models/Product/Product%20Type/option_values.dart';
 import 'package:unicorn_store/Data/Models/Product/Product%20Type/product_details.dart';
 import 'package:unicorn_store/Data/Models/Product/Product%20Type/related_products.dart';
@@ -16,8 +16,12 @@ import 'package:unicorn_store/Data/Models/Product/Product%20Type/type_details.da
 import 'package:unicorn_store/Data/Models/Product/Product%20Type/type_images.dart';
 import 'package:unicorn_store/Data/Models/Product/Product%20Type/types_options.dart';
 import 'package:unicorn_store/UI/Components/loading_indicator_bar.dart';
+import 'package:unicorn_store/UI/HomePage/Add%20Cart/add_to_cart.dart';
 import 'package:unicorn_store/UI/HomePage/Components/price_tag.dart';
 import 'package:unicorn_store/UI/HomePage/Components/third_header_text.dart';
+import 'package:unicorn_store/UI/HomePage/Search%20Button/custom_search_delegate.dart';
+import 'package:unicorn_store/UI/LoginPage/login_form.dart';
+import 'package:unicorn_store/UI/main_screen.dart';
 import 'package:unicorn_store/UI/size_config.dart';
 import 'package:unicorn_store/UI/HomePage/Components/build_app_bar.dart';
 import 'package:unicorn_store/UI/HomePage/Components/header_text.dart';
@@ -29,9 +33,20 @@ import 'Components/emi_option.dart';
 import 'Components/notify_me_form.dart';
 import 'Components/product_description.dart';
 
+// ignore: must_be_immutable
 class ProductDetailsScreen extends StatefulWidget {
   static String id = "ProductDetails_Screen";
-  const ProductDetailsScreen({Key? key}) : super(key: key);
+  final Map<String, String>? productValue;
+  final String? productTypeId;
+  final String? customerId;
+  bool? appBarBackButtonStatus;
+  ProductDetailsScreen(
+      {Key? key,
+      this.customerId,
+      this.productTypeId,
+      this.productValue,
+      this.appBarBackButtonStatus})
+      : super(key: key);
 
   @override
   State<ProductDetailsScreen> createState() => _ProductDetailsScreenState();
@@ -60,25 +75,48 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
 
   ProductTypeDetails? productTypeDetails;
   dynamic productPageDetail;
+  String? productPageId;
 
   String? radioButtonValue;
 
   bool isProgress = false;
+
+  //Back button check flag when wishlist product added by logout user
+  bool wishlistBackbuttonFlag = false;
 
   //Creating instance for logged in user data
   LoginData? loginData;
 
   @override
   void initState() {
+    if (widget.customerId != null) {
+      _productDetailsApiFetchBloc.add(
+          LoadProductDetailsApiFetch(productDetailsId: widget.productTypeId!));
+    }
     super.initState();
     _controller = TabController(length: 2, vsync: this);
   }
 
   @override
   void didChangeDependencies() {
-    final productDetailsId = ModalRoute.of(context)!.settings.arguments as int;
-    _productDetailsApiFetchBloc.add(LoadProductDetailsApiFetch(
-        productDetailsId: productDetailsId.toString()));
+    if (widget.customerId != null) {
+      _productPageDetailsBloc.add(LoadProductDataBasedOnValueEvent(
+          productValue: widget.productValue!,
+          productId: widget.productTypeId!,
+          customerId: widget.customerId!));
+      selectedIndex = widget.productValue!;
+      favoriteFlag = true;
+      wishlistBackbuttonFlag = true;
+    } else {
+      print("-----------------Login");
+
+      final productDetailsId =
+          ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+      final productTypeId = productDetailsId["productTypeId"];
+      _productDetailsApiFetchBloc.add(LoadProductDetailsApiFetch(
+          productDetailsId: productTypeId.toString()));
+    }
+
     super.didChangeDependencies();
   }
 
@@ -94,10 +132,10 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
 
   @override
   Widget build(BuildContext context) {
-    authenticationBloc = BlocProvider.of<AuthenticationBloc>(context);
+    // authenticationBloc = BlocProvider.of<AuthenticationBloc>(context);
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: const BuildAppBar(),
+      appBar: _buildAppBar(context),
       body: Stack(
         children: [
           MultiBlocProvider(
@@ -144,6 +182,87 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
     );
   }
 
+  AppBar _buildAppBar(BuildContext context) {
+    return AppBar(
+      backgroundColor: Colors.black,
+      leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            (wishlistBackbuttonFlag)
+                ? Navigator.pushNamed(context, MainScreen.id)
+                : Navigator.of(context).pop();
+          }),
+      actions: [
+        Expanded(flex: 5, child: SvgPicture.asset("assets/Unicorn-logo.svg")),
+        Expanded(
+          flex: 5,
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+                horizontal: getProportionateScreenWidth(10.0)),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                //Shopping_card Icon
+                Stack(
+                  // ignore: prefer_const_literals_to_create_immutables
+                  children: [
+                    IconButton(
+                      splashColor: Colors.transparent,
+                      highlightColor: Colors.transparent,
+                      icon: Icon(
+                        Icons.shopping_cart_sharp,
+                        size: getProportionateScreenWidth(25),
+                        color: Colors.white,
+                      ),
+                      tooltip: 'Shopping_cart',
+                      onPressed: () {
+                        Navigator.pushNamed(context, AddToCartPage.id);
+                      },
+                    ),
+                    Positioned(
+                      right: 8,
+                      top: 0,
+                      child: Container(
+                        width: getProportionateScreenWidth(18.0),
+                        height: getProportionateScreenWidth(18.0),
+                        decoration: const BoxDecoration(
+                          color: Colors.lightGreen,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Center(
+                            child: Text(
+                          "0",
+                          style: TextStyle(
+                              fontSize: getProportionateScreenWidth(12.0)),
+                        )),
+                      ),
+                    )
+                  ],
+                ),
+                SizedBox(width: getProportionateScreenWidth(5.0)),
+                //SearchButton
+                IconButton(
+                  highlightColor: Colors.transparent,
+                  splashColor: Colors.transparent,
+                  icon: Icon(
+                    Icons.search,
+                    size: getProportionateScreenWidth(25),
+                    color: Colors.white,
+                  ),
+                  tooltip: 'Search',
+                  onPressed: () {
+                    showSearch(
+                        context: context, delegate: CustomSearchDelegate());
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   //Product Details Page
   Widget _buildProductDetailsPage(BuildContext context) {
     List<TypesOptions>? _typeOption = productTypeDetails!.data!.typeOptions;
@@ -169,14 +288,22 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
             BlocListener<ProductPageDetailsBloc, ProductPageDetailsState>(
               listener: (context, state) {
                 if (state is ProductPageDetailsLoading) {
+                  print("Product Page Loading..............");
+
                   setState(() {
                     isProgress = true;
                   });
                 } else if (state is ProductPageDetailsLoaded) {
+                  print("Product Page Loded..............");
+
                   setState(() {
                     productPageFlag = true;
                     productPageDetail = state.productPageDetail;
                     isProgress = false;
+
+                    if (productPageDetail != "failed") {
+                      favoriteFlag = productPageDetail!.product.wishlist;
+                    }
                   });
                 }
               },
@@ -187,6 +314,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                   //   return _buildLoading();
                   // } else
                   if (state is ProductPageDetailsLoaded) {
+                    productPageFlag = true;
+                    productPageDetail = state.productPageDetail;
+
                     return _buildProductData(_typeImages,
                         productTypeDetails!.data, _typeOption, context);
                   } else {
@@ -288,19 +418,35 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                                         image:
                                             AssetImage("assets/NoImage.jpg"))),
 
-                            //Add to Wishlist Icon
+//############################ Add to Wishlist Icon #############################
                             BlocBuilder<AuthenticationBloc,
                                 AuthenticationState>(
                               builder: (context, state) {
                                 if (state is AuthenticationAuthenticated) {
                                   loginData = state.loginData;
-
                                   return BlocProvider(
                                     create: (context) =>
                                         wishlistProductDetailsFetchingBloc,
-                                    child: BlocBuilder<
-                                        WishlistProductDetailsFetchingBloc,
-                                        WishlistProductDetailsFetchingState>(
+                                    child: BlocListener<
+                                            WishlistProductDetailsFetchingBloc,
+                                            WishlistProductDetailsFetchingState>(
+                                        listener: (context, state) {
+                                      if (state
+                                          is WishlistProductDetailsFetchingLoading) {
+                                        setState(() {
+                                          isProgress = true;
+                                        });
+                                      }
+                                      if (state
+                                          is AddOrRemoveProductFromWishlistSuccess) {
+                                        print("Akshay");
+                                        setState(() {
+                                          isProgress = false;
+                                        });
+                                      }
+                                    }, child: BlocBuilder<
+                                            WishlistProductDetailsFetchingBloc,
+                                            WishlistProductDetailsFetchingState>(
                                       builder: (context, state) {
                                         return Positioned(
                                           top: getProportionateScreenHeight(
@@ -312,8 +458,31 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                                               setState(() {
                                                 favoriteFlag = !favoriteFlag;
                                               });
+                                              print(
+                                                  "*************${productPageDetail.product.id}");
                                               if (favoriteFlag) {
-                                                 wishlistProductDetailsFetchingBloc.add(AddOrDeleteProductFromWishlistEvent(customerId:loginData!.userData!.id.toString(), productId:"", token: loginData!.token!));
+                                                print(
+                                                    "############### ${productPageDetail!.product.wishlist}");
+
+                                                wishlistProductDetailsFetchingBloc.add(
+                                                    AddOrDeleteProductFromWishlistEvent(
+                                                        productId:
+                                                            productPageDetail!
+                                                                .product.id
+                                                                .toString(),
+                                                        token:
+                                                            loginData!.token!));
+                                              } else {
+                                                print(
+                                                    "############### ${productPageDetail!.product.wishlist}");
+                                                wishlistProductDetailsFetchingBloc.add(
+                                                    AddOrDeleteProductFromWishlistEvent(
+                                                        productId:
+                                                            productPageDetail!
+                                                                .product.id
+                                                                .toString(),
+                                                        token:
+                                                            loginData!.token!));
                                               }
                                             },
                                             child: Icon(
@@ -329,16 +498,38 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                                           ),
                                         );
                                       },
-                                    ),
+                                    )),
                                   );
                                 }
                                 return Positioned(
                                   top: getProportionateScreenHeight(10.0),
                                   right: getProportionateScreenWidth(0.0),
-                                  child: Icon(
-                                    Icons.favorite_border,
-                                    color: kDefaultSecondaryButtonColor,
-                                    size: getProportionateScreenHeight(25.0),
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(context,
+                                          MaterialPageRoute(builder: (context) {
+                                        return BlocProvider.value(
+                                          value: BlocProvider.of<
+                                              AuthenticationBloc>(context),
+                                          child: LoginScreen(
+                                            myAccountRedirect:
+                                                "goToProductPageType",
+                                            productValue: selectedIndex,
+                                            productTypeId: productDetails!
+                                                .typesId
+                                                .toString(),
+                                            productPageId: productPageDetail!
+                                                .product.id
+                                                .toString(),
+                                          ),
+                                        );
+                                      }));
+                                    },
+                                    child: Icon(
+                                      Icons.favorite_border,
+                                      color: kDefaultSecondaryButtonColor,
+                                      size: getProportionateScreenHeight(25.0),
+                                    ),
                                   ),
                                 );
                               },
@@ -573,52 +764,122 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
         ),
 
         //Select Product Color and other Details
-        ListView.builder(
-          itemCount: _typeOption!.length,
-          shrinkWrap: true,
-          physics: NeverScrollableScrollPhysics(),
-          itemBuilder: (context, index) {
-            List<OptionValues>? optionValues = _typeOption[index].optionValues;
-            return Column(
-              children: [
-                Container(
-                  alignment: Alignment.topLeft,
-                  child: ThirdHeaderText(
-                      thirdHeader:
-                          "${index + 1}. ${_typeOption[index].name.toString()}"),
-                ),
-                SizedBox(
-                  height: getProportionateScreenWidth(10.0),
-                ),
-                Container(
-                  alignment: Alignment.topLeft,
-                  child: Wrap(
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    spacing: 10,
-                    children: optionValues!.map((e) {
-                      if (e.color!.isNotEmpty) {
-                        //var colorIndex = optionValues.indexOf(e);
-                        return _buildColorContainer(
-                            e,
-                            index,
-                            _typeOption.length,
-                            productDetails.typesId.toString());
-                      } else {
-                        return _buildDataContainer(e, index, _typeOption.length,
-                            productDetails.typesId.toString());
-                      }
-                    }
-                        // (e) => (e.color!.isNotEmpty)
-                        //     ? _buildColorContainer(
-                        //         e.name, e.color?.substring(1))
-                        //     : _buildDataContainer(e.name),
-                        ).toList(),
-                  ),
-                ),
-                SizedBox(
-                  height: getProportionateScreenHeight(15.0),
-                ),
-              ],
+        BlocBuilder<AuthenticationBloc, AuthenticationState>(
+          builder: (context, state) {
+            if (state is AuthenticationAuthenticated) {
+              loginData = state.loginData;
+              //When user is logged in then its passes customerId as per user logged in data
+              return ListView.builder(
+                itemCount: _typeOption!.length,
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                itemBuilder: (context, index) {
+                  List<OptionValues>? optionValues =
+                      _typeOption[index].optionValues;
+                  return Column(
+                    children: [
+                      Container(
+                        alignment: Alignment.topLeft,
+                        child: ThirdHeaderText(
+                            thirdHeader:
+                                "${index + 1}. ${_typeOption[index].name.toString()}"),
+                      ),
+                      SizedBox(
+                        height: getProportionateScreenWidth(10.0),
+                      ),
+                      Container(
+                        alignment: Alignment.topLeft,
+                        child: Wrap(
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          spacing: 10,
+                          children: optionValues!.map((e) {
+                            if (e.color!.isNotEmpty) {
+                              //var colorIndex = optionValues.indexOf(e);
+                              return _buildColorContainer(
+                                  e,
+                                  index,
+                                  _typeOption.length,
+                                  productDetails.typesId.toString(),
+                                  loginData!.userData!.id.toString());
+                            } else {
+                              return _buildDataContainer(
+                                  e,
+                                  index,
+                                  _typeOption.length,
+                                  productDetails.typesId.toString(),
+                                  loginData!.userData!.id.toString());
+                            }
+                          }
+                              // (e) => (e.color!.isNotEmpty)
+                              //     ? _buildColorContainer(
+                              //         e.name, e.color?.substring(1))
+                              //     : _buildDataContainer(e.name),
+                              ).toList(),
+                        ),
+                      ),
+                      SizedBox(
+                        height: getProportionateScreenHeight(15.0),
+                      ),
+                    ],
+                  );
+                },
+              );
+            }
+            //when in not logged in then passes default cutomer id i.e "0"
+            return ListView.builder(
+              itemCount: _typeOption!.length,
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              itemBuilder: (context, index) {
+                List<OptionValues>? optionValues =
+                    _typeOption[index].optionValues;
+                return Column(
+                  children: [
+                    Container(
+                      alignment: Alignment.topLeft,
+                      child: ThirdHeaderText(
+                          thirdHeader:
+                              "${index + 1}. ${_typeOption[index].name.toString()}"),
+                    ),
+                    SizedBox(
+                      height: getProportionateScreenWidth(10.0),
+                    ),
+                    Container(
+                      alignment: Alignment.topLeft,
+                      child: Wrap(
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        spacing: 10,
+                        children: optionValues!.map((e) {
+                          if (e.color!.isNotEmpty) {
+                            //var colorIndex = optionValues.indexOf(e);
+                            return _buildColorContainer(
+                                e,
+                                index,
+                                _typeOption.length,
+                                productDetails.typesId.toString(),
+                                "0");
+                          } else {
+                            return _buildDataContainer(
+                                e,
+                                index,
+                                _typeOption.length,
+                                productDetails.typesId.toString(),
+                                "0");
+                          }
+                        }
+                            // (e) => (e.color!.isNotEmpty)
+                            //     ? _buildColorContainer(
+                            //         e.name, e.color?.substring(1))
+                            //     : _buildDataContainer(e.name),
+                            ).toList(),
+                      ),
+                    ),
+                    SizedBox(
+                      height: getProportionateScreenHeight(15.0),
+                    ),
+                  ],
+                );
+              },
             );
           },
         ),
@@ -821,8 +1082,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
   }
 
   //Select Product Data
-  Widget _buildDataContainer(
-      OptionValues optionValues, int index, int length, String typeId) {
+  Widget _buildDataContainer(OptionValues optionValues, int index, int length,
+      String typeId, String customerId) {
     return SelectableContainer(
       //selected: true,
       selected:
@@ -837,7 +1098,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
         if (selectedIndex.keys.length == length) {
           //adding bloc event
           _productPageDetailsBloc.add(LoadProductDataBasedOnValueEvent(
-              productValue: selectedIndex, productId: typeId));
+              productValue: selectedIndex,
+              productId: typeId,
+              customerId: customerId));
         }
       },
       child: Text(
@@ -856,8 +1119,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
   }
 
   //Select Product Color
-  Widget _buildColorContainer(
-      OptionValues optionValues, int index, int length, String typeId) {
+  Widget _buildColorContainer(OptionValues optionValues, int index, int length,
+      String typeId, String customerId) {
     return SelectableContainer(
       selected:
           (selectedIndex[index.toString()].toString() == optionValues.value)
@@ -870,7 +1133,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
         });
         if (selectedIndex.keys.length == length) {
           _productPageDetailsBloc.add(LoadProductDataBasedOnValueEvent(
-              productValue: selectedIndex, productId: typeId));
+              productValue: selectedIndex,
+              productId: typeId,
+              customerId: customerId));
         }
       },
       child: SizedBox(

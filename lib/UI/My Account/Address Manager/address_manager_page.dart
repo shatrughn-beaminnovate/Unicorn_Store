@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:unicorn_store/Business_Logic/bloc/my_account/address%20manager/address_manager_details_api_fetch_bloc.dart';
 import 'package:unicorn_store/Business_Logic/bloc/my_account/address%20manager/set_default_address_bloc.dart';
-import 'package:unicorn_store/Data/Data_Providers/Login%20and%20Signup/login_details.dart';
 import 'package:unicorn_store/Data/Models/Login%20and%20Signup/Login/login_data.dart';
 import 'package:unicorn_store/Data/Models/MyAccount/Address%20Manager/address.dart';
 import 'package:unicorn_store/Data/Models/MyAccount/Address%20Manager/address_list.dart';
@@ -35,6 +34,7 @@ class _AddressManagerPageState extends State<AddressManagerPage> {
       AddressManagerDetailsApiFetchBloc();
   final SetDefaultAddressBloc _setDefaultAddressBloc = SetDefaultAddressBloc();
 
+  // ignore: prefer_typing_uninitialized_variables
   var userData;
 
   //Creating instance for LoginData

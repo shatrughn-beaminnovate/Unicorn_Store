@@ -18,8 +18,12 @@ import 'Components/text_input_field.dart';
 class LoginScreen extends StatefulWidget {
   static String id = "Login_Form";
   final String? myAccountRedirect;
+  final Map<String, String>? productValue;
+  final String? productTypeId;
+  final String? productPageId;
 
-  const LoginScreen({Key? key, this.myAccountRedirect}) : super(key: key);
+  const LoginScreen({Key? key, this.myAccountRedirect, this.productValue,this.productTypeId,this.productPageId})
+      : super(key: key);
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -40,16 +44,13 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
-
+    print('@@@@@@@@@@@@@@@@@@@@@@ Login Data  ${widget.productValue}');
     return Scaffold(
       appBar: const BuildAppBar(),
       body: BlocProvider<LoginBloc>(
         create: (context) => loginBloc,
         child: BlocListener<LoginBloc, LoginState>(
             listener: (context, state) {
-              if (state is LoginLoading) {
-                print("login Loading");
-              }
               if (state is LoginInitial) {
                 if (widget.myAccountRedirect == "false") {
                   Navigator.push(context, MaterialPageRoute(builder: (context) {
@@ -57,10 +58,19 @@ class _LoginScreenState extends State<LoginScreen> {
                       myAccountRedirect: "true",
                     );
                   }));
-                } else {
+                } else if (widget.myAccountRedirect == "true") {
                   Navigator.push(context, MaterialPageRoute(builder: (context) {
                     return const MyApp(
                       myAccountRedirect: "false",
+                    );
+                  }));
+                } else if (widget.myAccountRedirect == "goToProductPageType") {
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+                    return MyApp(
+                      myAccountRedirect: "goToProductPageType",
+                      productValue: widget.productValue,
+                      productTypeId: widget.productTypeId,
+                      productPageId: widget.productPageId,
                     );
                   }));
                 }

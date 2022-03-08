@@ -106,8 +106,6 @@ class _AccountInformationPageState extends State<AccountInformationPage> {
                   // behavior: SnackBarBehavior.floating,
                 ),
               );
-            } else if (state is AccountInformationApiFetchError) {
-              print("ERROR>>>>>>>>>>>>>  ${state.message}");
             }
           },
           child: BlocBuilder<AccountInformationApiFetchBloc,

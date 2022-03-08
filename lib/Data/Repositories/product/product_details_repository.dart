@@ -8,8 +8,8 @@ class ProductDetailsRepository {
     return _productDetailsServiceApi.getProductDetails(productDetailsId);
   }
 
-  Future<dynamic> getProductPageDetails(Map<String,String> productValue,String productTypeId){
-    return _productDetailsServiceApi.getProductPageDetails(productValue,productTypeId);
+  Future<dynamic> getProductPageDetails(Map<String,String> productValue,String productTypeId,String customerId){
+    return _productDetailsServiceApi.getProductPageDetails(productValue,productTypeId,customerId);
   }
 
 }

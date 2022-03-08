@@ -10,9 +10,10 @@ abstract class ProductDetailsApiFetchEvent extends Equatable {
 class LoadProductDetailsApiFetch extends ProductDetailsApiFetchEvent {
   final String productDetailsId;
 
-  const LoadProductDetailsApiFetch({required this.productDetailsId});
+  const LoadProductDetailsApiFetch({
+    required this.productDetailsId,
+  });
 
   @override
   List<Object> get props => [productDetailsId];
 }
-

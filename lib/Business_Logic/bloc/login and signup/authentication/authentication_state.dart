@@ -13,6 +13,10 @@ class AuthenticationAuthenticated extends AuthenticationState {
   final LoginData loginData;
 
   const AuthenticationAuthenticated({required this.loginData});
+
+  
+  @override
+  List<Object> get props => [loginData];
 }
 
 class AuthenticationUnauthenticated extends AuthenticationState {}

@@ -10,8 +10,9 @@ abstract class ProductPageDetailsEvent extends Equatable {
 class LoadProductDataBasedOnValueEvent extends ProductPageDetailsEvent {
   final Map<String,String> productValue;
   final String productId;
+  final String customerId;
 
-  const LoadProductDataBasedOnValueEvent({required this.productValue,required this.productId});
+  const LoadProductDataBasedOnValueEvent({required this.productValue,required this.productId,required this.customerId});
 
   @override
   List<Object> get props => [productValue,productId];

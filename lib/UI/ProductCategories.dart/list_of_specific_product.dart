@@ -2,7 +2,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:unicorn_store/Business_Logic/bloc/category/subcategory_types_bloc/subcategory_types_api_fetch_bloc.dart';
-import 'package:unicorn_store/Business_Logic/bloc/login%20and%20signup/authentication/authentication_bloc.dart';
 import 'package:unicorn_store/Data/Models/Category/Subcategory_Types/sub_category_types.dart';
 import 'package:unicorn_store/Data/Models/Category/Subcategory_Types/subcategory_types_list.dart';
 import 'package:unicorn_store/UI/Components/loading_indicator_bar.dart';
@@ -27,8 +26,6 @@ class _ListOfSpecificProductState extends State<ListOfSpecificProduct> {
 
   // ignore: prefer_typing_uninitialized_variables
   var subcategoryData;
-
-
 
   @override
   void didChangeDependencies() {
@@ -69,8 +66,6 @@ class _ListOfSpecificProductState extends State<ListOfSpecificProduct> {
     );
   }
 
-  
-
   //List of Product
   Widget _buildProductList(
       BuildContext context, SubcategoryTypesList subcategoryTypesList) {
@@ -100,7 +95,12 @@ class _ListOfSpecificProductState extends State<ListOfSpecificProduct> {
                 itemBuilder: (BuildContext context, int index) {
                   return GestureDetector(
                     onTap: () {
-                      Navigator.pushNamed(context, ProductDetailsScreen.id,arguments: _subcategoryTypes[index].types_id);
+                      Navigator.pushNamed(context, ProductDetailsScreen.id,
+                          arguments: {
+                            "productTypeId": _subcategoryTypes[index].types_id,
+                            "customerId": " ",
+                            "productValue": " "
+                          });
                     },
                     child: Container(
                       width: double.infinity,

@@ -40,9 +40,8 @@ class _WishlistPageState extends State<WishlistPage> {
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
     loginData = userLoginData["loginData"];
 
-    wishlistProductDetailsFetchingBloc.add(LoadWishlistProductDetailsApiFetch(
-        customerId: loginData!.userData!.id.toString(),
-        token: loginData!.token!));
+    wishlistProductDetailsFetchingBloc
+        .add(LoadWishlistProductDetailsApiFetch(token: loginData!.token!));
 
     super.didChangeDependencies();
   }
@@ -61,13 +60,32 @@ class _WishlistPageState extends State<WishlistPage> {
                 wishlistDetails = state.wishlistDetails;
               });
             }
+            if (state is AddOrRemoveProductFromWishlistSuccess) {
+              setState(() {
+                wishlistDetails = state.wishlistDetails;
+              });
+
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text("Product removed from wishlist."),
+                  backgroundColor: Colors.green,
+                  duration: Duration(milliseconds: 2000),
+                  // behavior: SnackBarBehavior.floating,
+                ),
+              );
+            }
           },
           child: BlocBuilder<WishlistProductDetailsFetchingBloc,
               WishlistProductDetailsFetchingState>(
             builder: (context, state) {
-              if(state is WishlistProductDetailsFetchingLoading)
-              {
+              if (state is WishlistProductDetailsFetchingLoading) {
                 return LoadingIndicatorBar();
+              } else if (state is AddOrRemoveProductFromWishlistSuccess) {
+                return _buildWishlistProduct();
+              } else if (state is WishlistProductDetailsFetchingError) {
+                return Center(
+                  child: Text(state.message.toString()),
+                );
               }
               return _buildWishlistProduct();
             },
@@ -156,7 +174,8 @@ class _WishlistPageState extends State<WishlistPage> {
                             ),
                             Text(
                               wishlistDetails?.data?[index].productDetails?.name
-                                  .toString() ?? " ",
+                                      .toString() ??
+                                  " ",
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                   fontSize: getProportionateScreenWidth(15.0)),
@@ -164,19 +183,25 @@ class _WishlistPageState extends State<WishlistPage> {
                             SizedBox(
                               height: getProportionateScreenHeight(15.0),
                             ),
-                            //when Product is out of stock
-                            // Text(
-                            //   "Out of stock",
-                            //   style: TextStyle(
-                            //       color: Colors.red,
-                            //       fontSize: getProportionateScreenWidth(15.0)),
-                            // ),
 
-                            LoginButton(
-                              title: "Add to Cart",
-                              onPress: () {},
-                              color: const Color(0xFF1F99CF),
-                            ),
+
+                            (wishlistDetails
+                                        ?.data?[index].productDetails?.quantity
+                                        .toString() !=
+                                    "0")
+                                ? LoginButton(
+                                    title: "Add to Cart",
+                                    onPress: () {},
+                                    color: const Color(0xFF1F99CF),
+                                  )
+                                : Text(
+                                    "Out of stock",
+                                    style: TextStyle(
+                                        color: Colors.red,
+                                        fontWeight: FontWeight.w500,
+                                        fontSize:
+                                            getProportionateScreenWidth(15.0)),
+                                  ),
                             SizedBox(
                               height: getProportionateScreenHeight(20.0),
                             )
@@ -186,10 +211,20 @@ class _WishlistPageState extends State<WishlistPage> {
                       Positioned(
                         top: 10,
                         right: 10,
-                        child: Icon(
-                          Icons.cancel_outlined,
-                          size: getProportionateScreenWidth(25.0),
-                          color: Colors.grey,
+                        child: GestureDetector(
+                          onTap: () {
+                            wishlistProductDetailsFetchingBloc.add(
+                                AddOrDeleteProductFromWishlistEvent(
+                                    productId: wishlistDetails!
+                                        .data![index].productId
+                                        .toString(),
+                                    token: loginData!.token!));
+                          },
+                          child: Icon(
+                            Icons.cancel_outlined,
+                            size: getProportionateScreenWidth(25.0),
+                            color: Colors.grey,
+                          ),
                         ),
                       ),
                     ],

@@ -14,7 +14,7 @@ class ProductPageDetailsBloc extends Bloc<ProductPageDetailsEvent, ProductPageDe
        try {
         emit(ProductPageDetailsLoading());
         final _productPageDetails = await _productDetailsRepository
-            .getProductPageDetails(event.productValue,event.productId);
+            .getProductPageDetails(event.productValue,event.productId,event.customerId);
         emit(ProductPageDetailsLoaded(_productPageDetails));
       } catch (e) {
         emit(ProductPageDetailsError(e.toString()));

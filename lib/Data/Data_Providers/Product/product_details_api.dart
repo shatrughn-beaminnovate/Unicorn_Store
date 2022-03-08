@@ -10,18 +10,17 @@ class ProductDetailsServiceApi {
   Future<ProductTypeDetails> getProductDetails(String productDetailsId) async {
     var response = await http.get(Uri.parse(_baseUrl + productDetailsId));
 
-      if (response.statusCode == 200) {
-        var decode = jsonDecode(response.body);
-        var data = ProductTypeDetails.fromJson(decode);
-        return data;
-      } else {
-        throw Exception(response.statusCode);
-      }
-    
+    if (response.statusCode == 200) {
+      var decode = jsonDecode(response.body);
+      var data = ProductTypeDetails.fromJson(decode);
+      return data;
+    } else {
+      throw Exception(response.statusCode);
+    }
   }
 
-  Future<dynamic> getProductPageDetails(
-      Map<String, String> productValue, String productTypeId) async {
+  Future<dynamic> getProductPageDetails(Map<String, String> productValue,
+      String productTypeId, String customerId) async {
     String url = "$kDefaultBaseUrl/dictionary_product";
 
     //Empty product object
@@ -30,27 +29,33 @@ class ProductDetailsServiceApi {
     Map data = {
       'type_id': productTypeId,
       'options': productValue,
+      'customer_id': customerId
     };
     String body = json.encode(data);
-    var response = await http.post(Uri.parse(url),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: body);
 
-    if (response.statusCode == 200) {
-      var decode = jsonDecode(response.body);
+    try {
+      var response = await http.post(Uri.parse(url),
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+          body: body);
 
-      Map res = {"data": []};
+      if (response.statusCode == 200) {
+        var decode = jsonDecode(response.body);
 
-      if (res.toString() == decode.toString()) {
-        return "failed";
+        Map res = {"data": []};
+
+        if (res.toString() == decode.toString()) {
+          return "failed";
+        } else {
+          var data = ProductPageDetail.fromJson(decode);
+          return data;
+        }
       } else {
-        var data = ProductPageDetail.fromJson(decode);
-        return data;
+        throw Exception(response.statusCode);
       }
-    } else {
-      throw Exception(response.statusCode);
+    } catch (e) {
+      print(e);
     }
   }
 }

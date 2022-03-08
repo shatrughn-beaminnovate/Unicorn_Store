@@ -69,6 +69,8 @@ class Product {
 
   List<Images> images;
 
+  final bool? wishlist;
+
   Product(
       this.id,
       this.sku,
@@ -109,7 +111,8 @@ class Product {
       this.typesRouteId,
       this.typesEnabled,
       this.emiOptions,
-      this.discount);
+      this.discount,
+      this.wishlist);
 
   factory Product.fromJson(Map<String, dynamic> product) =>
       _$ProductFromJson(product);
@@ -117,6 +120,6 @@ class Product {
 
   @override
   String toString() {
-    return 'Product(id: $id, sku: $sku, name: $name, slug: $slug, routeId: $routeId, description: $description, excerpt: $excerpt, price: $price, saleprice: $saleprice, freeShipping: $freeShipping, shippable: $shippable, taxable: $taxable, fixedQuantity: $fixedQuantity, trackStock: $trackStock, quantity: $quantity, seoTitle: $seoTitle, meta: $meta, enabled: $enabled, tag: $tag, optionPincodes: $optionPincodes, productCode: $productCode, hsnCode: $hsnCode, affordability: $affordability, allowRating: $allowRating, showRating: $showRating, averageRating: $averageRating, typesId: $typesId, typesName: $typesName, cashback: $cashback, affordabilityNote: $affordabilityNote, offers: $offers, typesBadge: $typesBadge, display: $display, buybackOptions: $buybackOptions, cashbackNote: $cashbackNote, typesRouteId: $typesRouteId, typesEnabled: $typesEnabled, emiOptions: $emiOptions, images: $images)';
+    return 'Product(id: $id, wishlist:$wishlist,sku: $sku, name: $name, slug: $slug, routeId: $routeId, description: $description, excerpt: $excerpt, price: $price, saleprice: $saleprice, freeShipping: $freeShipping, shippable: $shippable, taxable: $taxable, fixedQuantity: $fixedQuantity, trackStock: $trackStock, quantity: $quantity, seoTitle: $seoTitle, meta: $meta, enabled: $enabled, tag: $tag, optionPincodes: $optionPincodes, productCode: $productCode, hsnCode: $hsnCode, affordability: $affordability, allowRating: $allowRating, showRating: $showRating, averageRating: $averageRating, typesId: $typesId, typesName: $typesName, cashback: $cashback, affordabilityNote: $affordabilityNote, offers: $offers, typesBadge: $typesBadge, display: $display, buybackOptions: $buybackOptions, cashbackNote: $cashbackNote, typesRouteId: $typesRouteId, typesEnabled: $typesEnabled, emiOptions: $emiOptions, images: $images,)';
   }
 }
