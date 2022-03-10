@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:unicorn_store/Business_Logic/bloc/login%20and%20signup/authentication/authentication_bloc.dart';
 import 'package:unicorn_store/UI/HomePage/Components/build_app_bar.dart';
@@ -20,7 +21,7 @@ import 'size_config.dart';
 class MainScreen extends StatefulWidget {
   static String id = "Main_Screen";
 
-  int selectedIndex;
+  int selectedIndex = 0;
 
   MainScreen({Key? key, required this.selectedIndex})
       : super(
@@ -48,7 +49,7 @@ class _MainScreenState extends State<MainScreen> {
     BlocBuilder<AuthenticationBloc, AuthenticationState>(
       builder: (context, state) {
         if (state is AuthenticationAuthenticated) {
-          return  const MyAccountPage();
+          return const MyAccountPage();
         } else {
           //Alert Dialog for login warning
           return AlertDialog(
@@ -69,15 +70,16 @@ class _MainScreenState extends State<MainScreen> {
                     title: "Login",
                     color: kDefaultSecondaryButtonColor,
                     onPress: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) {
-                        return BlocProvider.value(
-                          value: BlocProvider.of<AuthenticationBloc>(context),
-                          child: const LoginScreen(
-                            myAccountRedirect: "true",
-                          ),
-                        );
-                      }));
+                      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(
+                        builder: (context) {
+                          return BlocProvider.value(
+                            value: BlocProvider.of<AuthenticationBloc>(context),
+                            child: const LoginScreen(
+                              myAccountRedirect: "true",
+                            ),
+                          );
+                        }
+                      ),(Route<dynamic> route) => true);
                     }),
               )
             ],
@@ -110,56 +112,72 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
+    print("Not Selected Index for widget ${widget.selectedIndex}");
 
-    return Scaffold(
-      appBar: const BuildAppBar(),
-      drawer: navigationDrawer(context),
-
-      //Bottom Navigation Bar
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: widget.selectedIndex,
-        unselectedItemColor: Colors.grey,
-        selectedItemColor: kDefaultTitleColor,
-        iconSize: getProportionateScreenWidth(25),
-        selectedFontSize: getProportionateScreenWidth(12),
-        unselectedFontSize: getProportionateScreenWidth(12),
-        showSelectedLabels: true,
-        showUnselectedLabels: true,
-        // ignore: prefer_const_literals_to_create_immutables
-        items: [
-          const BottomNavigationBarItem(
-            icon: Icon(
-              Icons.home,
-            ),
-            label: 'HOME',
-          ),
-          const BottomNavigationBarItem(
-            icon: Icon(
-              Icons.category_rounded,
-            ),
-            label: 'Categories',
-          ),
-          // const BottomNavigationBarItem(
-          //   icon: Icon(
-          //     Icons.circle,
-          //   ),
-          //   label: 'Discover',
-          // ),
-          const BottomNavigationBarItem(
-            icon: Icon(
-              Icons.account_circle_rounded,
-            ),
-            label: 'Account',
-          ),
-        ],
-        onTap: (index) {
+    return WillPopScope(
+      onWillPop: () async {
+        print("Selected Index for widget ${widget.selectedIndex}");
+        if (widget.selectedIndex == 0) {
+          SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+          return false;
+        } else if (widget.selectedIndex == 1 || widget.selectedIndex == 2) {
           setState(() {
-            widget.selectedIndex = index;
+            widget.selectedIndex = 0;
           });
-        },
-      ),
+          return false;
+        }
+        return false;
+      },
+      child: Scaffold(
+        appBar: const BuildAppBar(),
+        drawer: navigationDrawer(context),
 
-      body: _widgetOptions.elementAt(widget.selectedIndex),
+        //Bottom Navigation Bar
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: widget.selectedIndex,
+          unselectedItemColor: Colors.grey,
+          selectedItemColor: kDefaultTitleColor,
+          iconSize: getProportionateScreenWidth(25),
+          selectedFontSize: getProportionateScreenWidth(12),
+          unselectedFontSize: getProportionateScreenWidth(12),
+          showSelectedLabels: true,
+          showUnselectedLabels: true,
+          // ignore: prefer_const_literals_to_create_immutables
+          items: [
+            const BottomNavigationBarItem(
+              icon: Icon(
+                Icons.home,
+              ),
+              label: 'HOME',
+            ),
+            const BottomNavigationBarItem(
+              icon: Icon(
+                Icons.category_rounded,
+              ),
+              label: 'Categories',
+            ),
+            // const BottomNavigationBarItem(
+            //   icon: Icon(
+            //     Icons.circle,
+            //   ),
+            //   label: 'Discover',
+            // ),
+            const BottomNavigationBarItem(
+              icon: Icon(
+                Icons.account_circle_rounded,
+              ),
+              label: 'Account',
+            ),
+          ],
+          onTap: (index) {
+            setState(() {
+              widget.selectedIndex = index;
+            });
+          },
+        ),
+
+        body: _widgetOptions.elementAt(widget.selectedIndex),
+      ),
     );
   }
 
@@ -229,13 +247,13 @@ class _MainScreenState extends State<MainScreen> {
                     onPress: () {
                       //Here we are using anonymous route for main Screen because
                       //we need to pass index value through constructor
-                      Navigator.push(context,
+                      Navigator.pushAndRemoveUntil(context,
                           MaterialPageRoute(builder: (context) {
                         return BlocProvider.value(
                           value: authenticationBloc,
                           child: MainScreen(selectedIndex: 2),
                         );
-                      }));
+                      }),(Route<dynamic> route) => true);
                     },
                   );
                 }

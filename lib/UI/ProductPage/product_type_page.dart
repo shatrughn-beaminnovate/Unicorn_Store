@@ -23,7 +23,6 @@ import 'package:unicorn_store/UI/HomePage/Search%20Button/custom_search_delegate
 import 'package:unicorn_store/UI/LoginPage/login_form.dart';
 import 'package:unicorn_store/UI/main_screen.dart';
 import 'package:unicorn_store/UI/size_config.dart';
-import 'package:unicorn_store/UI/HomePage/Components/build_app_bar.dart';
 import 'package:unicorn_store/UI/HomePage/Components/header_text.dart';
 import 'package:unicorn_store/UI/LoginPage/Components/custom_submit_button.dart';
 import 'package:unicorn_store/UI/text_file.dart';
@@ -39,14 +38,12 @@ class ProductDetailsScreen extends StatefulWidget {
   final Map<String, String>? productValue;
   final String? productTypeId;
   final String? customerId;
-  bool? appBarBackButtonStatus;
-  ProductDetailsScreen(
-      {Key? key,
-      this.customerId,
-      this.productTypeId,
-      this.productValue,
-      this.appBarBackButtonStatus})
-      : super(key: key);
+  const ProductDetailsScreen({
+    Key? key,
+    this.customerId,
+    this.productTypeId,
+    this.productValue,
+  }) : super(key: key);
 
   @override
   State<ProductDetailsScreen> createState() => _ProductDetailsScreenState();
@@ -108,8 +105,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
       favoriteFlag = true;
       wishlistBackbuttonFlag = true;
     } else {
-      print("-----------------Login");
-
       final productDetailsId =
           ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
       final productTypeId = productDetailsId["productTypeId"];
@@ -189,7 +184,12 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
           icon: Icon(Icons.arrow_back),
           onPressed: () {
             (wishlistBackbuttonFlag)
-                ? Navigator.pushNamed(context, MainScreen.id)
+                ? Navigator.pushAndRemoveUntil(context,
+                    MaterialPageRoute(builder: (context) {
+                    return MainScreen(
+                      selectedIndex: 0,
+                    );
+                  }),(Route<dynamic> route) => false)
                 : Navigator.of(context).pop();
           }),
       actions: [
@@ -288,14 +288,10 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
             BlocListener<ProductPageDetailsBloc, ProductPageDetailsState>(
               listener: (context, state) {
                 if (state is ProductPageDetailsLoading) {
-                  print("Product Page Loading..............");
-
                   setState(() {
                     isProgress = true;
                   });
                 } else if (state is ProductPageDetailsLoaded) {
-                  print("Product Page Loded..............");
-
                   setState(() {
                     productPageFlag = true;
                     productPageDetail = state.productPageDetail;
@@ -439,7 +435,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                                       }
                                       if (state
                                           is AddOrRemoveProductFromWishlistSuccess) {
-                                        print("Akshay");
                                         setState(() {
                                           isProgress = false;
                                         });
@@ -458,12 +453,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                                               setState(() {
                                                 favoriteFlag = !favoriteFlag;
                                               });
-                                              print(
-                                                  "*************${productPageDetail.product.id}");
                                               if (favoriteFlag) {
-                                                print(
-                                                    "############### ${productPageDetail!.product.wishlist}");
-
                                                 wishlistProductDetailsFetchingBloc.add(
                                                     AddOrDeleteProductFromWishlistEvent(
                                                         productId:
@@ -473,8 +463,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                                                         token:
                                                             loginData!.token!));
                                               } else {
-                                                print(
-                                                    "############### ${productPageDetail!.product.wishlist}");
                                                 wishlistProductDetailsFetchingBloc.add(
                                                     AddOrDeleteProductFromWishlistEvent(
                                                         productId:
@@ -506,7 +494,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                                   right: getProportionateScreenWidth(0.0),
                                   child: GestureDetector(
                                     onTap: () {
-                                      Navigator.push(context,
+                                      Navigator.pushAndRemoveUntil(context,
                                           MaterialPageRoute(builder: (context) {
                                         return BlocProvider.value(
                                           value: BlocProvider.of<
@@ -523,7 +511,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                                                 .toString(),
                                           ),
                                         );
-                                      }));
+                                      }),(Route<dynamic> route) => true);
                                     },
                                     child: Icon(
                                       Icons.favorite_border,

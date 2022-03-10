@@ -2,7 +2,7 @@ part of 'accessories_data_fetch_bloc.dart';
 
 abstract class AccessoriesDataFetchState extends Equatable {
   const AccessoriesDataFetchState();
-  
+
   @override
   List<Object> get props => [];
 }
@@ -15,6 +15,13 @@ class AccessoriesDataFetchLoaded extends AccessoriesDataFetchState {
   final AccessoriesListData accessoriesListData;
 
   const AccessoriesDataFetchLoaded(this.accessoriesListData);
+}
+
+class AccessoriesProductDetailsFetchSuccess extends AccessoriesDataFetchState {
+  final AccessoriesWishlistProductDetails accessoriesWishlistProductDetails;
+
+  const AccessoriesProductDetailsFetchSuccess(
+      this.accessoriesWishlistProductDetails);
 }
 
 class AccessoriesDataFetchError extends AccessoriesDataFetchState {

@@ -4,12 +4,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:unicorn_store/Business_Logic/bloc/category/accessories_bloc/accessories_data_fetch_bloc.dart';
 import 'package:unicorn_store/Business_Logic/bloc/category/category_bloc/category_api_fetch_bloc.dart';
 import 'package:unicorn_store/Business_Logic/bloc/category/subcategory_bloc/subcategory_api_fetch_bloc.dart';
+import 'package:unicorn_store/Business_Logic/bloc/login%20and%20signup/authentication/authentication_bloc.dart';
 import 'package:unicorn_store/Data/Models/Category/AccessoriesCategory/accessories_children.dart';
 import 'package:unicorn_store/Data/Models/Category/AccessoriesCategory/accessories_list_data.dart';
 import 'package:unicorn_store/Data/Models/Category/Subcategory/sub_category.dart';
 import 'package:unicorn_store/Data/Models/Category/Subcategory/subcategory_list.dart';
 import 'package:unicorn_store/Data/Models/Category/category.dart';
 import 'package:unicorn_store/Data/Models/Category/data.dart';
+import 'package:unicorn_store/Data/Models/Login%20and%20Signup/Login/login_data.dart';
+import 'package:unicorn_store/UI/Components/loading_indicator_bar.dart';
 import 'package:unicorn_store/UI/ProductCategories.dart/Accessories/list_of_children.dart';
 import '../size_config.dart';
 import '../constant.dart';
@@ -29,7 +32,9 @@ class _ProductCategoriesState extends State<ProductCategories> {
   bool isExpanded = false;
   int? selected = 0;
   String? categoryName;
-  
+
+  bool isProgress = false;
+
   //Creating object for category bloc
   final CategoryApiFetchBloc _categoryApiFetchBloc = CategoryApiFetchBloc();
   final SubcategoryApiFetchBloc _subcategoryApiFetchBloc =
@@ -38,6 +43,7 @@ class _ProductCategoriesState extends State<ProductCategories> {
   //Creating instance of accessories bloc
   final AccessoriesDataFetchBloc _accessoriesDataFetchBloc =
       AccessoriesDataFetchBloc();
+  late AuthenticationBloc authenticationBloc;
 
   //Load Category
   Category? cat;
@@ -46,8 +52,12 @@ class _ProductCategoriesState extends State<ProductCategories> {
   //Load accessories data
   AccessoriesListData? accessoriesListData;
 
+  String? token;
+
   @override
   void initState() {
+    authenticationBloc = BlocProvider.of<AuthenticationBloc>(context);
+
     //add Event to load all available category
     _categoryApiFetchBloc.add(LoadCategoryApiFetch());
     super.initState();
@@ -55,75 +65,183 @@ class _ProductCategoriesState extends State<ProductCategories> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(
-              height: getProportionateScreenHeight(15.0),
-            ),
-            Text("   Categories",
-                style: TextStyle(
-                    fontSize: getProportionateScreenWidth(25.0),
-                    color: kDefaultTitleFontColor)),
-            const Divider(
-              color: kDefaultBorderColor,
-              thickness: 1,
-            ),
-            MultiBlocProvider(
-              providers: [
-                BlocProvider<CategoryApiFetchBloc>(
-                  create: (BuildContext context) => _categoryApiFetchBloc,
-                ),
-                BlocProvider<SubcategoryApiFetchBloc>(
-                  create: (BuildContext context) => _subcategoryApiFetchBloc,
-                ),
-                BlocProvider<AccessoriesDataFetchBloc>(
-                  create: (BuildContext context) => _accessoriesDataFetchBloc,
-                ),
-              ],
-              child: BlocListener<CategoryApiFetchBloc, CategoryApiFetchState>(
-                listener: (context, state) {
-                  if (state is CategoryApiFetchLoaded) {
-                    setState(() {
-                      cat = state.category;
-                    });
-                  } else if (state is CategoryApiFetchError) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(state.message!),
+    return BlocBuilder<AuthenticationBloc, AuthenticationState>(
+      builder: (context, state) {
+        if (state is AuthenticationAuthenticated) {
+          token = state.loginData.token;
+          return SafeArea(
+            child: Stack(
+              children: [
+                SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        height: getProportionateScreenHeight(15.0),
                       ),
-                    );
-                  }
-                },
-                child: BlocBuilder<CategoryApiFetchBloc, CategoryApiFetchState>(
-                  builder: (context, state) {
-                    if (state is CategoryApiFetchInitial) {
-                      return _buildLoading();
-                    } else if (state is CategoryApiFetchLoading) {
-                      return _buildLoading();
-                    } else if (state is CategoryApiFetchLoaded) {
-                      return _buildCategory(context, state.category);
-                    } else if (state is CategoryApiFetchError) {
-                      return Center(
-                        child: Container(
-                          margin: EdgeInsets.symmetric(
-                              vertical:
-                                  (MediaQuery.of(context).size.height / 3)),
-                          child: const Text("No Category Found"),
+                      Text("   Categories",
+                          style: TextStyle(
+                              fontSize: getProportionateScreenWidth(25.0),
+                              color: kDefaultTitleFontColor)),
+                      const Divider(
+                        color: kDefaultBorderColor,
+                        thickness: 1,
+                      ),
+                      MultiBlocProvider(
+                        providers: [
+                          BlocProvider<CategoryApiFetchBloc>(
+                            create: (BuildContext context) =>
+                                _categoryApiFetchBloc,
+                          ),
+                          BlocProvider<SubcategoryApiFetchBloc>(
+                            create: (BuildContext context) =>
+                                _subcategoryApiFetchBloc,
+                          ),
+                          BlocProvider<AccessoriesDataFetchBloc>(
+                            create: (BuildContext context) =>
+                                _accessoriesDataFetchBloc,
+                          ),
+                        ],
+                        child: BlocListener<CategoryApiFetchBloc,
+                            CategoryApiFetchState>(
+                          listener: (context, state) {
+                            if (state is CategoryApiFetchLoading) {
+                              setState(() {
+                                isProgress = true;
+                              });
+                            }
+                            if (state is CategoryApiFetchLoaded) {
+                              setState(() {
+                                isProgress = false;
+                                cat = state.category;
+                              });
+                            } else if (state is CategoryApiFetchError) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(state.message!),
+                                ),
+                              );
+                            }
+                          },
+                          child: BlocBuilder<CategoryApiFetchBloc,
+                              CategoryApiFetchState>(
+                            builder: (context, state) {
+                              if (state is CategoryApiFetchLoaded) {
+                                return _buildCategory(context, state.category);
+                              } else if (state is CategoryApiFetchError) {
+                                return Center(
+                                  child: Container(
+                                    margin: EdgeInsets.symmetric(
+                                        vertical: (MediaQuery.of(context)
+                                                .size
+                                                .height /
+                                            3)),
+                                    child: const Text("No Category Found"),
+                                  ),
+                                );
+                              } else {
+                                return Container();
+                              }
+                            },
+                          ),
                         ),
-                      );
-                    } else {
-                      return Container();
-                    }
-                  },
+                      ),
+                    ],
+                  ),
                 ),
-              ),
+                (isProgress) ? LoadingIndicatorBar() : const Center(),
+              ],
             ),
-          ],
-        ),
-      ),
+          );
+        } else if (state is AuthenticationUnauthenticated) {
+          token="";
+          return SafeArea(
+            child: Stack(
+              children: [
+                SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        height: getProportionateScreenHeight(15.0),
+                      ),
+                      Text("   Categories",
+                          style: TextStyle(
+                              fontSize: getProportionateScreenWidth(25.0),
+                              color: kDefaultTitleFontColor)),
+                      const Divider(
+                        color: kDefaultBorderColor,
+                        thickness: 1,
+                      ),
+                      MultiBlocProvider(
+                        providers: [
+                          BlocProvider<CategoryApiFetchBloc>(
+                            create: (BuildContext context) =>
+                                _categoryApiFetchBloc,
+                          ),
+                          BlocProvider<SubcategoryApiFetchBloc>(
+                            create: (BuildContext context) =>
+                                _subcategoryApiFetchBloc,
+                          ),
+                          BlocProvider<AccessoriesDataFetchBloc>(
+                            create: (BuildContext context) =>
+                                _accessoriesDataFetchBloc,
+                          ),
+                        ],
+                        child: BlocListener<CategoryApiFetchBloc,
+                            CategoryApiFetchState>(
+                          listener: (context, state) {
+                            if (state is CategoryApiFetchLoading) {
+                              setState(() {
+                                isProgress = true;
+                              });
+                            }
+                            if (state is CategoryApiFetchLoaded) {
+                              setState(() {
+                                isProgress = false;
+                                cat = state.category;
+                              });
+                            } else if (state is CategoryApiFetchError) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(state.message!),
+                                ),
+                              );
+                            }
+                          },
+                          child: BlocBuilder<CategoryApiFetchBloc,
+                              CategoryApiFetchState>(
+                            builder: (context, state) {
+                              if (state is CategoryApiFetchLoaded) {
+                                return _buildCategory(context, state.category);
+                              } else if (state is CategoryApiFetchError) {
+                                return Center(
+                                  child: Container(
+                                    margin: EdgeInsets.symmetric(
+                                        vertical: (MediaQuery.of(context)
+                                                .size
+                                                .height /
+                                            3)),
+                                    child: const Text("No Category Found"),
+                                  ),
+                                );
+                              } else {
+                                return Container();
+                              }
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                (isProgress) ? LoadingIndicatorBar() : const Center(),
+              ],
+            ),
+          );
+        }
+        return Center(child: Text("No Categories Found"));
+      },
     );
   }
 
@@ -155,7 +273,8 @@ class _ProductCategoriesState extends State<ProductCategories> {
 
                     // ignore: avoid_unnecessary_containers
                     trailing: CachedNetworkImage(
-                        imageUrl: "$imageDefaultURL$imageThirdUrl${categoryList[index].image}",
+                        imageUrl:
+                            "$imageDefaultURL$imageThirdUrl${categoryList[index].image}",
                         placeholder: (context, url) => const SizedBox(
                               height: 50,
                               width: 50,
@@ -174,7 +293,8 @@ class _ProductCategoriesState extends State<ProductCategories> {
                           _accessoriesDataFetchBloc.add(
                               LoadAccessoriesDataFetch(
                                   subCategoryId:
-                                      category.data![index].id.toString()));
+                                      category.data![index].id.toString(),
+                                  token: token!));
                         } else {
                           _subcategoryApiFetchBloc.add(LoadSubcategoryApiFetch(
                               subCategoryId:
@@ -235,7 +355,8 @@ class _ProductCategoriesState extends State<ProductCategories> {
                                 builder: (context, state) {
                                   if (state is AccessoriesDataFetchLoaded) {
                                     return _buildAccessoriesSubcategories(
-                                        context, categoryList[index].id.toString());
+                                        context,
+                                        categoryList[index].id.toString());
                                   } else {
                                     return Container();
                                   }
@@ -261,8 +382,8 @@ class _ProductCategoriesState extends State<ProductCategories> {
                                     return Container();
                                   } else if (state
                                       is SubcategoryApiFetchLoaded) {
-                                    return _buildSubcategories(
-                                        context, categoryList[index].id.toString());
+                                    return _buildSubcategories(context,
+                                        categoryList[index].id.toString());
                                   } else if (state
                                       is SubcategoryApiFetchError) {
                                     return const Padding(
@@ -314,7 +435,8 @@ class _ProductCategoriesState extends State<ProductCategories> {
                       Navigator.pushNamed(context, ListOfChildren.id,
                           arguments: {
                             "id": categoryId,
-                            "name": subcategoryList[index].name.toString()
+                            "name": subcategoryList[index].name.toString(),
+                            "token": token,
                           });
                     } else {
                       Navigator.pushNamed(context, ListOfSpecificProduct.id,
@@ -376,13 +498,15 @@ class _ProductCategoriesState extends State<ProductCategories> {
                             "name": subcategoryList[index].name.toString(),
                             "subcategoryData": accessoriesListData!
                                 .data!.children![index].children,
+                            "token": token,
                           });
                     } else {
                       Navigator.pushNamed(context, ListOfProduct.id,
                           arguments: {
                             "name": subcategoryList[index].name.toString(),
                             "productData": accessoriesListData!
-                                .data!.children![index].products
+                                .data!.children![index].products,
+                             "token": token,
                           });
                     }
                   },

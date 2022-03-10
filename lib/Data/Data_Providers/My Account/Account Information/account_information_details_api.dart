@@ -10,7 +10,7 @@ class AccountInformationDetailsApi {
       String customerId, String token) async {
     String url = "$kDefaultBaseUrl/account_info/$customerId";
 
-    try {
+   
       var response = await http.get(
         Uri.parse(url),
         headers: {
@@ -26,10 +26,7 @@ class AccountInformationDetailsApi {
       } else {
         throw Exception(response.statusCode);
       }
-    } catch (e) {
-      print(e);
-    }
-    throw Exception();
+    
   }
 
   //Updating Account Information

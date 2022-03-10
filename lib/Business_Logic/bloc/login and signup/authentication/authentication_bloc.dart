@@ -45,6 +45,7 @@ class AuthenticationBloc
     on<LoggedOut>((event, emit) async {
       emit(AuthenticationLoading());
 
+      // ignore: unused_local_variable
       final logoutData = await loginDetailsRepository.getLogoutDetails(
           event.userId, event.token);
       await loginDetailsRepository.deleteToken();

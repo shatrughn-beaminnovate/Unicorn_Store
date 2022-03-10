@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:unicorn_store/Data/Models/Category/AccessoriesCategory/accessories_list_data.dart';
 import 'package:unicorn_store/Data/Models/Category/Subcategory/subcategory_list.dart';
+import 'package:unicorn_store/Data/Models/MyAccount/Wishlist/Accessories%20product%20Wishlist/accessories_wishlist_product_details.dart';
 import 'package:unicorn_store/UI/constant.dart';
 
 class SubCategoryServiceApi {
@@ -11,37 +12,67 @@ class SubCategoryServiceApi {
     Map data = {"sub_category": true, "product": false};
     var body = jsonEncode(data);
 
+    try {
+      var response = await http.post(Uri.parse(_baseUrl + categoryID),
+          headers: {"Content-Type": "application/json"}, body: body);
+
+      if (response.statusCode == 200) {
+        var decode = jsonDecode(response.body);
+        var data = SubCategoryList.fromJson(decode);
+        return data;
+      } else {
+        throw Exception(response.statusCode);
+      }
+    } catch (e) {
+      print(e);
+    }
+    throw Exception();
+  }
+
+  //This will accessories data
+  Future<AccessoriesListData> getAccessoriesCategoryData(
+      String categoryID, String token) async {
+    Map data = {"sub_category": true, "product": true};
+    var body = jsonEncode(data);
+
     var response = await http.post(Uri.parse(_baseUrl + categoryID),
-        headers: {"Content-Type": "application/json"}, body: body);
+        headers: {
+          "Content-Type": "application/json",
+          "X-Auth-Token": token,
+        },
+        body: body);
 
     if (response.statusCode == 200) {
       var decode = jsonDecode(response.body);
+    
+      var data = AccessoriesListData.fromJson(decode);
+      print(data.data!.children![1].products);
 
-      var data = SubCategoryList.fromJson(decode);
       return data;
     } else {
       throw Exception(response.statusCode);
     }
   }
 
-  //This will accessories data
-  Future<AccessoriesListData> getAccessoriesCategoryData(
-      String categoryID) async {
-    Map data = {"sub_category": true, "product": true};
-    var body = jsonEncode(data);
+  //This will load Accessories Product Details
+  Future<AccessoriesWishlistProductDetails> getAccessoriesProductDetails(
+      String productId, String token) async {
+    String url = "$kDefaultBaseUrl/product/$productId";
 
-    var response = await http.post(Uri.parse(_baseUrl + categoryID),
-        headers: {"Content-Type": "application/json"}, body: body);
-    
+    var response = await http.get(
+      Uri.parse(url),
+      headers: {
+        "Content-Type": "application/json",
+        "X-Auth-Token": token,
+        "Connection": "keep-alive"
+      },
+    );
     if (response.statusCode == 200) {
       var decode = jsonDecode(response.body);
-
-      var data = AccessoriesListData.fromJson(decode);
+      var data = AccessoriesWishlistProductDetails.fromJson(decode);
       return data;
     } else {
       throw Exception(response.statusCode);
     }
-    
-
   }
 }

@@ -28,6 +28,8 @@ class ListOfProduct extends StatelessWidget {
     accessoriesData =
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
 
+    print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@  ${accessoriesData["token"]}");
+
     return Scaffold(
       appBar: const BuildAppBar(),
       backgroundColor: Colors.white,
@@ -82,7 +84,8 @@ class ListOfProduct extends StatelessWidget {
           return GestureDetector(
             onTap: (){
                   Navigator.pushNamed(context, ProductPage.id,arguments: {
-                    "productDetails":accessoriesProduct![index]
+                    "productDetails":accessoriesProduct![index],
+                    "token":accessoriesData["token"],
                   });
             },
             child: Column(

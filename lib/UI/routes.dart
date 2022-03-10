@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:unicorn_store/Business_Logic/bloc/login%20and%20signup/authentication/authentication_bloc.dart';
 import 'package:unicorn_store/UI/HomePage/home_page.dart';
 import 'package:unicorn_store/UI/HomePage/NavigationDrawer/Contact/contact_page.dart';
 import 'package:unicorn_store/UI/HomePage/NavigationDrawer/Hot%20Deals/hot_deals_page.dart';
@@ -41,7 +39,7 @@ final Map<String, WidgetBuilder> routes = {
   AddToCartPage.id: (context) => const AddToCartPage(),
   StudentOfferScreen.id: (context) => const StudentOfferScreen(),
   SignUpForm.id: (context) => const SignUpForm(),
-  ProductDetailsScreen.id: (context) =>   ProductDetailsScreen(),
+  ProductDetailsScreen.id: (context) => const  ProductDetailsScreen(),
   ContactPage.id: (context) => const ContactPage(),
   TextFile.id: (context) => const TextFile(),
   AccountInformationPage.id: (context) => const AccountInformationPage(),
@@ -53,7 +51,7 @@ final Map<String, WidgetBuilder> routes = {
   ForgotPassword.id: (context) => const ForgotPassword(),
   ProductCategories.id: (context) => const ProductCategories(),
   ListOfSpecificProduct.id: (context) => const ListOfSpecificProduct(),
-  ProductPage.id: (context) => const ProductPage(),
+  ProductPage.id: (context) =>  ProductPage(),
   HotDealsPage.id: (context) => const HotDealsPage(),
   OnBoardingPage.id: (context) => const OnBoardingPage(),
   InitialScreen.id: (context) => const InitialScreen(),

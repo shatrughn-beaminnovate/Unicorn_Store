@@ -29,6 +29,7 @@ class _ListOfChildrenState extends State<ListOfChildren> {
     accessoriesData =
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
     accessoriesChildren = accessoriesData["subcategoryData"];
+    print('token ${accessoriesData["token"]}');
     return Scaffold(
       appBar: const BuildAppBar(),
       backgroundColor: Colors.white,
@@ -76,12 +77,14 @@ class _ListOfChildrenState extends State<ListOfChildren> {
                             "name": accessoriesChildren![index].name!,
                             "subcategoryData":
                                 accessoriesChildren![index].children,
+                            "token": accessoriesData["token"]
                           });
                     } else {
                       Navigator.pushNamed(context, ListOfProduct.id,
                           arguments: {
                             "name": accessoriesChildren![index].name,
-                            "productData": accessoriesChildren![index].products
+                            "productData": accessoriesChildren![index].products,
+                            "token": accessoriesData["token"]
                           });
                     }
                   },

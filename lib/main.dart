@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:unicorn_store/Business_Logic/bloc/login%20and%20signup/authentication/authentication_bloc.dart';
 import 'package:unicorn_store/UI/Components/loading_indicator_bar.dart';
 import 'package:unicorn_store/UI/OnBoarding%20Screen/on_boarding_page.dart';
+import 'package:unicorn_store/UI/ProductPage/product_page.dart';
 import 'package:unicorn_store/UI/ProductPage/product_type_page.dart';
 import 'package:unicorn_store/UI/main_screen.dart';
 import 'package:unicorn_store/UI/routes.dart';
@@ -80,6 +81,12 @@ class _MyAppState extends State<MyApp> {
                         productId: widget.productPageId!,
                         token: state.loginData.token!));
               }
+              if (widget.myAccountRedirect == "goToAccessoriesProductPage") {
+                wishlistProductDetailsFetchingBloc.add(
+                    AddProductToWishlistEvent(
+                        productId: widget.productPageId!,
+                        token: state.loginData.token!));
+              }
             }
           },
           child: BlocBuilder<AuthenticationBloc, AuthenticationState>(
@@ -115,7 +122,15 @@ class _MyAppState extends State<MyApp> {
                       productTypeId: widget.productTypeId,
                       productValue: widget.productValue,
                       customerId: state.loginData.userData!.id.toString(),
-                      appBarBackButtonStatus: true,
+                    ),
+                  );
+                } else if (widget.myAccountRedirect ==
+                    "goToAccessoriesProductPage") {
+                  return BlocProvider.value(
+                    value: authenticationBloc,
+                    child: ProductPage(
+                      productPageId: widget.productPageId,
+                      token: state.loginData.token,
                     ),
                   );
                 }
@@ -139,10 +154,8 @@ class _MyAppState extends State<MyApp> {
                   ),
                 );
               }
-              return Scaffold(
-                body: Container(
-                  child: Center(child: Text("Akshay")),
-                ),
+              return const Scaffold(
+                body: Center(child: Text("Akshay")),
               );
             },
           ),

@@ -22,7 +22,12 @@ class LoginScreen extends StatefulWidget {
   final String? productTypeId;
   final String? productPageId;
 
-  const LoginScreen({Key? key, this.myAccountRedirect, this.productValue,this.productTypeId,this.productPageId})
+  const LoginScreen(
+      {Key? key,
+      this.myAccountRedirect,
+      this.productValue,
+      this.productTypeId,
+      this.productPageId})
       : super(key: key);
 
   @override
@@ -44,7 +49,6 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
-    print('@@@@@@@@@@@@@@@@@@@@@@ Login Data  ${widget.productValue}');
     return Scaffold(
       appBar: const BuildAppBar(),
       body: BlocProvider<LoginBloc>(
@@ -53,26 +57,35 @@ class _LoginScreenState extends State<LoginScreen> {
             listener: (context, state) {
               if (state is LoginInitial) {
                 if (widget.myAccountRedirect == "false") {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) {
                     return const MyApp(
                       myAccountRedirect: "true",
                     );
-                  }));
+                  }),(Route<dynamic> route) => false);
                 } else if (widget.myAccountRedirect == "true") {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) {
                     return const MyApp(
                       myAccountRedirect: "false",
                     );
-                  }));
+                  }),(Route<dynamic> route) => false);
                 } else if (widget.myAccountRedirect == "goToProductPageType") {
-                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+                  Navigator.pushAndRemoveUntil(context,
+                      MaterialPageRoute(builder: (context) {
                     return MyApp(
                       myAccountRedirect: "goToProductPageType",
                       productValue: widget.productValue,
                       productTypeId: widget.productTypeId,
                       productPageId: widget.productPageId,
                     );
-                  }));
+                  }),(Route<dynamic> route) => false);
+                } else if (widget.myAccountRedirect ==
+                    "goToAccessoriesProductPage") {
+                  Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) {
+                    return MyApp(
+                      myAccountRedirect: "goToAccessoriesProductPage",
+                      productPageId: widget.productPageId,
+                    );
+                  }),(Route<dynamic> route) => false);
                 }
               }
               if (state is LoginFailure) {

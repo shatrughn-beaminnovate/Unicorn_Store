@@ -51,6 +51,7 @@ class AccessoriesProduct {
   final int? averageRating;
 
   final int? discount;
+  final bool? wishlist;
 
   List<TypeImages>? images;
 
@@ -79,6 +80,7 @@ class AccessoriesProduct {
     this.averageRating,
     this.discount,
     this.images,
+    this.wishlist,
   });
 
   factory AccessoriesProduct.fromJson(
@@ -89,6 +91,6 @@ class AccessoriesProduct {
 
   @override
   String toString() {
-    return 'AccessoriesProduct(id: $id, sku: $sku, name: $name, slug: $slug, routeId: $routeId, description: $description, excerpt: $excerpt, price: $price, saleprice: $saleprice, freeShipping: $freeShipping, shippable: $shippable, taxable: $taxable, fixedQuantity: $fixedQuantity, trackStock: $trackStock, quantity: $quantity, seoTitle: $seoTitle, meta: $meta, enabled: $enabled, affordability: $affordability, allowRating: $allowRating, showRating: $showRating, averageRating: $averageRating, discount: $discount, images: $images)';
+    return 'AccessoriesProduct(id: $id,wishlist: $wishlist, sku: $sku, name: $name, slug: $slug, routeId: $routeId, description: $description, excerpt: $excerpt, price: $price, saleprice: $saleprice, freeShipping: $freeShipping, shippable: $shippable, taxable: $taxable, fixedQuantity: $fixedQuantity, trackStock: $trackStock, quantity: $quantity, seoTitle: $seoTitle, meta: $meta, enabled: $enabled, affordability: $affordability, allowRating: $allowRating, showRating: $showRating, averageRating: $averageRating, discount: $discount, images: $images, )';
   }
 }

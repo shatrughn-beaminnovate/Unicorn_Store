@@ -22,7 +22,7 @@ class LoadingIndicatorBar extends StatelessWidget {
     return Container(
       width: MediaQuery.of(context).size.width,
       height: MediaQuery.of(context).size.height,
-      color: Colors.transparent,
+      color: Colors.black54,
       child: Padding(
         padding: EdgeInsets.all(getProportionateScreenWidth(130)),
         child: Center(

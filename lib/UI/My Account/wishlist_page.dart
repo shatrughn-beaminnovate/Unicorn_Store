@@ -29,6 +29,7 @@ class _WishlistPageState extends State<WishlistPage> {
   //Creating instace for wishlist product details
   WishlistDetails? wishlistDetails;
 
+  // ignore: prefer_typing_uninitialized_variables
   var userLoginData;
 
   //getting logged in user details

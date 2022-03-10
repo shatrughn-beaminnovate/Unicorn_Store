@@ -34,6 +34,7 @@ AccessoriesProduct _$AccessoriesProductFromJson(Map<String, dynamic> json) =>
       images: (json['images'] as List<dynamic>?)
           ?.map((e) => TypeImages.fromJson(e as Map<String, dynamic>))
           .toList(),
+      wishlist: json['wishlist'] as bool?,
     );
 
 Map<String, dynamic> _$AccessoriesProductToJson(AccessoriesProduct instance) =>
@@ -61,5 +62,6 @@ Map<String, dynamic> _$AccessoriesProductToJson(AccessoriesProduct instance) =>
       'show_rating': instance.showRating,
       'average_rating': instance.averageRating,
       'discount': instance.discount,
+      'wishlist': instance.wishlist,
       'images': instance.images,
     };

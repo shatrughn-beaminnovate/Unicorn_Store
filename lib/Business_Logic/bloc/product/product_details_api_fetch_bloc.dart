@@ -1,6 +1,5 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:unicorn_store/Business_Logic/bloc/product/product%20page%20details/product_page_details_bloc.dart';
 import 'package:unicorn_store/Data/Models/Product/Product%20Page/product_page_details.dart';
 import 'package:unicorn_store/Data/Models/Product/Product%20Type/type_details.dart';
 import 'package:unicorn_store/Data/Repositories/product/product_details_repository.dart';

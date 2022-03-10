@@ -33,7 +33,6 @@ class ProductDetailsServiceApi {
     };
     String body = json.encode(data);
 
-    try {
       var response = await http.post(Uri.parse(url),
           headers: <String, String>{
             'Content-Type': 'application/json; charset=UTF-8',
@@ -54,8 +53,6 @@ class ProductDetailsServiceApi {
       } else {
         throw Exception(response.statusCode);
       }
-    } catch (e) {
-      print(e);
-    }
+    
   }
 }

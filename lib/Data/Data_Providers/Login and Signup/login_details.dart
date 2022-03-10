@@ -75,7 +75,7 @@ class LoginDetailsApi {
 
     String body = json.encode(registerData);
 
-    try {
+    
       var response = await http.post(Uri.parse(url),
           headers: {
             'Content-Type': 'application/json; charset=UTF-8',
@@ -87,14 +87,9 @@ class LoginDetailsApi {
         var decode = jsonDecode(response.body);
         
         var data = RegisterResponse.fromJson(decode);
-        print(data);
         return data;
       } else {
         throw Exception(response.statusCode);
       }
-    } catch (e) {
-      print(e);
-    }
-    throw Exception();
-  }
+    } 
 }
