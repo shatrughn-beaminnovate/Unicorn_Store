@@ -1,4 +1,6 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:unicorn_store/Data/Models/MyAccount/Order%20History/order_items.dart';
 import 'package:unicorn_store/UI/HomePage/Components/price_tag.dart';
 
 import '../../../size_config.dart';
@@ -6,9 +8,8 @@ import '../../../constant.dart';
 import 'title_and_data.dart';
 
 class ItemsInsideSingleOrder extends StatelessWidget {
-  const ItemsInsideSingleOrder({
-    Key? key,
-  }) : super(key: key);
+  final OrderItems? orderItems;
+  const ItemsInsideSingleOrder({Key? key, this.orderItems}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -25,15 +26,19 @@ class ItemsInsideSingleOrder extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
+          CachedNetworkImage(
             height: getProportionateScreenHeight(90.0),
             width: getProportionateScreenWidth(90.0),
-
-            // decoration: BoxDecoration(
-            //     border: Border.all(color: kDefaultBorderColor)),
-            child: const Image(
-              fit: BoxFit.fill,
-              image: AssetImage("assets/BestSellerImages/macbook.jpeg"),
+            imageUrl:
+                "$imageDefaultURL$imageSecondUrl${orderItems!.contents!.images[0].filename!}",
+            placeholder: (context, url) => Container(),
+            errorWidget: (context, url, error) => SizedBox(
+              height: getProportionateScreenHeight(300),
+              width: getProportionateScreenWidth(300),
+              child: const Image(
+                fit: BoxFit.fill,
+                image: AssetImage("assets/NoImage.jpg"),
+              ),
             ),
           ),
           SizedBox(
@@ -44,7 +49,7 @@ class ItemsInsideSingleOrder extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "21.5-inch iMac with Retina 4K display",
+                  orderItems!.contents!.name.toString(),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
@@ -53,14 +58,15 @@ class ItemsInsideSingleOrder extends StatelessWidget {
                 SizedBox(
                   height: getProportionateScreenHeight(10.0),
                 ),
-                const TitleAndData(title: "OTY: ", data: "5"),
+                TitleAndData(
+                    title: "OTY: ", data: orderItems!.quantity!.toString()),
                 SizedBox(
                   height: getProportionateScreenHeight(10.0),
                 ),
-               const TitleAndData(
+                TitleAndData(
                   title: "Amount: ",
                   priceTag: PriceTag(
-                    price: "1,00,500",
+                    price: orderItems!.contents!.saleprice.toString(),
                   ),
                 ),
               ],

@@ -18,7 +18,7 @@ class EditAddressManagerDataFetchApiBloc extends Bloc<
       try {
        // emit(EditAddressManagerDataFetchApiLoading());
         final _addressDetails = await _addressManagerDetailsRepository
-            .getAddressManagerDetailsEdit(event.customerId, event.addressId,event.token);
+            .getAddressManagerDetailsEdit( event.addressId,event.token);
 
         emit(EditAddressManagerDataFetchApiLoaded(_addressDetails));
       } catch (e) {

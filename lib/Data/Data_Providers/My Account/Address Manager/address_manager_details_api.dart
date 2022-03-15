@@ -10,13 +10,14 @@ import 'package:unicorn_store/Data/Models/MyAccount/Address%20Manager/search_zip
 import 'package:unicorn_store/UI/constant.dart';
 
 class AddressManagerDetailsApi {
-  final _baseUrl = "$kDefaultBaseUrl/address_bank/";
+  final _baseUrl = "$kDefaultBaseUrl/address_bank";
 
   //This will Fetch List of user Address Details
   Future<AddressList> getAddressManagerDetails(
-      String customerID, String token) async {
+      String token) async {
+      try{  
     var response = await http.get(
-      Uri.parse(_baseUrl + customerID),
+      Uri.parse(_baseUrl),
       headers: {
         "Content-Type": "application/json",
         "X-Auth-Token": token,
@@ -30,16 +31,18 @@ class AddressManagerDetailsApi {
     } else {
       throw Exception(response.statusCode);
     }
+      }catch(e){print(e);}
+      throw Exception();
   }
 
   //This will load user address based address id
   Future<EditAddressList> getAddressManagerDetailsEdit(
-      String customerID, String addressId, String token) async {
+       String addressId, String token) async {
 
     
     var response = await http.get(
       Uri.parse(
-          "$kDefaultBaseUrl/edit_address_bank/?customer_id=$customerID&address_id=$addressId"),
+          "$kDefaultBaseUrl/edit_address_bank/?address_id=$addressId"),
       headers: {
         "Content-Type": "application/json",
         "X-Auth-Token": token,
@@ -56,12 +59,11 @@ class AddressManagerDetailsApi {
   }
 
   //This is post request for setting default billing and default shipping for user addresss
-  Future<Map<String, dynamic>> setDefaultAddress(String customerId,
+  Future<Map<String, dynamic>> setDefaultAddress(
       String addressId, String addressType, String token) async {
     String url = "$kDefaultBaseUrl/set_default_address";
 
     Map data = {
-      'customer_id': customerId,
       'address_id': addressId,
       'address_type': addressType,
     };

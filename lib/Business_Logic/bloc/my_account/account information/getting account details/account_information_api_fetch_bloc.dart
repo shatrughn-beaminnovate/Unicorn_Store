@@ -18,7 +18,7 @@ class AccountInformationApiFetchBloc extends Bloc<
       try {
         emit(AccountInformationApiFetchLoading());
         final _accountDetails = await _accountInformationRepository
-            .getAccountDetails(event.customerId, event.token);
+            .getAccountDetails( event.token);
 
         emit(AccountInformationApiFetchLoaded(_accountDetails));
       } catch (e) {

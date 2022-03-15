@@ -10,22 +10,22 @@ class AddressManagerDetailsRepository {
   final _addressManagerDetailsApi = AddressManagerDetailsApi();
 
   //Load Customer list of address
-  Future<AddressList> getAddressManagerDetails(String customerID,String token) {
-    return _addressManagerDetailsApi.getAddressManagerDetails(customerID,token);
+  Future<AddressList> getAddressManagerDetails(String token) {
+    return _addressManagerDetailsApi.getAddressManagerDetails(token);
   }
 
   //Load Customer address based on address Id
   Future<EditAddressList> getAddressManagerDetailsEdit(
-      String customerID, String addressID,String token) {
+       String addressID,String token) {
     return _addressManagerDetailsApi.getAddressManagerDetailsEdit(
-        customerID, addressID,token);
+         addressID,token);
   }
 
   //This will set defaultShipping and defaultBilling
   Future<Map<String, dynamic>> setDefaultAddress(
-      String customerId, String addressId, String addressType,String token) {
+  String addressId, String addressType,String token) {
     return _addressManagerDetailsApi.setDefaultAddress(
-        customerId, addressId, addressType,token);
+       addressId, addressType,token);
   }
 
   //This will delete customer address based on address id

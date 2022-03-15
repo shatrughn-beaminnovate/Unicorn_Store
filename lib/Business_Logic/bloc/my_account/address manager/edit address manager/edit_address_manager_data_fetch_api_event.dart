@@ -9,15 +9,15 @@ abstract class EditAddressManagerDataFetchApiEvent extends Equatable {
 
 class LoadEditAddressManagerDataFetchApi
     extends EditAddressManagerDataFetchApiEvent {
-  final String customerId;
+
   final String addressId;
   final String token;
 
   const LoadEditAddressManagerDataFetchApi(
-      {required this.customerId, required this.addressId,required this.token});
+      { required this.addressId,required this.token});
 
   @override
-  List<Object> get props => [customerId, addressId,token];
+  List<Object> get props => [addressId,token];
 }
 
 class AddCustomerAddressEvent extends EditAddressManagerDataFetchApiEvent {

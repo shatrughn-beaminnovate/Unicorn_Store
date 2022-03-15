@@ -26,7 +26,7 @@ class _AddressManagerPageState extends State<AddressManagerPage> {
   String? shipping;
 
   String? secondBillingValue = " ";
-    String? secondShippingValue = " ";
+  String? secondShippingValue = " ";
 
   List<Address>? address;
   //Creating object for category bloc
@@ -42,15 +42,16 @@ class _AddressManagerPageState extends State<AddressManagerPage> {
 
   @override
   void didChangeDependencies() {
-     userData = ModalRoute.of(context)?.settings.arguments;
+    userData = ModalRoute.of(context)?.settings.arguments;
     loginData = userData["loginData"];
     _addressManagerDetailsApiFetchBloc
-        .add(LoadAddressDetailsApiFetch(customerId: "25",token:loginData!.token!));
+        .add(LoadAddressDetailsApiFetch(token: loginData!.token!));
     super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
+    print("Akshay");
     return Scaffold(
       appBar: const BuildAppBar(),
       body: SafeArea(
@@ -119,8 +120,6 @@ class _AddressManagerPageState extends State<AddressManagerPage> {
     );
   }
 
-
-
   //List of User Address
   Widget _buildAddressManagerList(
       BuildContext context, AddressList addressList) {
@@ -137,8 +136,13 @@ class _AddressManagerPageState extends State<AddressManagerPage> {
                       arguments: {
                         "customerId": address![0].customerId.toString(),
                         "addressId": "",
-                        "loginData":loginData
-                      });
+                        "loginData": loginData
+                      }).then((_) {
+                    setState(() {
+                      _addressManagerDetailsApiFetchBloc.add(
+                          LoadAddressDetailsApiFetch(token: loginData!.token!));
+                    });
+                  });
                 },
                 color: const Color(0xFF1F99CF),
               ),
@@ -242,9 +246,17 @@ class _AddressManagerPageState extends State<AddressManagerPage> {
                                     arguments: {
                                       "customerId":
                                           address![index].customerId.toString(),
-                                      "addressId": address![index].id.toString(),
-                                      "loginData":loginData
-                                    });
+                                      "addressId":
+                                          address![index].id.toString(),
+                                      "loginData": loginData
+                                    }).then((_) {
+                                  setState(() {
+                                    _addressManagerDetailsApiFetchBloc.add(
+                                        LoadAddressDetailsApiFetch(
+                                            token: loginData!.token!));
+                                  });
+                                });
+                                ;
                               },
                               color: const Color(0xFF1F99CF),
                             ),
@@ -282,13 +294,10 @@ class _AddressManagerPageState extends State<AddressManagerPage> {
                                           onPressed: () {
                                             _addressManagerDetailsApiFetchBloc
                                                 .add(DeleteCustomerAddressEvent(
-                                              addressId:
-                                                  address![index].id.toString(),
-                                              customerId: address![index]
-                                                  .customerId
-                                                  .toString(),
-                                              token: loginData!.token!
-                                            ));
+                                                    addressId: address![index]
+                                                        .id
+                                                        .toString(),
+                                                    token: loginData!.token!));
 
                                             Navigator.pop(context, 'OK');
                                           },
@@ -312,7 +321,6 @@ class _AddressManagerPageState extends State<AddressManagerPage> {
 
   //Radio button for Default Billing address and Default Shipping address
   Widget _buildDefaultBillingRadio(List<Address>? address, int index) {
-    
     return Column(children: [
       //Default Billing
       Row(
@@ -323,13 +331,13 @@ class _AddressManagerPageState extends State<AddressManagerPage> {
             width: getProportionateScreenHeight(20.0),
             child: Radio<String>(
               value: address![index].id.toString(),
-              groupValue: (secondBillingValue == " ") ? billing : secondBillingValue,
+              groupValue:
+                  (secondBillingValue == " ") ? billing : secondBillingValue,
               onChanged: (String? value) {
                 setState(() {
                   secondBillingValue = value;
                 });
                 _setDefaultAddressBloc.add(SetDefaultAddresssDetails(
-                    customerId: address[index].customerId.toString(),
                     addressId: address[index].id.toString(),
                     addressType: "billing",
                     token: loginData!.token!));
@@ -359,10 +367,10 @@ class _AddressManagerPageState extends State<AddressManagerPage> {
             width: getProportionateScreenHeight(20.0),
             child: Radio<String>(
               value: address[index].id.toString(),
-              groupValue: (secondShippingValue == " ") ? shipping : secondShippingValue,
+              groupValue:
+                  (secondShippingValue == " ") ? shipping : secondShippingValue,
               onChanged: (String? value) {
                 _setDefaultAddressBloc.add(SetDefaultAddresssDetails(
-                    customerId: address[index].customerId.toString(),
                     addressId: address[index].id.toString(),
                     addressType: "shipping",
                     token: loginData!.token!));

@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:selectable_container/selectable_container.dart';
@@ -128,51 +129,65 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
   @override
   Widget build(BuildContext context) {
     // authenticationBloc = BlocProvider.of<AuthenticationBloc>(context);
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: _buildAppBar(context),
-      body: Stack(
-        children: [
-          MultiBlocProvider(
-            providers: [
-              BlocProvider(
-                create: (context) => _productDetailsApiFetchBloc,
-              ),
-              BlocProvider(
-                create: (context) => _productPageDetailsBloc,
-              ),
-            ],
-            child: BlocListener<ProductDetailsApiFetchBloc,
-                ProductDetailsApiFetchState>(
-              listener: (context, state) {
-                if (state is ProductDetailsApiFetchLoaded) {
-                  setState(() {
-                    productTypeDetails = state.productTypeDetails;
-                  });
-                }
-              },
-              child: BlocBuilder<ProductDetailsApiFetchBloc,
-                  ProductDetailsApiFetchState>(
-                builder: (context, state) {
-                  if (state is ProductDetailsApiFetchInitial) {
-                    return LoadingIndicatorBar();
-                  } else if (state is ProductDetailsApiFetchLoading) {
-                    return LoadingIndicatorBar();
-                  } else if (state is ProductDetailsApiFetchLoaded) {
-                    return _buildProductDetailsPage(context);
-                  } else if (state is ProductDetailsApiFetchError) {
-                    return const Center(
-                      child: Text("No Product Details Found"),
+    return WillPopScope(
+       onWillPop: () async {
+        if (wishlistBackbuttonFlag) {
+           Navigator.pushAndRemoveUntil(context,
+                    MaterialPageRoute(builder: (context) {
+                    return MainScreen(
+                      selectedIndex: 0,
                     );
-                  } else {
-                    return Container();
+                  }),(Route<dynamic> route) => false);
+          return false;
+        } 
+        return false;
+      },
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: _buildAppBar(context),
+        body: Stack(
+          children: [
+            MultiBlocProvider(
+              providers: [
+                BlocProvider(
+                  create: (context) => _productDetailsApiFetchBloc,
+                ),
+                BlocProvider(
+                  create: (context) => _productPageDetailsBloc,
+                ),
+              ],
+              child: BlocListener<ProductDetailsApiFetchBloc,
+                  ProductDetailsApiFetchState>(
+                listener: (context, state) {
+                  if (state is ProductDetailsApiFetchLoaded) {
+                    setState(() {
+                      productTypeDetails = state.productTypeDetails;
+                    });
                   }
                 },
+                child: BlocBuilder<ProductDetailsApiFetchBloc,
+                    ProductDetailsApiFetchState>(
+                  builder: (context, state) {
+                    if (state is ProductDetailsApiFetchInitial) {
+                      return LoadingIndicatorBar();
+                    } else if (state is ProductDetailsApiFetchLoading) {
+                      return LoadingIndicatorBar();
+                    } else if (state is ProductDetailsApiFetchLoaded) {
+                      return _buildProductDetailsPage(context);
+                    } else if (state is ProductDetailsApiFetchError) {
+                      return const Center(
+                        child: Text("No Product Details Found"),
+                      );
+                    } else {
+                      return Container();
+                    }
+                  },
+                ),
               ),
             ),
-          ),
-          (isProgress) ? LoadingIndicatorBar() : Center()
-        ],
+            (isProgress) ? LoadingIndicatorBar() : Center()
+          ],
+        ),
       ),
     );
   }

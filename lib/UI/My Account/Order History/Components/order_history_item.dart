@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:unicorn_store/Data/Models/MyAccount/Order%20History/order_data.dart';
 
 import '../../../size_config.dart';
 import '../../../constant.dart';
@@ -6,9 +7,8 @@ import '../order_details.dart';
 import 'title_and_data.dart';
 
 class OderHistoryItem extends StatelessWidget {
-  const OderHistoryItem({
-    Key? key,
-  }) : super(key: key);
+  final OrderData? orderData;
+  const OderHistoryItem({Key? key, this.orderData}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +16,8 @@ class OderHistoryItem extends StatelessWidget {
       children: [
         GestureDetector(
           onTap: () {
-            Navigator.pushNamed(context, OrderDetails.id);
+            Navigator.pushNamed(context, OrderDetails.id,
+                arguments: {"productDataList": orderData!.orderedProduct});
           },
           child: Container(
             width: double.infinity,
@@ -34,26 +35,27 @@ class OderHistoryItem extends StatelessWidget {
                 borderRadius: BorderRadius.all(Radius.circular(2.0))),
             child: Column(
               children: [
-                const TitleAndData(
+                TitleAndData(
                   title: "Order ID: ",
-                  data: "163395646710972",
+                  data: orderData!.orderNumber.toString(),
                 ),
                 SizedBox(
                   height: getProportionateScreenHeight(10.0),
                 ),
-                const TitleAndData(
-                    title: "Items: ",
-                    data:
-                        "iPad mini 6th Generation, iPad 9th Generation, iPad Pro Apple M1 chip"),
+                TitleAndData(
+                    title: "No Of Items: ",
+                    data: orderData!.orderedProduct!.length.toString()),
                 SizedBox(
                   height: getProportionateScreenHeight(10.0),
                 ),
-                const TitleAndData(
-                    title: "Order Date: ", data: "23rd Dec, 2021"),
+                TitleAndData(
+                    title: "Order Date: ",
+                    data: orderData!.orderedOn.toString()),
                 SizedBox(
                   height: getProportionateScreenHeight(10.0),
                 ),
-                const TitleAndData(title: "Total Amount: ", data: "2,00,000"),
+                TitleAndData(
+                    title: "Total Amount: ", data: orderData!.total.toString()),
               ],
             ),
           ),
@@ -68,7 +70,7 @@ class OderHistoryItem extends StatelessWidget {
                 borderRadius: const BorderRadius.all(Radius.circular(5.0)),
               ),
               child: Text(
-                "Delivered",
+                orderData!.status.toString(),
                 style: TextStyle(
                     fontSize: getProportionateScreenWidth(15.0),
                     color: kDefaultSecondaryButtonColor),

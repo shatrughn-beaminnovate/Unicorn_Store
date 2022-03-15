@@ -7,8 +7,8 @@ import 'package:unicorn_store/UI/constant.dart';
 class AccountInformationDetailsApi {
   //Fetching Account Information
   Future<AccountInfoDetails> getAccountDetails(
-      String customerId, String token) async {
-    String url = "$kDefaultBaseUrl/account_info/$customerId";
+    String token) async {
+    String url = "$kDefaultBaseUrl/account_info";
 
    
       var response = await http.get(

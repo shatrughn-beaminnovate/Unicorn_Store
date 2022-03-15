@@ -8,14 +8,14 @@ abstract class AccountInformationApiFetchEvent extends Equatable {
 }
 
 class LoadAccountDetailsApiFetch extends AccountInformationApiFetchEvent {
-  final String customerId;
+
   final String token;
 
   const LoadAccountDetailsApiFetch(
-      {required this.customerId, required this.token});
+      { required this.token});
 
   @override
-  List<Object> get props => [customerId, token];
+  List<Object> get props => [token];
 }
 
 class UpdateCustomerAccountDetailsEvent

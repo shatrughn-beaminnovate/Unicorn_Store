@@ -8,16 +8,16 @@ abstract class SetDefaultAddressEvent extends Equatable {
 }
 
 class SetDefaultAddresssDetails extends SetDefaultAddressEvent {
-  final String customerId;
+  
   final String addressId;
   final String addressType;
   final String token;
 
   const SetDefaultAddresssDetails(
-      {required this.customerId,
+      {
       required this.addressId,
       required this.addressType,required this.token});
 
   @override
-  List<Object> get props => [customerId, addressId, addressType,token];
+  List<Object> get props => [ addressId, addressType,token];
 }

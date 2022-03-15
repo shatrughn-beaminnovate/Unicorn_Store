@@ -37,7 +37,7 @@ class _MyAccountPageState extends State<MyAccountPage> {
     return BlocBuilder<AuthenticationBloc, AuthenticationState>(
       builder: (context, state) {
         if (state is AuthenticationAuthenticated) {
-          loginData=state.loginData;
+          loginData = state.loginData;
           return Container(
             padding: EdgeInsets.all(getProportionateScreenHeight(15.0)),
             child: Column(
@@ -63,7 +63,8 @@ class _MyAccountPageState extends State<MyAccountPage> {
                       leadingIcon: Icons.inventory_2,
                       trailingIcon: Icons.arrow_forward_ios,
                       onTap: () {
-                        Navigator.pushNamed(context, ProductHistory.id);
+                        Navigator.pushNamed(context, ProductHistory.id,
+                            arguments: {"loginData": loginData});
                       },
                     ),
 
@@ -73,9 +74,8 @@ class _MyAccountPageState extends State<MyAccountPage> {
                       leadingIcon: Icons.account_circle_rounded,
                       trailingIcon: Icons.arrow_forward_ios,
                       onTap: () {
-                        Navigator.pushNamed(
-                            context, AccountInformationPage.id,
-                            arguments: {"loginData":loginData});
+                        Navigator.pushNamed(context, AccountInformationPage.id,
+                            arguments: {"loginData": loginData});
                       },
                     ),
 
@@ -85,7 +85,8 @@ class _MyAccountPageState extends State<MyAccountPage> {
                       leadingIcon: Icons.location_on_rounded,
                       trailingIcon: Icons.arrow_forward_ios,
                       onTap: () {
-                        Navigator.pushNamed(context, AddressManagerPage.id,arguments: {"loginData":loginData});
+                        Navigator.pushNamed(context, AddressManagerPage.id,
+                            arguments: {"loginData": loginData});
                       },
                     ),
 
@@ -95,7 +96,8 @@ class _MyAccountPageState extends State<MyAccountPage> {
                       leadingIcon: Icons.favorite,
                       trailingIcon: Icons.arrow_forward_ios,
                       onTap: () {
-                        Navigator.pushNamed(context, WishlistPage.id,arguments: {"loginData":loginData});
+                        Navigator.pushNamed(context, WishlistPage.id,
+                            arguments: {"loginData": loginData});
                       },
                     ),
                   ],

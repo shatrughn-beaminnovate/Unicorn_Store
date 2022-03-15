@@ -77,7 +77,7 @@ class _AccountInformationPageState extends State<AccountInformationPage> {
 
     //Adding event to load Account Information
     accountInformationApiFetchBloc.add(LoadAccountDetailsApiFetch(
-        customerId: loginData!.userData!.id.toString(),
+      
         token: loginData!.token.toString()));
 
     super.didChangeDependencies();

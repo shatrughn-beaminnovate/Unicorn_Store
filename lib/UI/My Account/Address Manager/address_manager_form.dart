@@ -136,7 +136,6 @@ class _AddressManagerFormState extends State<AddressManagerForm> {
       _countryDataApiFetchBloc.add(LoadCountryDataFetchApi(loginData!.token!));
       _editAddressManagerDataFetchApiBloc.add(
           LoadEditAddressManagerDataFetchApi(
-              customerId: addressManagerIds["customerId"],
               addressId: addressManagerIds["addressId"],
               token: loginData!.token!));
     } else {

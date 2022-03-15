@@ -17,7 +17,7 @@ class AddressManagerDetailsApiFetchBloc extends Bloc<
       try {
         emit(AddressManagerDetailsApiFetchLoading());
         final _addressDetails = await _addressManagerDetailsRepository
-            .getAddressManagerDetails(event.customerId,event.token);
+            .getAddressManagerDetails(event.token);
 
         emit(AddressManagerDetailsApiFetchLoaded(_addressDetails));
       } catch (e) {
@@ -33,7 +33,7 @@ class AddressManagerDetailsApiFetchBloc extends Bloc<
             await _addressManagerDetailsRepository
                 .deleteUserAddress(event.addressId,event.token);
         final _addressDetails = await _addressManagerDetailsRepository
-            .getAddressManagerDetails(event.customerId,event.token);
+            .getAddressManagerDetails(event.token);
         emit(DeleteCustomerAddressSuccess(
             _addressDetails, _deleteUserAddressResponse));
       } catch (e) {

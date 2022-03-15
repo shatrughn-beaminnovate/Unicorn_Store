@@ -61,7 +61,7 @@ final Map<String, WidgetBuilder> routes = {
   ConfirmOrder.id: (context) => const ConfirmOrder(),
   ShippingAddress.id: (context) => const ShippingAddress(),
   PaymentMethod.id: (context) => const PaymentMethod(),
-  OrderDetails.id: (context) => const OrderDetails(),
+  OrderDetails.id: (context) =>  OrderDetails(),
   ListOfChildren.id: (context) => const ListOfChildren(),
   ListOfProduct.id: (context) => ListOfProduct(),
 };

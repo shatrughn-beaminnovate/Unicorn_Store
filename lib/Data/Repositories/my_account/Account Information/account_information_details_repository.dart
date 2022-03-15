@@ -7,8 +7,8 @@ class AccountInformationDetailsRepository {
 
   //Load Customer list of address
   Future<AccountInfoDetails> getAccountDetails(
-      String customerID, String token) {
-    return _accountInformationDetails.getAccountDetails(customerID, token);
+       String token) {
+    return _accountInformationDetails.getAccountDetails( token);
   }
 
   //Update Customer Information

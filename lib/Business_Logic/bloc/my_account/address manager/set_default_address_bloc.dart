@@ -14,9 +14,9 @@ class SetDefaultAddressBloc extends Bloc<SetDefaultAddressEvent, SetDefaultAddre
       try {
         final _setDefaultAddressResponse =
             await _addressManagerDetailsRepository.setDefaultAddress(
-                event.customerId, event.addressId, event.addressType,event.token);
+              event.addressId, event.addressType,event.token);
         final _addressDetails = await _addressManagerDetailsRepository
-            .getAddressManagerDetails(event.customerId,event.token);
+            .getAddressManagerDetails(event.token);
         emit(
             SetDefaultAddressSuccess(_setDefaultAddressResponse, _addressDetails));
       } catch (e) {

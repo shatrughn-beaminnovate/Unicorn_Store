@@ -90,35 +90,49 @@ class _ProductPageState extends State<ProductPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        backgroundColor: Colors.white,
-        appBar: _buildAppBar(context),
-        body: BlocProvider(
-            create: (context) => _accessoriesDataFetchBloc,
-            child: BlocListener<AccessoriesDataFetchBloc,
-                AccessoriesDataFetchState>(
-              listener: (context, state) {
-                if (state is AccessoriesProductDetailsFetchSuccess) {
-                  setState(() {
-                    favoriteFlag =
-                        state.accessoriesWishlistProductDetails.data?.wishlist;
-                  });
-                }
-              },
-              child: BlocBuilder<AccessoriesDataFetchBloc,
+    return WillPopScope(
+       onWillPop: () async {
+        if (wishlistBackbuttonFlag) {
+           Navigator.pushAndRemoveUntil(context,
+                    MaterialPageRoute(builder: (context) {
+                    return MainScreen(
+                      selectedIndex: 0,
+                    );
+                  }),(Route<dynamic> route) => false);
+          return false;
+        } 
+        return false;
+      },
+      child: Scaffold(
+          backgroundColor: Colors.white,
+          appBar: _buildAppBar(context),
+          body: BlocProvider(
+              create: (context) => _accessoriesDataFetchBloc,
+              child: BlocListener<AccessoriesDataFetchBloc,
                   AccessoriesDataFetchState>(
-                builder: (context, state) {
+                listener: (context, state) {
                   if (state is AccessoriesProductDetailsFetchSuccess) {
-                    return _buildAccessoriesProduct(
-                        state.accessoriesWishlistProductDetails.data);
-                  } else if (state is AccessoriesDataFetchLoading) {
-                    return LoadingIndicatorBar();
-                  } else {
-                    return Container();
+                    setState(() {
+                      favoriteFlag =
+                          state.accessoriesWishlistProductDetails.data?.wishlist;
+                    });
                   }
                 },
-              ),
-            )));
+                child: BlocBuilder<AccessoriesDataFetchBloc,
+                    AccessoriesDataFetchState>(
+                  builder: (context, state) {
+                    if (state is AccessoriesProductDetailsFetchSuccess) {
+                      return _buildAccessoriesProduct(
+                          state.accessoriesWishlistProductDetails.data);
+                    } else if (state is AccessoriesDataFetchLoading) {
+                      return LoadingIndicatorBar();
+                    } else {
+                      return Container();
+                    }
+                  },
+                ),
+              ))),
+    );
   }
 
   //This will load accessories product details
