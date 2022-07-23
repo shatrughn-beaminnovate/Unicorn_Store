@@ -7,13 +7,15 @@ part of 'login_data.dart';
 // **************************************************************************
 
 LoginData _$LoginDataFromJson(Map<String, dynamic> json) => LoginData(
-      json['user_data'] == null
+      json['data'] == null
           ? null
-          : UserData.fromJson(json['user_data'] as Map<String, dynamic>),
-      json['token'] as String?,
+          : UserData.fromJson(json['data'] as Map<String, dynamic>),
+      json['status'] as bool?,
+      json['message'] as String?,
     );
 
 Map<String, dynamic> _$LoginDataToJson(LoginData instance) => <String, dynamic>{
-      'user_data': instance.userData,
-      'token': instance.token,
+      'data': instance.userData,
+      'status': instance.status,
+      'message': instance.message,
     };

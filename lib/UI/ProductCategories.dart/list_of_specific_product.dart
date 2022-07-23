@@ -4,10 +4,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:unicorn_store/Business_Logic/bloc/category/subcategory_types_bloc/subcategory_types_api_fetch_bloc.dart';
 import 'package:unicorn_store/Data/Models/Category/Subcategory_Types/sub_category_types.dart';
 import 'package:unicorn_store/Data/Models/Category/Subcategory_Types/subcategory_types_list.dart';
-import 'package:unicorn_store/UI/Components/loading_indicator_bar.dart';
 import 'package:unicorn_store/UI/HomePage/Components/build_app_bar.dart';
 import 'package:unicorn_store/UI/HomePage/Components/price_tag.dart';
-import 'package:unicorn_store/UI/ProductPage/product_type_page.dart';
+import '../Components/linear_indicator.dart';
+import '../ProductPage/product_type_page.dart';
 import '../size_config.dart';
 import '../constant.dart';
 
@@ -26,13 +26,16 @@ class _ListOfSpecificProductState extends State<ListOfSpecificProduct> {
 
   // ignore: prefer_typing_uninitialized_variables
   var subcategoryData;
+  String? token;
 
   @override
   void didChangeDependencies() {
     subcategoryData =
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+    token=subcategoryData["token"];
     _subcategoryTypesApiFetchBloc.add(LoadSubcategoryTypesApiFetch(
         subCategoryTypesId: subcategoryData["id"]));
+      
     super.didChangeDependencies();
   }
 
@@ -46,10 +49,8 @@ class _ListOfSpecificProductState extends State<ListOfSpecificProduct> {
           child: BlocBuilder<SubcategoryTypesApiFetchBloc,
               SubcategoryTypesApiFetchState>(
             builder: (context, state) {
-              if (state is SubcategoryTypesApiFetchInitial) {
-                return LoadingIndicatorBar();
-              } else if (state is SubcategoryTypesApiFetchLoading) {
-                return LoadingIndicatorBar();
+             if (state is SubcategoryTypesApiFetchLoading) {
+                return const LinearIndicatorBar();
               } else if (state is SubcategoryTypesApiFetchLoaded) {
                 return _buildProductList(context, state.subcategoryTypes);
               } else if (state is SubcategoryTypesApiFetchError) {
@@ -69,7 +70,7 @@ class _ListOfSpecificProductState extends State<ListOfSpecificProduct> {
   //List of Product
   Widget _buildProductList(
       BuildContext context, SubcategoryTypesList subcategoryTypesList) {
-    List<SubcategoryTypes>? _subcategoryTypes = subcategoryTypesList.data;
+    List<SubcategoryTypes>? subcategoryTypes = subcategoryTypesList.data;
 
     return Container(
       padding: EdgeInsets.all(getProportionateScreenHeight(15.0)),
@@ -91,14 +92,15 @@ class _ListOfSpecificProductState extends State<ListOfSpecificProduct> {
           //List of Products
           Expanded(
             child: ListView.builder(
-                itemCount: _subcategoryTypes!.length,
+                itemCount: subcategoryTypes!.length,
                 itemBuilder: (BuildContext context, int index) {
                   return GestureDetector(
                     onTap: () {
                       Navigator.pushNamed(context, ProductDetailsScreen.id,
                           arguments: {
-                            "productTypeId": _subcategoryTypes[index].types_id,
-                            "customerId": " ",
+                            "productTypeId": subcategoryTypes[index].types_id,
+                            "token": token,
+                            "productTypeSlug":subcategoryTypes[index].types_slug,
                             "productValue": " "
                           });
                     },
@@ -124,7 +126,7 @@ class _ListOfSpecificProductState extends State<ListOfSpecificProduct> {
                               height: getProportionateScreenHeight(200),
                               width: getProportionateScreenWidth(200),
                               imageUrl:
-                                  "$imageDefaultURL$imageSecondUrl${_subcategoryTypes[index].type_image}",
+                                  "$imageDefaultURL$imageSecondUrl${subcategoryTypes[index].type_image}",
                               placeholder: (context, url) => Container(),
                               errorWidget: (context, url, error) => const Image(
                                   image: AssetImage("assets/NoImage.jpg"))),
@@ -132,7 +134,7 @@ class _ListOfSpecificProductState extends State<ListOfSpecificProduct> {
                             height: getProportionateScreenHeight(15.0),
                           ),
                           Text(
-                            _subcategoryTypes[index].types_name.toString(),
+                            subcategoryTypes[index].types_name.toString(),
                             maxLines: 2,
                             textAlign: TextAlign.center,
                             style: TextStyle(
@@ -165,7 +167,7 @@ class _ListOfSpecificProductState extends State<ListOfSpecificProduct> {
                                 width: getProportionateScreenWidth(10.0),
                               ),
                               PriceTag(
-                                price: _subcategoryTypes[index]
+                                price: subcategoryTypes[index]
                                     .saleprice
                                     .toString(),
                               ),
@@ -174,13 +176,13 @@ class _ListOfSpecificProductState extends State<ListOfSpecificProduct> {
                           SizedBox(
                             height: getProportionateScreenHeight(15.0),
                           ),
-                          (_subcategoryTypes[index].saleprice !=
-                                      _subcategoryTypes[index].price &&
-                                  _subcategoryTypes[index].price != 0)
+                          (subcategoryTypes[index].saleprice !=
+                                      subcategoryTypes[index].price &&
+                                  subcategoryTypes[index].price != 0)
                               ? Column(
                                   children: [
                                     PriceTag(
-                                      price: _subcategoryTypes[index]
+                                      price: subcategoryTypes[index]
                                           .price
                                           .toString(),
                                       textDecoration:
@@ -192,7 +194,7 @@ class _ListOfSpecificProductState extends State<ListOfSpecificProduct> {
                                           getProportionateScreenHeight(15.0),
                                     ),
                                     Text(
-                                      "${_subcategoryTypes[index].discount}% off",
+                                      "${subcategoryTypes[index].discount}% off",
                                       style: TextStyle(
                                           fontSize:
                                               getProportionateScreenWidth(15.0),

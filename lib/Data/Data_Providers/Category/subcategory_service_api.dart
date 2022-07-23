@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:http/http.dart' as http;
 import 'package:unicorn_store/Data/Models/Category/AccessoriesCategory/accessories_list_data.dart';
 import 'package:unicorn_store/Data/Models/Category/Subcategory/subcategory_list.dart';
@@ -6,13 +7,13 @@ import 'package:unicorn_store/Data/Models/MyAccount/Wishlist/Accessories%20produ
 import 'package:unicorn_store/UI/constant.dart';
 
 class SubCategoryServiceApi {
-  final _baseUrl = "$kDefaultBaseUrl/sub_category/";
+  final _baseUrl = "$kDefaultBaseUrl/sub_category";
 
   Future<SubCategoryList> getSubCategories(String categoryID) async {
     Map data = {"sub_category": true, "product": false};
     var body = jsonEncode(data);
 
-    try {
+
       var response = await http.post(Uri.parse(_baseUrl + categoryID),
           headers: {"Content-Type": "application/json"}, body: body);
 
@@ -23,22 +24,19 @@ class SubCategoryServiceApi {
       } else {
         throw Exception(response.statusCode);
       }
-    } catch (e) {
-      print(e);
-    }
-    throw Exception();
+   
   }
 
   //This will accessories data
   Future<AccessoriesListData> getAccessoriesCategoryData(
-      String categoryID, String token) async {
-    Map data = {"sub_category": true, "product": true};
+      String categoryID) async {
+    Map data = {"category_id": categoryID,"sub_category": true, "product": true};
     var body = jsonEncode(data);
+   
 
-    var response = await http.post(Uri.parse(_baseUrl + categoryID),
+    var response = await http.post(Uri.parse(_baseUrl),
         headers: {
           "Content-Type": "application/json",
-          "X-Auth-Token": token,
         },
         body: body);
 
@@ -46,12 +44,13 @@ class SubCategoryServiceApi {
       var decode = jsonDecode(response.body);
     
       var data = AccessoriesListData.fromJson(decode);
-      print(data.data!.children![1].products);
+    
 
       return data;
     } else {
       throw Exception(response.statusCode);
     }
+
   }
 
   //This will load Accessories Product Details

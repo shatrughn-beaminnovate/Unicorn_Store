@@ -26,7 +26,7 @@ class _OnBoardingPageState extends State<OnBoardingPage>
     const pageDecoration = PageDecoration(
       titleTextStyle: TextStyle(fontSize: 25.0, fontWeight: FontWeight.w700),
       bodyTextStyle: bodyStyle,
-      descriptionPadding: EdgeInsets.all(10),
+     //descriptionPadding: EdgeInsets.all(10),
       pageColor: Colors.white,
       imagePadding: EdgeInsets.zero,
     );
@@ -70,7 +70,7 @@ class _OnBoardingPageState extends State<OnBoardingPage>
       onDone: () => _onIntroEnd(context),
       //onSkip: () => _onIntroEnd(context), // You can override onSkip callback
       showSkipButton: true,
-      skipFlex: 0,
+    //  skipFlex: 0,
       nextFlex: 0,
       //rtl: true, // Display as right-to-left
       skip: const Text('Skip'),

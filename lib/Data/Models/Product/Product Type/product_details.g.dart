@@ -15,12 +15,6 @@ ProductDetails _$ProductDetailsFromJson(Map<String, dynamic> json) =>
       json['types_slug'] as String?,
       json['types_route_id'] as int?,
       json['types_enabled'] as int?,
-      (json['types_images'] as List<dynamic>?)
-          ?.map((e) => TypeImages.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      (json['related_products'] as List<dynamic>?)
-          ?.map((e) => RelatedProduct.fromJson(e as Map<String, dynamic>))
-          .toList(),
       json['emi_options'] as String?,
       json['cashback'] as int?,
       json['affordability_note'] as String?,
@@ -28,10 +22,17 @@ ProductDetails _$ProductDetailsFromJson(Map<String, dynamic> json) =>
       json['types_badge'] as String?,
       json['display'] as int?,
       json['buyback_options'] as String?,
-      json['cashback_note'] as String?,
       (json['type_options'] as List<dynamic>?)
           ?.map((e) => TypesOptions.fromJson(e as Map<String, dynamic>))
           .toList(),
+      (json['types_images'] as List<dynamic>?)
+          ?.map((e) => TypeImages.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      (json['related_products'] as List<dynamic>?)
+          ?.map((e) => RelatedProduct.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      json['status'] as bool?,
+      json['msg'] as String?,
     );
 
 Map<String, dynamic> _$ProductDetailsToJson(ProductDetails instance) =>
@@ -50,8 +51,9 @@ Map<String, dynamic> _$ProductDetailsToJson(ProductDetails instance) =>
       'types_badge': instance.typesBadge,
       'display': instance.display,
       'buyback_options': instance.buybackOptions,
-      'cashback_note': instance.cashbackNote,
       'type_options': instance.typeOptions,
       'types_images': instance.typeImages,
       'related_products': instance.relatedProduct,
+      'status': instance.status,
+      'msg': instance.msg,
     };

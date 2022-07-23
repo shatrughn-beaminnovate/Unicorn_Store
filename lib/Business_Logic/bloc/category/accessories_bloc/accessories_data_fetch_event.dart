@@ -9,9 +9,9 @@ abstract class AccessoriesDataFetchEvent extends Equatable {
 
 class LoadAccessoriesDataFetch extends AccessoriesDataFetchEvent {
   final String subCategoryId;
-  final String token;
+ 
 
-  const LoadAccessoriesDataFetch({required this.subCategoryId,required this.token});
+  const LoadAccessoriesDataFetch({required this.subCategoryId});
 
   @override
   List<Object> get props => [subCategoryId];

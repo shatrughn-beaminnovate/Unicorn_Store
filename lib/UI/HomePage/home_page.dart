@@ -395,11 +395,6 @@ class _HomePageState extends State<HomePage> {
                         height: getProportionateScreenHeight(40),
                         child: ElevatedButton(
                           onPressed: () {},
-                          child: Text(
-                            "SUBSCRIBE",
-                            style: TextStyle(
-                                fontSize: getProportionateScreenWidth(15.0)),
-                          ),
                           style: ElevatedButton.styleFrom(
                             primary: Color(0xFF1F99CF), // background
                             onPrimary: Colors.white,
@@ -409,6 +404,11 @@ class _HomePageState extends State<HomePage> {
                                   bottomRight:
                                       Radius.circular(5.0)), // <-- Radius
                             ), // foreground
+                          ),
+                          child: Text(
+                            "SUBSCRIBE",
+                            style: TextStyle(
+                                fontSize: getProportionateScreenWidth(15.0)),
                           ),
                         )),
                   ),

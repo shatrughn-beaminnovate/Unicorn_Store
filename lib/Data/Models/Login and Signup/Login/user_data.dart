@@ -8,6 +8,7 @@ class UserData {
   final String? firstname;
   final String? lastname;
   final String? email;
+  final String? token;
 
   @JsonKey(name: "email_subscribe")
   final String? emailSubscribe;
@@ -31,6 +32,7 @@ class UserData {
     this.firstname,
     this.lastname,
     this.email,
+    this.token,
     this.emailSubscribe,
     this.phone,
     this.company,
@@ -48,6 +50,6 @@ class UserData {
 
   @override
   String toString() {
-    return 'UserData(id: $id, firstname: $firstname, lastname: $lastname, email: $email, emailSubscribe: $emailSubscribe, phone: $phone, company: $company, defaultBillingAddress: $defaultBillingAddress, defaultShippingAddress: $defaultShippingAddress, shipToBillAddress: $shipToBillAddress, gst: $gst, gender: $gender, responce: $responce)';
+    return 'UserData(id: $id, firstname: $firstname, lastname: $lastname, email: $email, token: $token, emailSubscribe: $emailSubscribe, phone: $phone, company: $company, defaultBillingAddress: $defaultBillingAddress, defaultShippingAddress: $defaultShippingAddress, shipToBillAddress: $shipToBillAddress, gst: $gst, gender: $gender, responce: $responce)';
   }
 }

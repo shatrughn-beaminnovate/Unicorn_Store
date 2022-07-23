@@ -86,8 +86,8 @@ class _CustomDropDownButtonState extends State<CustomDropDownButton> {
                   isExpanded: true,
                   items: widget.data!.map((item) {
                     return DropdownMenuItem(
-                      child: Text(item.name.toString()),
                       value: item.id.toString(),
+                      child: Text(item.name.toString()),
                     );
                   }).toList(),
                 ),

@@ -9,13 +9,13 @@ part of 'product_add_delete_response.dart';
 ProductAddDeleteResponse _$ProductAddDeleteResponseFromJson(
         Map<String, dynamic> json) =>
     ProductAddDeleteResponse(
-      json['data'] == null
-          ? null
-          : ProductAddDeleteData.fromJson(json['data'] as Map<String, dynamic>),
+      json['status'] as bool?,
+      json['message'] as String?,
     );
 
 Map<String, dynamic> _$ProductAddDeleteResponseToJson(
         ProductAddDeleteResponse instance) =>
     <String, dynamic>{
-      'data': instance.data,
+      'status': instance.status,
+      'message': instance.message,
     };

@@ -1,7 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:selectable_container/selectable_container.dart';
@@ -13,7 +12,6 @@ import 'package:unicorn_store/Data/Models/Login%20and%20Signup/Login/login_data.
 import 'package:unicorn_store/Data/Models/Product/Product%20Type/option_values.dart';
 import 'package:unicorn_store/Data/Models/Product/Product%20Type/product_details.dart';
 import 'package:unicorn_store/Data/Models/Product/Product%20Type/related_products.dart';
-import 'package:unicorn_store/Data/Models/Product/Product%20Type/type_details.dart';
 import 'package:unicorn_store/Data/Models/Product/Product%20Type/type_images.dart';
 import 'package:unicorn_store/Data/Models/Product/Product%20Type/types_options.dart';
 import 'package:unicorn_store/UI/Components/loading_indicator_bar.dart';
@@ -27,6 +25,7 @@ import 'package:unicorn_store/UI/size_config.dart';
 import 'package:unicorn_store/UI/HomePage/Components/header_text.dart';
 import 'package:unicorn_store/UI/LoginPage/Components/custom_submit_button.dart';
 import 'package:unicorn_store/UI/text_file.dart';
+import '../Components/linear_indicator.dart';
 import '../constant.dart';
 import 'Components/accessories_product_item.dart';
 import 'Components/emi_option.dart';
@@ -37,12 +36,14 @@ import 'Components/product_description.dart';
 class ProductDetailsScreen extends StatefulWidget {
   static String id = "ProductDetails_Screen";
   final Map<String, String>? productValue;
+  final String? token;
+  final String? productTypeSlug;
   final String? productTypeId;
-  final String? customerId;
   const ProductDetailsScreen({
     Key? key,
-    this.customerId,
-    this.productTypeId,
+    this.token,
+     this.productTypeId,
+    this.productTypeSlug,
     this.productValue,
   }) : super(key: key);
 
@@ -71,7 +72,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
   final WishlistProductDetailsFetchingBloc wishlistProductDetailsFetchingBloc =
       WishlistProductDetailsFetchingBloc();
 
-  ProductTypeDetails? productTypeDetails;
+  ProductDetails? productTypeDetails;
   dynamic productPageDetail;
   String? productPageId;
 
@@ -85,11 +86,15 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
   //Creating instance for logged in user data
   LoginData? loginData;
 
+  String? token;
+
   @override
   void initState() {
-    if (widget.customerId != null) {
+   // print(token);
+  //  print(widget.productTypeSlug);
+    if (widget.token != null) {
       _productDetailsApiFetchBloc.add(
-          LoadProductDetailsApiFetch(productDetailsId: widget.productTypeId!));
+          LoadProductDetailsApiFetch(productDetailsId: widget.productTypeSlug!));
     }
     super.initState();
     _controller = TabController(length: 2, vsync: this);
@@ -97,20 +102,25 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
 
   @override
   void didChangeDependencies() {
-    if (widget.customerId != null) {
+    if (widget.token != null) {
+      // print(widget.token);
+      // print("true");
       _productPageDetailsBloc.add(LoadProductDataBasedOnValueEvent(
           productValue: widget.productValue!,
-          productId: widget.productTypeId!,
-          customerId: widget.customerId!));
+          productId:widget.productTypeId!,
+          token: widget.token!));
       selectedIndex = widget.productValue!;
       favoriteFlag = true;
       wishlistBackbuttonFlag = true;
     } else {
+     // print("false");
       final productDetailsId =
           ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
-      final productTypeId = productDetailsId["productTypeId"];
+      final productTypeSlug = productDetailsId["productTypeSlug"];
+      token = productDetailsId["token"];
+    //  print("############################################# $productTypeSlug");
       _productDetailsApiFetchBloc.add(LoadProductDetailsApiFetch(
-          productDetailsId: productTypeId.toString()));
+          productDetailsId: productTypeSlug.toString()));
     }
 
     super.didChangeDependencies();
@@ -130,16 +140,18 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
   Widget build(BuildContext context) {
     // authenticationBloc = BlocProvider.of<AuthenticationBloc>(context);
     return WillPopScope(
-       onWillPop: () async {
+      onWillPop: () async {
+   
         if (wishlistBackbuttonFlag) {
-           Navigator.pushAndRemoveUntil(context,
-                    MaterialPageRoute(builder: (context) {
-                    return MainScreen(
-                      selectedIndex: 0,
-                    );
-                  }),(Route<dynamic> route) => false);
+          Navigator.pushAndRemoveUntil(context,
+              MaterialPageRoute(builder: (context) {
+            return MainScreen(
+              selectedIndex: 0,
+            );
+          }), (Route<dynamic> route) => false);
           return false;
-        } 
+        }
+        Navigator.pop(context);
         return false;
       },
       child: Scaffold(
@@ -168,10 +180,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                 child: BlocBuilder<ProductDetailsApiFetchBloc,
                     ProductDetailsApiFetchState>(
                   builder: (context, state) {
-                    if (state is ProductDetailsApiFetchInitial) {
-                      return LoadingIndicatorBar();
-                    } else if (state is ProductDetailsApiFetchLoading) {
-                      return LoadingIndicatorBar();
+                    if (state is ProductDetailsApiFetchLoading) {
+                      return LinearIndicatorBar();
                     } else if (state is ProductDetailsApiFetchLoaded) {
                       return _buildProductDetailsPage(context);
                     } else if (state is ProductDetailsApiFetchError) {
@@ -204,10 +214,11 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                     return MainScreen(
                       selectedIndex: 0,
                     );
-                  }),(Route<dynamic> route) => false)
+                  }), (Route<dynamic> route) => false)
                 : Navigator.of(context).pop();
           }),
       actions: [
+        const Spacer(),
         Expanded(flex: 5, child: SvgPicture.asset("assets/Unicorn-logo.svg")),
         Expanded(
           flex: 5,
@@ -280,17 +291,16 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
 
   //Product Details Page
   Widget _buildProductDetailsPage(BuildContext context) {
-    List<TypesOptions>? _typeOption = productTypeDetails!.data!.typeOptions;
-    List<TypeImages>? _typeImages = productTypeDetails!.data!.typeImages;
-    List<RelatedProduct>? _relatedProduct =
-        productTypeDetails!.data!.relatedProduct;
+    List<TypesOptions>? typeOption = productTypeDetails!.typeOptions;
+    List<TypeImages>? typeImages = productTypeDetails!.typeImages;
+    List<RelatedProduct>? relatedProduct = productTypeDetails!.relatedProduct;
 
     return SingleChildScrollView(
       child: Container(
         padding: EdgeInsets.all(getProportionateScreenWidth(15.0)),
         child: Column(
           children: [
-            Text(productTypeDetails!.data!.typesName.toString(),
+            Text(productTypeDetails!.typesName.toString(),
                 style: TextStyle(
                     height: 1.5,
                     fontSize: getProportionateScreenWidth(20.0),
@@ -312,8 +322,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                     productPageDetail = state.productPageDetail;
                     isProgress = false;
 
-                    if (productPageDetail != "failed") {
-                      favoriteFlag = productPageDetail!.product.wishlist;
+                    if (productPageDetail.toString() != "false") {
+                      favoriteFlag = productPageDetail!.wishlist;
                     }
                   });
                 }
@@ -328,31 +338,36 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                     productPageFlag = true;
                     productPageDetail = state.productPageDetail;
 
-                    return _buildProductData(_typeImages,
-                        productTypeDetails!.data, _typeOption, context);
+                    return _buildProductData(
+                        typeImages, productTypeDetails, typeOption, context);
                   } else {
-                    return _buildProductData(_typeImages,
-                        productTypeDetails!.data!, _typeOption, context);
+                    return _buildProductData(
+                        typeImages, productTypeDetails, typeOption, context);
                   }
                 },
               ),
             ),
 
             //***************Add on Accessories************
-            HeaderText(header: "Add on Accessories"),
-
-            SizedBox(
-              height: getProportionateScreenWidth(320),
-              child: ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: _relatedProduct!.length,
-                  scrollDirection: Axis.horizontal,
-                  itemBuilder: (BuildContext context, int index) {
-                    return AccessoriesProductItem(
-                      relatedProduct: _relatedProduct[index],
-                    );
-                  }),
-            ),
+            (relatedProduct!.isNotEmpty)
+                ? Column(
+                    children: [
+                      HeaderText(header: "Add on Accessories"),
+                      SizedBox(
+                        height: getProportionateScreenWidth(320),
+                        child: ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: relatedProduct.length,
+                            scrollDirection: Axis.horizontal,
+                            itemBuilder: (BuildContext context, int index) {
+                              return AccessoriesProductItem(
+                                relatedProduct: relatedProduct[index],
+                              );
+                            }),
+                      ),
+                    ],
+                  )
+                : Container(),
 
             //***************Description*****************/
             SizedBox(
@@ -390,10 +405,10 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
               height: MediaQuery.of(context).size.height * 60 / 100,
               child: TabBarView(controller: _controller, children: [
                 ProductDescription(
-                  descriptionData: productTypeDetails!.data!.typesDescription,
+                  descriptionData: productTypeDetails!.typesDescription,
                 ),
                 ProductDescription(
-                  descriptionData: productTypeDetails!.data!.typesDescription,
+                  descriptionData: productTypeDetails!.typesDescription,
                 ),
               ]),
             ),
@@ -405,9 +420,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
 
   //This is widget for show product details
   Widget _buildProductData(
-      List<TypeImages>? _typeImages,
+      List<TypeImages>? typeImages,
       ProductDetails? productDetails,
-      List<TypesOptions>? _typeOption,
+      List<TypesOptions>? typeOption,
       BuildContext context) {
     return Column(
       children: [
@@ -422,7 +437,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                                 width: getProportionateScreenWidth(300.0),
                                 height: getProportionateScreenHeight(300.0),
                                 imageUrl:
-                                    "$imageDefaultURL$imageSecondUrl${productPageDetail!.product.images[0].filename!}",
+                                    "$imageDefaultURL$imageSecondUrl${productPageDetail!.images[0].filename!}",
                                 placeholder: (context, url) => Container(),
                                 errorWidget: (context, url, error) =>
                                     const Image(
@@ -445,13 +460,13 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                                       if (state
                                           is WishlistProductDetailsFetchingLoading) {
                                         setState(() {
-                                          isProgress = true;
+                                          //  isProgress = true;
                                         });
                                       }
                                       if (state
                                           is AddOrRemoveProductFromWishlistSuccess) {
                                         setState(() {
-                                          isProgress = false;
+                                          //    isProgress = false;
                                         });
                                       }
                                     }, child: BlocBuilder<
@@ -473,19 +488,19 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                                                     AddOrDeleteProductFromWishlistEvent(
                                                         productId:
                                                             productPageDetail!
-                                                                .product.id
+                                                                .id
                                                                 .toString(),
-                                                        token:
-                                                            loginData!.token!));
+                                                        token: loginData!
+                                                            .userData!.token!));
                                               } else {
                                                 wishlistProductDetailsFetchingBloc.add(
                                                     AddOrDeleteProductFromWishlistEvent(
                                                         productId:
                                                             productPageDetail!
-                                                                .product.id
+                                                                .id
                                                                 .toString(),
-                                                        token:
-                                                            loginData!.token!));
+                                                        token: loginData!
+                                                            .userData!.token!));
                                               }
                                             },
                                             child: Icon(
@@ -518,15 +533,15 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                                             myAccountRedirect:
                                                 "goToProductPageType",
                                             productValue: selectedIndex,
-                                            productTypeId: productDetails!
-                                                .typesId
+                                            productTypeSlug: productDetails!
+                                                .typesSlug
                                                 .toString(),
-                                            productPageId: productPageDetail!
-                                                .product.id
+                                            productPageId: productPageDetail!.id
                                                 .toString(),
+                                                productTypeId: productDetails.typesId.toString(),
                                           ),
                                         );
-                                      }),(Route<dynamic> route) => true);
+                                      }), (Route<dynamic> route) => true);
                                     },
                                     child: Icon(
                                       Icons.favorite_border,
@@ -543,7 +558,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                           width: getProportionateScreenWidth(300.0),
                           height: getProportionateScreenHeight(300.0),
                           imageUrl: (imageSrc == " ")
-                              ? "$imageDefaultURL$imageSecondUrl${getPrimaryImageSrc(_typeImages!)}"
+                              ? "$imageDefaultURL$imageSecondUrl${getPrimaryImageSrc(typeImages!)}"
                               : imageSrc!,
                           placeholder: (context, url) => Container(),
                           errorWidget: (context, url, error) => const Image(
@@ -554,7 +569,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                       ? Column(
                           children: [
                             (productPageFlag &&
-                                    productPageDetail!.product.quantity! <= 0)
+                                    productPageDetail!.quantity! <= 0)
                                 ? Text(
                                     "OUT OF STOCK",
                                     style: TextStyle(
@@ -573,8 +588,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                                       //Product Title
                                       Center(
                                         child: Text(
-                                          productPageDetail!.product.name
-                                              .toString(),
+                                          productPageDetail!.name.toString(),
                                           maxLines: 2,
                                           textAlign: TextAlign.center,
                                           style: TextStyle(
@@ -595,14 +609,13 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
                                         children: [
-                                          (productPageDetail!.product.price
+                                          (productPageDetail!.price
                                                       .toString() !=
-                                                  productPageDetail!
-                                                      .product.saleprice
+                                                  productPageDetail!.saleprice
                                                       .toString())
                                               ? PriceTag(
                                                   price: productPageDetail!
-                                                      .product.price
+                                                      .price
                                                       .toString(),
                                                   color: kDefaultTitleFontColor,
                                                   textDecoration: TextDecoration
@@ -614,8 +627,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                                                 10.0),
                                           ),
                                           PriceTag(
-                                            price: productPageDetail!
-                                                .product.saleprice
+                                            price: productPageDetail!.saleprice
                                                 .toString(),
                                             color: Colors.black,
                                           )
@@ -628,9 +640,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                                       ),
 
                                       //Price with cashback
-                                      (productPageDetail!
-                                                  .product.affordability ==
-                                              1)
+                                      (productPageDetail!.affordability == 1)
                                           ? Column(
                                               children: [
                                                 Row(
@@ -654,10 +664,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                                                     ),
                                                     PriceTag(
                                                       price: (productPageDetail!
-                                                                  .product
                                                                   .saleprice! -
                                                               productPageDetail!
-                                                                  .product
                                                                   .cashback!)
                                                           .toString(),
                                                       color: Colors.black,
@@ -673,9 +681,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                                             )
                                           : Container(),
 
-                                      (productPageDetail!.product.discount! > 0)
+                                      (productPageDetail!.discount! > 0)
                                           ? Text(
-                                              "${productPageDetail!.product.discount}% off",
+                                              "${productPageDetail!.discount}% off",
                                               style: TextStyle(
                                                   fontSize:
                                                       getProportionateScreenWidth(
@@ -707,7 +715,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                               border: Border.all(color: kDefaultBorderColor)),
                           child: CachedNetworkImage(
                               imageUrl:
-                                  "$imageDefaultURL$imageSecondUrl${productPageDetail!.product.images[0].filename!}",
+                                  "$imageDefaultURL$imageSecondUrl${productPageDetail!.images[0].filename!}",
                               placeholder: (context, url) => Container(),
                               errorWidget: (context, url, error) => const Image(
                                   image: AssetImage("assets/NoImage.jpg"))),
@@ -717,17 +725,17 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                           padding: EdgeInsets.symmetric(
                               horizontal: getProportionateScreenWidth(15.0)),
                           child: ListView.builder(
-                            itemCount: _typeImages!.length,
+                            itemCount: typeImages!.length,
                             scrollDirection: Axis.horizontal,
                             shrinkWrap: true,
                             itemBuilder: (context, index) {
-                              if (_typeImages[index].primary == true) {
+                              if (typeImages[index].primary == true) {
                                 imageSrc =
-                                    "$imageDefaultURL$imageSecondUrl${_typeImages[index].filename}";
+                                    "$imageDefaultURL$imageSecondUrl${typeImages[index].filename}";
 
-                                return _buildImageList(_typeImages, index);
+                                return _buildImageList(typeImages, index);
                               }
-                              return _buildImageList(_typeImages, index);
+                              return _buildImageList(typeImages, index);
                             },
                           ),
                         ),
@@ -773,19 +781,19 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
               loginData = state.loginData;
               //When user is logged in then its passes customerId as per user logged in data
               return ListView.builder(
-                itemCount: _typeOption!.length,
+                itemCount: typeOption!.length,
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
                 itemBuilder: (context, index) {
                   List<OptionValues>? optionValues =
-                      _typeOption[index].optionValues;
+                      typeOption[index].optionValues;
                   return Column(
                     children: [
                       Container(
                         alignment: Alignment.topLeft,
                         child: ThirdHeaderText(
                             thirdHeader:
-                                "${index + 1}. ${_typeOption[index].name.toString()}"),
+                                "${index + 1}. ${typeOption[index].name.toString()}"),
                       ),
                       SizedBox(
                         height: getProportionateScreenWidth(10.0),
@@ -799,18 +807,18 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                             if (e.color!.isNotEmpty) {
                               //var colorIndex = optionValues.indexOf(e);
                               return _buildColorContainer(
-                                  e,
-                                  index,
-                                  _typeOption.length,
-                                  productDetails.typesId.toString(),
-                                  loginData!.userData!.id.toString());
+                                e,
+                                index,
+                                typeOption.length,
+                                productDetails.typesId.toString(),
+                              );
                             } else {
                               return _buildDataContainer(
-                                  e,
-                                  index,
-                                  _typeOption.length,
-                                  productDetails.typesId.toString(),
-                                  loginData!.userData!.id.toString());
+                                e,
+                                index,
+                                typeOption.length,
+                                productDetails.typesId.toString(),
+                              );
                             }
                           }
                               // (e) => (e.color!.isNotEmpty)
@@ -830,19 +838,19 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
             }
             //when in not logged in then passes default cutomer id i.e "0"
             return ListView.builder(
-              itemCount: _typeOption!.length,
+              itemCount: typeOption!.length,
               shrinkWrap: true,
               physics: NeverScrollableScrollPhysics(),
               itemBuilder: (context, index) {
                 List<OptionValues>? optionValues =
-                    _typeOption[index].optionValues;
+                    typeOption[index].optionValues;
                 return Column(
                   children: [
                     Container(
                       alignment: Alignment.topLeft,
                       child: ThirdHeaderText(
                           thirdHeader:
-                              "${index + 1}. ${_typeOption[index].name.toString()}"),
+                              "${index + 1}. ${typeOption[index].name.toString()}"),
                     ),
                     SizedBox(
                       height: getProportionateScreenWidth(10.0),
@@ -858,16 +866,14 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                             return _buildColorContainer(
                                 e,
                                 index,
-                                _typeOption.length,
-                                productDetails.typesId.toString(),
-                                "0");
+                                typeOption.length,
+                                productDetails.typesId.toString());
                           } else {
                             return _buildDataContainer(
                                 e,
                                 index,
-                                _typeOption.length,
-                                productDetails.typesId.toString(),
-                                "0");
+                                typeOption.length,
+                                productDetails.typesId.toString());
                           }
                         }
                             // (e) => (e.color!.isNotEmpty)
@@ -891,7 +897,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
         (productPageFlag && productPageDetail != "failed")
             ? Column(
                 children: [
-                  (productPageDetail!.product.affordability == 1)
+                  (productPageDetail!.affordability == 1)
                       ? Align(
                           alignment: Alignment.topLeft,
                           child: Text(
@@ -903,13 +909,13 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                         )
                       : Container(),
 
-                  (productPageDetail!.product.affordability == 1)
+                  (productPageDetail!.affordability == 1)
                       ? SizedBox(
                           height: getProportionateScreenHeight(15.0),
                         )
                       : Container(),
 
-                  (productPageDetail!.product.affordability == 1)
+                  (productPageDetail!.affordability == 1)
                       ? Align(
                           alignment: Alignment.topLeft,
                           child: Text(
@@ -920,7 +926,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                           ),
                         )
                       : Container(),
-                  (productPageDetail!.product.quantity! <= 0)
+                  (productPageDetail!.quantity! <= 0)
                       ? Align(
                           alignment: Alignment.topLeft,
                           child: LoginButton(
@@ -981,7 +987,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                   //add to cart and emi button
                   Row(
                     children: [
-                      (productPageDetail!.product.quantity! <= 0)
+                      (productPageDetail!.quantity! <= 0)
                           ? Container()
                           : LoginButton(
                               title: "Add to Cart",
@@ -989,12 +995,12 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                               onPress: () {
                                 Navigator.pushNamed(context, TextFile.id);
                               }),
-                      (productPageDetail!.product.quantity! <= 0)
+                      (productPageDetail!.quantity! <= 0)
                           ? Container()
                           : SizedBox(
                               width: getProportionateScreenHeight(15.0),
                             ),
-                      (productPageDetail!.product.emiOptions!.isNotEmpty)
+                      (productPageDetail!.emiOptions!.isNotEmpty)
                           ? SizedBox(
                               child: ElevatedButton.icon(
                                 onPressed: () {
@@ -1044,8 +1050,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                     child: Container(
                       alignment: Alignment.topLeft,
                       child: EmiTable(
-                        emiTableHtml:
-                            productPageDetail!.product.emiOptions.toString(),
+                        emiTableHtml: productPageDetail!.emiOptions.toString(),
                       ),
                     ),
                   ),
@@ -1057,14 +1062,14 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
   }
 
   //This is list of Product Images
-  Widget _buildImageList(List<TypeImages> _typeImages, int index) {
+  Widget _buildImageList(List<TypeImages> typeImages, int index) {
     return InkWell(
       splashColor: Colors.white,
       highlightColor: Colors.white,
       onTap: () {
         setState(() {
           imageSrc =
-              "$imageDefaultURL$imageSecondUrl${_typeImages[index].filename}";
+              "$imageDefaultURL$imageSecondUrl${typeImages[index].filename}";
         });
       },
       child: Container(
@@ -1076,7 +1081,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
             border: Border.all(color: kDefaultBorderColor)),
         child: CachedNetworkImage(
             imageUrl:
-                "$imageDefaultURL$imageSecondUrl${_typeImages[index].filename}",
+                "$imageDefaultURL$imageSecondUrl${typeImages[index].filename}",
             placeholder: (context, url) => Container(),
             errorWidget: (context, url, error) =>
                 const Image(image: AssetImage("assets/NoImage.jpg"))),
@@ -1085,8 +1090,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
   }
 
   //Select Product Data
-  Widget _buildDataContainer(OptionValues optionValues, int index, int length,
-      String typeId, String customerId) {
+  Widget _buildDataContainer(
+      OptionValues optionValues, int index, int length, String typeId) {
     return SelectableContainer(
       //selected: true,
       selected:
@@ -1101,29 +1106,27 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
         if (selectedIndex.keys.length == length) {
           //adding bloc event
           _productPageDetailsBloc.add(LoadProductDataBasedOnValueEvent(
-              productValue: selectedIndex,
-              productId: typeId,
-              customerId: customerId));
+              productValue: selectedIndex, productId: typeId, token: token!));
         }
       },
-      child: Text(
-        optionValues.name ?? "",
-        style: TextStyle(
-            fontSize: getProportionateScreenWidth(15.0),
-            color: kDefaultHeaderFontColor),
-      ),
       padding: 10,
       iconSize: 12,
       borderRadius: 3,
       borderSize: 1,
       unselectedOpacity: 0.9,
       unselectedBorderColor: kDefaultBorderColor,
+      child:  Text(
+        optionValues.name ?? "",
+        style: TextStyle(
+            fontSize: getProportionateScreenWidth(15.0),
+            color: kDefaultHeaderFontColor),
+      ),
     );
   }
 
   //Select Product Color
-  Widget _buildColorContainer(OptionValues optionValues, int index, int length,
-      String typeId, String customerId) {
+  Widget _buildColorContainer(
+      OptionValues optionValues, int index, int length, String typeId) {
     return SelectableContainer(
       selected:
           (selectedIndex[index.toString()].toString() == optionValues.value)
@@ -1136,11 +1139,15 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
         });
         if (selectedIndex.keys.length == length) {
           _productPageDetailsBloc.add(LoadProductDataBasedOnValueEvent(
-              productValue: selectedIndex,
-              productId: typeId,
-              customerId: customerId));
+              productValue: selectedIndex, productId: typeId, token: token!));
         }
       },
+      padding: 7,
+      iconSize: 12,
+      borderRadius: 3,
+      borderSize: 1,
+      unselectedOpacity: 0.9,
+      unselectedBorderColor: kDefaultBorderColor,
       child: SizedBox(
         width: getProportionateScreenWidth(80.0),
         child: Column(
@@ -1164,12 +1171,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
           ],
         ),
       ),
-      padding: 7,
-      iconSize: 12,
-      borderRadius: 3,
-      borderSize: 1,
-      unselectedOpacity: 0.9,
-      unselectedBorderColor: kDefaultBorderColor,
     );
   }
 }

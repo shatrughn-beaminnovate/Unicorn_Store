@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:after_layout/after_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -18,13 +20,12 @@ class _InitialScreenState extends State<InitialScreen>
   Future checkFirstSeen() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    bool _seen = (prefs.getBool('seen') ?? false);
+    bool seen = (prefs.getBool('seen') ?? false);
 
-    if (_seen) {
+    if (seen) {
       Navigator.pushReplacementNamed(context, MainScreen.id);
     } else {
       await prefs.setBool('seen', true);
-
       Navigator.pushReplacementNamed(context, OnBoardingPage.id);
     }
   }

@@ -1,4 +1,5 @@
-import 'package:device_preview/device_preview.dart';
+// ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:unicorn_store/Business_Logic/bloc/login%20and%20signup/authentication/authentication_bloc.dart';
@@ -12,26 +13,21 @@ import 'package:unicorn_store/UI/routes.dart';
 import 'Business_Logic/bloc/my_account/Wishlist/Wishlist Product Details/wishlist_product_details_fetching_bloc.dart';
 
 void main() {
-  runApp(DevicePreview(
-      enabled: true,
-      // ignore: prefer_const_literals_to_create_immutables
-      tools: [
-        ...DevicePreview.defaultTools,
-      ],
-      builder: (context) => const MyApp()));
+  runApp( const MyApp());
 }
 
 class MyApp extends StatefulWidget {
   final String? myAccountRedirect;
   final Map<String, String>? productValue;
-  final String? productTypeId;
+  final String? productTypeSlug;
   final String? productPageId;
+  final String? productTypeId;
 
   const MyApp(
       {Key? key,
       this.myAccountRedirect,
       this.productValue,
-      this.productTypeId,
+      this.productTypeId,      this.productTypeSlug,
       this.productPageId})
       : super(key: key);
 
@@ -64,9 +60,9 @@ class _MyAppState extends State<MyApp> {
         ),
       ],
       child: MaterialApp(
-        useInheritedMediaQuery: true,
-        locale: DevicePreview.locale(context),
-        builder: DevicePreview.appBuilder,
+        // useInheritedMediaQuery: true,
+        // locale: DevicePreview.locale(context),
+        // builder: DevicePreview.appBuilder,
         debugShowCheckedModeBanner: false,
         title: 'Flutter Demo',
         theme: ThemeData(
@@ -79,13 +75,13 @@ class _MyAppState extends State<MyApp> {
                 wishlistProductDetailsFetchingBloc.add(
                     AddProductToWishlistEvent(
                         productId: widget.productPageId!,
-                        token: state.loginData.token!));
+                        token: state.loginData.userData!.token!));
               }
               if (widget.myAccountRedirect == "goToAccessoriesProductPage") {
                 wishlistProductDetailsFetchingBloc.add(
                     AddProductToWishlistEvent(
                         productId: widget.productPageId!,
-                        token: state.loginData.token!));
+                        token: state.loginData.userData!.token!));
               }
             }
           },
@@ -95,7 +91,13 @@ class _MyAppState extends State<MyApp> {
                 print("Authentication Unintialiazed............");
 
                 return Scaffold(body: LoadingIndicatorBar());
-              } else if (state is AuthenticatedOnboardingIncomplete) {
+              } else
+                if (state is AuthenticationLoading) {
+                print("AuthenticationLoading............");
+
+                return Scaffold(body: LoadingIndicatorBar());
+              }
+               if (state is AuthenticatedOnboardingIncomplete) {
                 print("OnBoardingPage............");
 
                 return const OnBoardingPage();
@@ -116,12 +118,14 @@ class _MyAppState extends State<MyApp> {
                     ),
                   );
                 } else if (widget.myAccountRedirect == "goToProductPageType") {
+               
                   return BlocProvider.value(
                     value: authenticationBloc,
                     child: ProductDetailsScreen(
-                      productTypeId: widget.productTypeId,
+                      productTypeSlug: widget.productTypeSlug,
                       productValue: widget.productValue,
-                      customerId: state.loginData.userData!.id.toString(),
+                      productTypeId: widget.productTypeId!,
+                      token: state.loginData.userData!.token.toString(),
                     ),
                   );
                 } else if (widget.myAccountRedirect ==
@@ -130,7 +134,7 @@ class _MyAppState extends State<MyApp> {
                     value: authenticationBloc,
                     child: ProductPage(
                       productPageId: widget.productPageId,
-                      token: state.loginData.token,
+                      token: state.loginData.userData!.token!,
                     ),
                   );
                 }
@@ -140,11 +144,8 @@ class _MyAppState extends State<MyApp> {
                     selectedIndex: 0,
                   ),
                 );
-              } else if (state is AuthenticationLoading) {
-                print("AuthenticationLoading............");
-
-                return Scaffold(body: LoadingIndicatorBar());
-              } else if (state is AuthenticationUnauthenticated) {
+              } 
+             else if (state is AuthenticationUnauthenticated) {
                 print("AuthenticationUnauthenticated............");
 
                 return BlocProvider(
@@ -155,7 +156,7 @@ class _MyAppState extends State<MyApp> {
                 );
               }
               return const Scaffold(
-                body: Center(child: Text("Akshay")),
+                body: Center(child: Text("")),
               );
             },
           ),

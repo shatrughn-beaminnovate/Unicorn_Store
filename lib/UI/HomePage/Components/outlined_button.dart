@@ -24,16 +24,16 @@ class OutlinedButtonContainer extends StatelessWidget {
           onPressed: () {
             onPress!();
           },
-          child: Text(
-            title,
-            style:  TextStyle(color: kDefaultOutlineButtonColor,fontSize: getProportionateScreenWidth(14.0)),
-          ),
           style: ButtonStyle(
             side: MaterialStateProperty.resolveWith<BorderSide>(
                 (Set<MaterialState> states) {
               return const BorderSide(
                   color: kDefaultOutlineButtonColor, width: 1);
             }),
+          ),
+          child: Text(
+            title,
+            style:  TextStyle(color: kDefaultOutlineButtonColor,fontSize: getProportionateScreenWidth(14.0)),
           ),
         
       ),

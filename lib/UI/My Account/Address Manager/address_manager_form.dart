@@ -13,7 +13,7 @@ import 'package:unicorn_store/Data/Models/MyAccount/Address%20Manager/State/data
 import 'package:unicorn_store/Data/Models/MyAccount/Address%20Manager/State/state_list.dart';
 import 'package:unicorn_store/Data/Models/MyAccount/Address%20Manager/field_data.dart';
 import 'package:unicorn_store/Data/Models/MyAccount/Address%20Manager/search_zip_address.dart';
-import 'package:unicorn_store/UI/Components/loading_indicator_bar.dart';
+import 'package:unicorn_store/UI/Components/linear_indicator.dart';
 import 'package:unicorn_store/UI/HomePage/Components/build_app_bar.dart';
 import 'package:unicorn_store/UI/LoginPage/Components/custom_submit_button.dart';
 import 'package:unicorn_store/UI/LoginPage/Components/text_input_field.dart';
@@ -105,7 +105,7 @@ class _AddressManagerFormState extends State<AddressManagerForm> {
     _stateDataApiFetchBloc.add(LoadStateData(
         countryID: editAddressList.addressData!.fieldDataEditAddress!.countryId
             .toString(),
-        token: loginData!.token!));
+        token: loginData!.userData!.token!));
   }
 
   void setFormDataBasedOnZip(SearchZipAddress searchZipAddress) {
@@ -114,7 +114,7 @@ class _AddressManagerFormState extends State<AddressManagerForm> {
     secondDropdownvalueForCountry = searchZipAddress.countryId.toString();
     _stateDataApiFetchBloc.add(LoadStateData(
         countryID: searchZipAddress.countryId.toString(),
-        token: loginData!.token!));
+        token: loginData!.userData!.token!));
   }
 
   //Creating instance for user details after login
@@ -133,15 +133,15 @@ class _AddressManagerFormState extends State<AddressManagerForm> {
     loginData = addressManagerIds["loginData"];
     if (addressManagerIds["addressId"].toString().isNotEmpty) {
       editAddressFlag = true;
-      _countryDataApiFetchBloc.add(LoadCountryDataFetchApi(loginData!.token!));
+      _countryDataApiFetchBloc.add(LoadCountryDataFetchApi(loginData!.userData!.token!));
       _editAddressManagerDataFetchApiBloc.add(
           LoadEditAddressManagerDataFetchApi(
               addressId: addressManagerIds["addressId"],
-              token: loginData!.token!));
+              token: loginData!.userData!.token!));
     } else {
-      _countryDataApiFetchBloc.add(LoadCountryDataFetchApi(loginData!.token!));
+      _countryDataApiFetchBloc.add(LoadCountryDataFetchApi(loginData!.userData!.token!));
       _stateDataApiFetchBloc
-          .add(LoadStateData(countryID: "99", token: loginData!.token!));
+          .add(LoadStateData(countryID: "99", token: loginData!.userData!.token!));
     }
     super.didChangeDependencies();
   }
@@ -189,10 +189,8 @@ class _AddressManagerFormState extends State<AddressManagerForm> {
                 child: BlocBuilder<EditAddressManagerDataFetchApiBloc,
                         EditAddressManagerDataFetchApiState>(
                     builder: (context, state) {
-                  if (state is EditAddressManagerDataFetchApiInitial) {
-                    return LoadingIndicatorBar();
-                  } else if (state is EditAddressManagerDataFetchApiLoading) {
-                    return LoadingIndicatorBar();
+              if (state is EditAddressManagerDataFetchApiLoading) {
+                    return const LinearIndicatorBar();
                   } else if (state is EditAddressManagerDataFetchApiLoaded) {
                     return _buildEditAddressForm(context);
                   } else if (state is EditAddressManagerDataFetchApiError) {
@@ -265,6 +263,8 @@ class _AddressManagerFormState extends State<AddressManagerForm> {
                   color: kDefaultBorderColor,
                   thickness: 1,
                 ),
+
+
 
                 //First Name
                 TextInputField(
@@ -374,7 +374,7 @@ class _AddressManagerFormState extends State<AddressManagerForm> {
                               secondDropdownvalueForState = " ";
                               dropdownValueForState = null;
                               _searchZipAddressBloc.add(LoadSearchZipAddress(
-                                  pincode: value, token: loginData!.token!));
+                                  pincode: value, token: loginData!.userData!.token!));
                               // if (formScrollController.hasClients) {
                               //   final position =
                               //       formScrollController.position.maxScrollExtent;
@@ -474,11 +474,13 @@ class _AddressManagerFormState extends State<AddressManagerForm> {
                                     addressId: addressListData!.addressData!.id
                                         .toString(),
                                     addressData: addressData,
-                                    token: loginData!.token!));
+                                    token:loginData!.userData!.token!));
                           } else {
+                          
                             _editAddressManagerDataFetchApiBloc.add(
                                 AddCustomerAddressEvent(
-                                    addressData, loginData!.token!));
+                                    addressData, loginData!.userData!.token!));
+                          
                           }
                         }),
                     const Spacer(),
@@ -572,7 +574,7 @@ class _AddressManagerFormState extends State<AddressManagerForm> {
                     });
 
                     _stateDataApiFetchBloc.add(LoadStateData(
-                        countryID: newValue ?? " ", token: loginData!.token!));
+                        countryID: newValue ?? " ", token: loginData!.userData!.token!));
                   },
                   hint: Text("Select Country",
                       style: TextStyle(
@@ -585,8 +587,8 @@ class _AddressManagerFormState extends State<AddressManagerForm> {
                   },
                   items: countryList?.country!.map((item) {
                     return DropdownMenuItem(
-                      child: Text(item.name.toString()),
                       value: item.id.toString(),
+                      child: Text(item.name.toString()),
                     );
                   }).toList(),
                 ),
@@ -598,9 +600,7 @@ class _AddressManagerFormState extends State<AddressManagerForm> {
     );
   }
 
-  Widget _buildStateDropdown(
-    BuildContext context,
-  ) {
+  Widget _buildStateDropdown(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -657,8 +657,8 @@ class _AddressManagerFormState extends State<AddressManagerForm> {
                   isExpanded: true,
                   items: stateList?.state!.map((item) {
                     return DropdownMenuItem(
-                      child: Text(item.name.toString()),
                       value: item.id.toString(),
+                      child: Text(item.name.toString()),
                     );
                   }).toList(),
                 ),

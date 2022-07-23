@@ -1,5 +1,5 @@
-import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:unicorn_store/Data/Models/MyAccount/Address%20Manager/Edit%20Address%20Manager/address_data.dart';
 import 'package:unicorn_store/Data/Models/MyAccount/Address%20Manager/Edit%20Address%20Manager/edit_address_list.dart';
 import 'package:unicorn_store/Data/Repositories/my_account/Address%20Manager/address_manager_details_repository.dart';
@@ -11,16 +11,16 @@ class EditAddressManagerDataFetchApiBloc extends Bloc<
     EditAddressManagerDataFetchApiEvent, EditAddressManagerDataFetchApiState> {
   EditAddressManagerDataFetchApiBloc()
       : super(EditAddressManagerDataFetchApiInitial()) {
-    final AddressManagerDetailsRepository _addressManagerDetailsRepository =
+    final AddressManagerDetailsRepository addressManagerDetailsRepository =
         AddressManagerDetailsRepository();
 
     on<LoadEditAddressManagerDataFetchApi>((event, emit) async {
       try {
-       // emit(EditAddressManagerDataFetchApiLoading());
-        final _addressDetails = await _addressManagerDetailsRepository
+        emit(EditAddressManagerDataFetchApiLoading());
+        final addressDetails = await addressManagerDetailsRepository
             .getAddressManagerDetailsEdit( event.addressId,event.token);
-
-        emit(EditAddressManagerDataFetchApiLoaded(_addressDetails));
+        await Future.delayed(const Duration(seconds: 2));
+        emit(EditAddressManagerDataFetchApiLoaded(addressDetails));
       } catch (e) {
         emit(EditAddressManagerDataFetchApiError(e.toString()));
       }
@@ -30,10 +30,10 @@ class EditAddressManagerDataFetchApiBloc extends Bloc<
     on<AddCustomerAddressEvent>((event, emit) async {
       try {
         emit(EditAddressManagerDataFetchApiLoading());
-        final _addUserAddressResponse =
-            await _addressManagerDetailsRepository.addUserAddress(event.addressData,event.token);
+        final addUserAddressResponse =
+            await addressManagerDetailsRepository.addUserAddress(event.addressData,event.token);
 
-        emit(AddCustomerAddressSuccess(_addUserAddressResponse));
+        emit(AddCustomerAddressSuccess(addUserAddressResponse));
       } catch (e) {
         emit(EditAddressManagerDataFetchApiError(e.toString()));
       }
@@ -43,11 +43,11 @@ class EditAddressManagerDataFetchApiBloc extends Bloc<
       try {
                 emit(EditAddressManagerDataFetchApiLoading());
 
-        final _updateUserAddressResponse =
-            await _addressManagerDetailsRepository
+        final updateUserAddressResponse =
+            await addressManagerDetailsRepository
                 .updateUserAddress(event.addressId,event.addressData,event.token);
 
-        emit(UpdateCustomerAddressSuccess(_updateUserAddressResponse));
+        emit(UpdateCustomerAddressSuccess(updateUserAddressResponse));
       } catch (e) {
         emit(EditAddressManagerDataFetchApiError(e.toString()));
       }

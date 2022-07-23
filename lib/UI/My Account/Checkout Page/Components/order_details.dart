@@ -24,14 +24,14 @@ class OrderDetails extends StatelessWidget {
           Container(
             padding: EdgeInsets.all(getProportionateScreenWidth(10.0)),
             width: double.infinity,
-            child: Text(
-              "Order Details",
-              style: TextStyle(fontSize: getProportionateScreenWidth(15.0)),
-            ),
             decoration: const BoxDecoration(
               border: Border(
                 bottom: BorderSide(color: kDefaultBorderColor),
               ),
+            ),
+            child: Text(
+              "Order Details",
+              style: TextStyle(fontSize: getProportionateScreenWidth(15.0)),
             ),
           ),
 

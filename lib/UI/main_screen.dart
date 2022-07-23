@@ -112,11 +112,9 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
-    print("Not Selected Index for widget ${widget.selectedIndex}");
 
     return WillPopScope(
       onWillPop: () async {
-        print("Selected Index for widget ${widget.selectedIndex}");
         if (widget.selectedIndex == 0) {
           SystemChannels.platform.invokeMethod('SystemNavigator.pop');
           return false;
@@ -328,8 +326,7 @@ class _MainScreenState extends State<MainScreen> {
                     title: "Logout",
                     onPress: () {
                       authenticationBloc.add(LoggedOut(
-                          state.loginData.userData!.id.toString(),
-                          state.loginData.token.toString()));
+                          state.loginData.userData!.token.toString()));
                     },
                   );
                 }

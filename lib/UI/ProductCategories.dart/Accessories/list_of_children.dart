@@ -29,7 +29,6 @@ class _ListOfChildrenState extends State<ListOfChildren> {
     accessoriesData =
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
     accessoriesChildren = accessoriesData["subcategoryData"];
-    print('token ${accessoriesData["token"]}');
     return Scaffold(
       appBar: const BuildAppBar(),
       backgroundColor: Colors.white,

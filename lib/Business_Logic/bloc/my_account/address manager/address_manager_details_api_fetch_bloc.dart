@@ -1,5 +1,5 @@
-import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:unicorn_store/Data/Models/MyAccount/Address%20Manager/address_list.dart';
 import 'package:unicorn_store/Data/Repositories/my_account/Address%20Manager/address_manager_details_repository.dart';
 
@@ -10,38 +10,36 @@ class AddressManagerDetailsApiFetchBloc extends Bloc<
     AddressManagerDetailsApiFetchEvent, AddressManagerDetailsApiFetchState> {
   AddressManagerDetailsApiFetchBloc()
       : super(AddressManagerDetailsApiFetchInitial()) {
-    final AddressManagerDetailsRepository _addressManagerDetailsRepository =
+    final AddressManagerDetailsRepository addressManagerDetailsRepository =
         AddressManagerDetailsRepository();
 
     on<LoadAddressDetailsApiFetch>((event, emit) async {
       try {
         emit(AddressManagerDetailsApiFetchLoading());
-        final _addressDetails = await _addressManagerDetailsRepository
+        final addressDetails = await addressManagerDetailsRepository
             .getAddressManagerDetails(event.token);
-
-        emit(AddressManagerDetailsApiFetchLoaded(_addressDetails));
+        await Future.delayed(const Duration(seconds: 2));
+        emit(AddressManagerDetailsApiFetchLoaded(addressDetails));
       } catch (e) {
         emit(AddressManagerDetailsApiFetchError(e.toString()));
       }
     });
-
 
     on<DeleteCustomerAddressEvent>((event, emit) async {
       try {
         emit(AddressManagerDetailsApiFetchLoading());
-        final _deleteUserAddressResponse =
-            await _addressManagerDetailsRepository
-                .deleteUserAddress(event.addressId,event.token);
-        final _addressDetails = await _addressManagerDetailsRepository
+        final deleteUserAddressResponse =
+            await addressManagerDetailsRepository.deleteUserAddress(
+                event.addressId, event.token);
+        final addressDetails = await addressManagerDetailsRepository
             .getAddressManagerDetails(event.token);
+        await Future.delayed(const Duration(seconds: 2));
+
         emit(DeleteCustomerAddressSuccess(
-            _addressDetails, _deleteUserAddressResponse));
+            addressDetails, deleteUserAddressResponse));
       } catch (e) {
         emit(AddressManagerDetailsApiFetchError(e.toString()));
       }
     });
-
-
-   
   }
 }

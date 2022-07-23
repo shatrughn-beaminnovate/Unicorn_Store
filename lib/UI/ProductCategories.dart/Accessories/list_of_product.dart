@@ -28,7 +28,6 @@ class ListOfProduct extends StatelessWidget {
     accessoriesData =
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
 
-    print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@  ${accessoriesData["token"]}");
 
     return Scaffold(
       appBar: const BuildAppBar(),

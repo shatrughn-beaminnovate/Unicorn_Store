@@ -13,9 +13,7 @@ class AddressManagerDetailsApi {
   final _baseUrl = "$kDefaultBaseUrl/address_bank";
 
   //This will Fetch List of user Address Details
-  Future<AddressList> getAddressManagerDetails(
-      String token) async {
-      try{  
+  Future<AddressList> getAddressManagerDetails(String token) async {
     var response = await http.get(
       Uri.parse(_baseUrl),
       headers: {
@@ -31,18 +29,13 @@ class AddressManagerDetailsApi {
     } else {
       throw Exception(response.statusCode);
     }
-      }catch(e){print(e);}
-      throw Exception();
   }
 
   //This will load user address based address id
   Future<EditAddressList> getAddressManagerDetailsEdit(
-       String addressId, String token) async {
-
-    
+      String addressId, String token) async {
     var response = await http.get(
-      Uri.parse(
-          "$kDefaultBaseUrl/edit_address_bank/?address_id=$addressId"),
+      Uri.parse("$kDefaultBaseUrl/edit_address_bank/?address_id=$addressId"),
       headers: {
         "Content-Type": "application/json",
         "X-Auth-Token": token,
@@ -87,16 +80,15 @@ class AddressManagerDetailsApi {
 
   //This is get request for deleting user address based on address id
   Future<Map<String, dynamic>> deleteUserAddress(
-    String addressId,String token
-  ) async {
+      String addressId, String token) async {
     String url = "$kDefaultBaseUrl/delete_address_bank/$addressId";
 
     var response = await http.get(
       Uri.parse(url),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
-         "X-Auth-Token": token,
-          "Connection": "keep-alive"
+        "X-Auth-Token": token,
+        "Connection": "keep-alive"
       },
     );
     if (response.statusCode == 200) {
@@ -109,15 +101,32 @@ class AddressManagerDetailsApi {
 
   //This is post request for Updating  user address
   Future<Map<String, dynamic>> updateUserAddress(
-      String addressId, AddressData? addressData,String token) async {
-    String url = "$kDefaultBaseUrl/update_address_bank/$addressId";
+      String addressId, AddressData? addressData, String token) async {
+    String url = "$kDefaultBaseUrl/update_address_bank";
 
-    String body = json.encode(addressData);
+    Map<String, dynamic> data = {
+      "address_id": addressId,
+      "firstname": addressData!.fieldDataEditAddress!.firstname,
+      "lastname":  addressData.fieldDataEditAddress!.lastname,
+      "email": addressData.fieldDataEditAddress!.email,
+      "phone":  addressData.fieldDataEditAddress!.phone,
+      "address1":  addressData.fieldDataEditAddress!.address1,
+      "address2":  addressData.fieldDataEditAddress!.address2,
+      "city":  addressData.fieldDataEditAddress!.city,
+      "zip":  addressData.fieldDataEditAddress!.zip,
+      "zone":  addressData.fieldDataEditAddress!.zone,
+      "country":  addressData.fieldDataEditAddress!.country,
+      "country_code": addressData.fieldDataEditAddress!.countryCode,
+      "country_id":  addressData.fieldDataEditAddress!.countryId,
+      "zone_id":  addressData.fieldDataEditAddress!.zoneId
+    };
+
+    String body = json.encode(data);
 
     var response = await http.post(Uri.parse(url),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
-           "X-Auth-Token": token,
+          "X-Auth-Token": token,
           "Connection": "keep-alive"
         },
         body: body);
@@ -130,15 +139,32 @@ class AddressManagerDetailsApi {
   }
 
   //This is post request for adding new user address
-  Future<Map<String, dynamic>> addUserAddress(AddressData? addressData,String token) async {
+  Future<Map<String, dynamic>> addUserAddress(
+      AddressData? addressData, String token) async {
     String url = "$kDefaultBaseUrl/add_address_bank";
 
-    String body = json.encode(addressData);
+    Map<String, dynamic> data = {
+      "firstname": addressData!.fieldDataEditAddress!.firstname,
+      "lastname": addressData.fieldDataEditAddress!.lastname,
+      "email": addressData.fieldDataEditAddress!.email,
+      "phone": addressData.fieldDataEditAddress!.phone,
+      "address1": addressData.fieldDataEditAddress!.address1,
+      "address2": addressData.fieldDataEditAddress!.address2,
+      "city": addressData.fieldDataEditAddress!.city,
+      "zip": addressData.fieldDataEditAddress!.zip,
+      "zone": addressData.fieldDataEditAddress!.zone,
+      "country": addressData.fieldDataEditAddress!.country,
+      "country_code": addressData.fieldDataEditAddress!.countryCode,
+      "country_id": addressData.fieldDataEditAddress!.countryId,
+      "zone_id": addressData.fieldDataEditAddress!.zoneId
+    };
+
+    String body = json.encode(data);
 
     var response = await http.post(Uri.parse(url),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
-           "X-Auth-Token": token,
+          "X-Auth-Token": token,
           "Connection": "keep-alive"
         },
         body: body);
@@ -151,15 +177,16 @@ class AddressManagerDetailsApi {
   }
 
   //This will load address based on pincode
-  Future<SearchZipAddress> searchPincodeAddress(String pinCode,String token) async {
+  Future<SearchZipAddress> searchPincodeAddress(
+      String pinCode, String token) async {
     String url = "$kDefaultBaseUrl/master_stores/$pinCode";
 
     var response = await http.get(
       Uri.parse(url),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
-         "X-Auth-Token": token,
-          "Connection": "keep-alive"
+        "X-Auth-Token": token,
+        "Connection": "keep-alive"
       },
     );
     if (response.statusCode == 200) {
@@ -179,8 +206,8 @@ class AddressManagerDetailsApi {
       Uri.parse(url),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
-         "X-Auth-Token": token,
-          "Connection": "keep-alive"
+        "X-Auth-Token": token,
+        "Connection": "keep-alive"
       },
     );
     if (response.statusCode == 200) {
@@ -193,15 +220,15 @@ class AddressManagerDetailsApi {
   }
 
   //This will load list of State
-  Future<StateList> getStateList(String? countryId,String token) async {
+  Future<StateList> getStateList(String? countryId, String token) async {
     String url = "$kDefaultBaseUrl/master_state/$countryId";
 
     var response = await http.get(
       Uri.parse(url),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
-         "X-Auth-Token": token,
-          "Connection": "keep-alive"
+        "X-Auth-Token": token,
+        "Connection": "keep-alive"
       },
     );
     if (response.statusCode == 200) {

@@ -9,8 +9,8 @@ class SubCategoryRepository {
     return _subCategoryServiceApi.getSubCategories(categoryId);
   }
 
-  Future<AccessoriesListData> getAccessoriesCategoryData(String categoryId,String token) {
-    return _subCategoryServiceApi.getAccessoriesCategoryData(categoryId,token);
+  Future<AccessoriesListData> getAccessoriesCategoryData(String categoryId) {
+    return _subCategoryServiceApi.getAccessoriesCategoryData(categoryId);
   }
 
   //This will load Accessories Product Details

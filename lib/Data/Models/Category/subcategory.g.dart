@@ -1,12 +1,12 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'category.dart';
+part of 'subcategory.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-Category _$CategoryFromJson(Map<String, dynamic> json) => Category(
+Subcategory _$SubcategoryFromJson(Map<String, dynamic> json) => Subcategory(
       id: json['id'] as int?,
       parentId: json['parent_id'] as int?,
       name: json['name'] as String?,
@@ -22,12 +22,10 @@ Category _$CategoryFromJson(Map<String, dynamic> json) => Category(
       isNavigable: json['is_navigable'] as int?,
       catMeta: json['cat_meta'] as int?,
       catBadge: json['cat_badge'] as String?,
-      children: (json['children'] as List<dynamic>)
-          .map((e) => Subcategory.fromJson(e as Map<String, dynamic>))
-          .toList(),
     );
 
-Map<String, dynamic> _$CategoryToJson(Category instance) => <String, dynamic>{
+Map<String, dynamic> _$SubcategoryToJson(Subcategory instance) =>
+    <String, dynamic>{
       'id': instance.id,
       'parent_id': instance.parentId,
       'name': instance.name,
@@ -43,5 +41,4 @@ Map<String, dynamic> _$CategoryToJson(Category instance) => <String, dynamic>{
       'is_navigable': instance.isNavigable,
       'cat_meta': instance.catMeta,
       'cat_badge': instance.catBadge,
-      'children': instance.children,
     };

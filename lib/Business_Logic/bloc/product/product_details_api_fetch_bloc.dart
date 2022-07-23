@@ -1,8 +1,9 @@
-import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:unicorn_store/Data/Models/Product/Product%20Page/product_page_details.dart';
-import 'package:unicorn_store/Data/Models/Product/Product%20Type/type_details.dart';
 import 'package:unicorn_store/Data/Repositories/product/product_details_repository.dart';
+
+import '../../../Data/Models/Product/Product Type/product_details.dart';
 
 part 'product_details_api_fetch_event.dart';
 part 'product_details_api_fetch_state.dart';
@@ -10,16 +11,20 @@ part 'product_details_api_fetch_state.dart';
 class ProductDetailsApiFetchBloc
     extends Bloc<ProductDetailsApiFetchEvent, ProductDetailsApiFetchState> {
   ProductDetailsApiFetchBloc() : super(ProductDetailsApiFetchInitial()) {
-    final ProductDetailsRepository _productDetailsRepository =
+    final ProductDetailsRepository productDetailsRepository =
         ProductDetailsRepository();
 
     on<LoadProductDetailsApiFetch>((event, emit) async {
       try {
         emit(ProductDetailsApiFetchLoading());
-        final _productDetails = await _productDetailsRepository
+        final productDetails = await productDetailsRepository
             .getProductDetails(event.productDetailsId);
-
-        emit(ProductDetailsApiFetchLoaded(_productDetails));
+        await Future.delayed(const Duration(seconds: 2));
+        if (productDetails.typesId != null) {
+          emit(ProductDetailsApiFetchLoaded(productDetails));
+        } else {
+          emit(const ProductDetailsApiFetchError("No Product Details"));
+        }
       } catch (e) {
         emit(ProductDetailsApiFetchError(e.toString()));
       }

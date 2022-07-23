@@ -7,8 +7,9 @@ import 'package:unicorn_store/UI/constant.dart';
 
 class WishlistDetailsProductApi {
   //This will load Wishlist product list of the user
-  Future<WishlistDetails> getWishlistProductDetails(
-       String token) async {
+  Future<WishlistDetails> getWishlistProductDetails(String token) async {
+
+
     var response = await http.get(
       Uri.parse("$kDefaultBaseUrl/wishlist"),
       headers: {
@@ -24,15 +25,15 @@ class WishlistDetailsProductApi {
     } else {
       throw Exception(response.statusCode);
     }
+ 
   }
 
   //Wishlist product add or delete
   Future<ProductAddDeleteResponse> addOrDeleteWishlistProduct(
-       String productId, String token) async {
-    
+      String productId, String token) async {
+    try {
       var response = await http.get(
-        Uri.parse(
-            "$kDefaultBaseUrl/add_to_wishlist?product_id=$productId"),
+        Uri.parse("$kDefaultBaseUrl/add_to_wishlist?product_id=$productId"),
         headers: {
           "Content-Type": "application/json",
           "X-Auth-Token": token,
@@ -47,31 +48,30 @@ class WishlistDetailsProductApi {
       } else {
         throw Exception(response.statusCode);
       }
-    
+    } catch (e) {
+   //   print(e);
+    }
+    throw Exception();
   }
 
-
-    //Wishlist product add
+  //Wishlist product add
   Future<ProductAddDeleteResponse> addProductToWishlist(
-       String productId, String token) async {
-    
-      var response = await http.get(
-        Uri.parse(
-            "$kDefaultBaseUrl/insert_wishlist?product_id=$productId"),
-        headers: {
-          "Content-Type": "application/json",
-          "X-Auth-Token": token,
-          "Connection": "keep-alive"
-        },
-      );
+      String productId, String token) async {
+    var response = await http.get(
+      Uri.parse("$kDefaultBaseUrl/insert_wishlist?product_id=$productId"),
+      headers: {
+        "Content-Type": "application/json",
+        "X-Auth-Token": token,
+        "Connection": "keep-alive"
+      },
+    );
 
-      if (response.statusCode == 200) {
-        var decode = jsonDecode(response.body);
-        var data = ProductAddDeleteResponse.fromJson(decode);
-        return data;
-      } else {
-        throw Exception(response.statusCode);
-      }
-    
+    if (response.statusCode == 200) {
+      var decode = jsonDecode(response.body);
+      var data = ProductAddDeleteResponse.fromJson(decode);
+      return data;
+    } else {
+      throw Exception(response.statusCode);
+    }
   }
 }

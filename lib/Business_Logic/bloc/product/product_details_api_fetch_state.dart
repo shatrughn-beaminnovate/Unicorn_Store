@@ -14,7 +14,7 @@ class ProductDetailsApiFetchInitial extends ProductDetailsApiFetchState {}
 class ProductDetailsApiFetchLoading extends ProductDetailsApiFetchState {}
 
 class ProductDetailsApiFetchLoaded extends ProductDetailsApiFetchState {
-  final ProductTypeDetails productTypeDetails;
+  final ProductDetails productTypeDetails;
 
   const ProductDetailsApiFetchLoaded(this.productTypeDetails);
 }

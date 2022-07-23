@@ -25,13 +25,13 @@ class LoggedIn extends AuthenticationEvent {
 }
 
 class LoggedOut extends AuthenticationEvent {
-  final String userId;
+ 
   final String token;
 
-  const LoggedOut(this.userId, this.token);
+  const LoggedOut(this.token);
 
   @override
-  List<Object> get props => [userId, token];
+  List<Object> get props => [token];
 
   @override
   String toString() => 'LoggedOut';

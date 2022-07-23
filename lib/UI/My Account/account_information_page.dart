@@ -4,7 +4,7 @@ import 'package:unicorn_store/Business_Logic/bloc/my_account/account%20informati
 import 'package:unicorn_store/Data/Models/Login%20and%20Signup/Login/login_data.dart';
 import 'package:unicorn_store/Data/Models/MyAccount/Account%20Information/account_info_details.dart';
 import 'package:unicorn_store/Data/Models/MyAccount/Account%20Information/address_details.dart';
-import 'package:unicorn_store/UI/Components/loading_indicator_bar.dart';
+import 'package:unicorn_store/UI/Components/linear_indicator.dart';
 import 'package:unicorn_store/UI/HomePage/Components/build_app_bar.dart';
 import 'package:unicorn_store/UI/LoginPage/Components/custom_submit_button.dart';
 import 'package:unicorn_store/UI/LoginPage/Components/form_validation.dart';
@@ -78,7 +78,7 @@ class _AccountInformationPageState extends State<AccountInformationPage> {
     //Adding event to load Account Information
     accountInformationApiFetchBloc.add(LoadAccountDetailsApiFetch(
       
-        token: loginData!.token.toString()));
+        token: loginData!.userData!.token!.toString()));
 
     super.didChangeDependencies();
   }
@@ -112,7 +112,7 @@ class _AccountInformationPageState extends State<AccountInformationPage> {
               AccountInformationApiFetchState>(
             builder: (context, state) {
               if (state is AccountInformationApiFetchLoading) {
-                return LoadingIndicatorBar();
+                return const LinearIndicatorBar();
               }
               return _buildAccountInformationForm(context);
             },
@@ -381,7 +381,7 @@ class _AccountInformationPageState extends State<AccountInformationPage> {
                       accountInformationApiFetchBloc.add(
                           UpdateCustomerAccountDetailsEvent(
                               addressData: addressDetails,
-                              token: loginData!.token!));
+                              token: loginData!.userData!.token!));
                     }
                   },
                   width: double.infinity,

@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:unicorn_store/Data/Models/Login%20and%20Signup/Login/login_data.dart';
 import 'package:unicorn_store/Data/Models/Login%20and%20Signup/Logout/logout_details.dart';
 import 'package:unicorn_store/Data/Repositories/login%20and%20signup/login_details_repository.dart';
@@ -47,7 +47,7 @@ class AuthenticationBloc
 
       // ignore: unused_local_variable
       final logoutData = await loginDetailsRepository.getLogoutDetails(
-          event.userId, event.token);
+          event.token);
       await loginDetailsRepository.deleteToken();
      // emit(AuthenticatedUserLoggedout(logoutDetails: logoutData));
       emit(AuthenticationUnauthenticated());

@@ -47,10 +47,6 @@ class TextFormFieldAndButton extends StatelessWidget {
             height: getProportionateScreenHeight(40),
             child: ElevatedButton(
               onPressed: () {},
-              child: Text(
-                buttonTitle,
-                style: TextStyle(fontSize: getProportionateScreenWidth(15.0)),
-              ),
               style: ElevatedButton.styleFrom(
                 primary: kDefaultSecondaryButtonColor, // background
                 onPrimary: Colors.white,
@@ -59,6 +55,10 @@ class TextFormFieldAndButton extends StatelessWidget {
                       topRight: Radius.circular(3.0),
                       bottomRight: Radius.circular(3.0)), // <-- Radius
                 ), // foreground
+              ),
+              child: Text(
+                buttonTitle,
+                style: TextStyle(fontSize: getProportionateScreenWidth(15.0)),
               ),
             )),
       ),

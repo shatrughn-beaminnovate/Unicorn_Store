@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:unicorn_store/Data/Data_Providers/Login%20and%20Signup/login_details.dart';
@@ -21,14 +23,26 @@ class LoginDetailsRepository {
   }
 
   //Getting logout response
-  Future<LogoutDetails> getLogoutDetails(String userId, String token) {
-    return loginDetailsApi.getLogoutDetails(userId, token);
+  Future<LogoutDetails> getLogoutDetails(String token) {
+    return loginDetailsApi.getLogoutDetails(token);
   }
 
   //Forgot Password response
   Future<ForgotPasswordResponse> forgotPasswordDetails(String emailId) {
     return loginDetailsApi.forgotPasswordDetails(emailId);
   }
+
+  //send otp request
+  Future<Map<String,dynamic>> sendOtpRequest(String mobileNumber)
+  {
+    return loginDetailsApi.sendOtpRequest(mobileNumber);
+  }
+
+    //Getting login response based on OTP
+  Future<LoginData> getLoginDetailsBasedOnOtp(String phone, String otp) {
+    return loginDetailsApi.getLoginDetailsBasedOnOtp(phone, otp);
+  }
+
 
   //User Registration Response
    Future<RegisterResponse> registerUserDetails(RegisterData registerData) {

@@ -5,7 +5,7 @@ import 'package:unicorn_store/Business_Logic/bloc/my_account/address%20manager/s
 import 'package:unicorn_store/Data/Models/Login%20and%20Signup/Login/login_data.dart';
 import 'package:unicorn_store/Data/Models/MyAccount/Address%20Manager/address.dart';
 import 'package:unicorn_store/Data/Models/MyAccount/Address%20Manager/address_list.dart';
-import 'package:unicorn_store/UI/Components/loading_indicator_bar.dart';
+import 'package:unicorn_store/UI/Components/linear_indicator.dart';
 import 'package:unicorn_store/UI/HomePage/Components/build_app_bar.dart';
 import 'package:unicorn_store/UI/LoginPage/Components/custom_submit_button.dart';
 import 'package:unicorn_store/UI/My%20Account/Address%20Manager/address_manager_form.dart';
@@ -45,13 +45,12 @@ class _AddressManagerPageState extends State<AddressManagerPage> {
     userData = ModalRoute.of(context)?.settings.arguments;
     loginData = userData["loginData"];
     _addressManagerDetailsApiFetchBloc
-        .add(LoadAddressDetailsApiFetch(token: loginData!.token!));
+        .add(LoadAddressDetailsApiFetch(token: loginData!.userData!.token!));
     super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
-    print("Akshay");
     return Scaffold(
       appBar: const BuildAppBar(),
       body: SafeArea(
@@ -95,10 +94,8 @@ class _AddressManagerPageState extends State<AddressManagerPage> {
             },
             child: BlocBuilder<AddressManagerDetailsApiFetchBloc,
                 AddressManagerDetailsApiFetchState>(builder: (context, state) {
-              if (state is AddressManagerDetailsApiFetchInitial) {
-                return LoadingIndicatorBar();
-              } else if (state is AddressManagerDetailsApiFetchLoading) {
-                return LoadingIndicatorBar();
+              if (state is AddressManagerDetailsApiFetchLoading) {
+                return const LinearIndicatorBar();
               } else if (state is AddressManagerDetailsApiFetchLoaded) {
                 return _buildAddressManagerList(context, state.addressList);
                 // } else if (state is DefaultAdressSetState) {
@@ -140,7 +137,7 @@ class _AddressManagerPageState extends State<AddressManagerPage> {
                       }).then((_) {
                     setState(() {
                       _addressManagerDetailsApiFetchBloc.add(
-                          LoadAddressDetailsApiFetch(token: loginData!.token!));
+                          LoadAddressDetailsApiFetch(token: loginData!.userData!.token!));
                     });
                   });
                 },
@@ -253,10 +250,9 @@ class _AddressManagerPageState extends State<AddressManagerPage> {
                                   setState(() {
                                     _addressManagerDetailsApiFetchBloc.add(
                                         LoadAddressDetailsApiFetch(
-                                            token: loginData!.token!));
+                                            token: loginData!.userData!.token!));
                                   });
                                 });
-                                ;
                               },
                               color: const Color(0xFF1F99CF),
                             ),
@@ -297,7 +293,7 @@ class _AddressManagerPageState extends State<AddressManagerPage> {
                                                     addressId: address![index]
                                                         .id
                                                         .toString(),
-                                                    token: loginData!.token!));
+                                                    token: loginData!.userData!.token!));
 
                                             Navigator.pop(context, 'OK');
                                           },
@@ -340,7 +336,7 @@ class _AddressManagerPageState extends State<AddressManagerPage> {
                 _setDefaultAddressBloc.add(SetDefaultAddresssDetails(
                     addressId: address[index].id.toString(),
                     addressType: "billing",
-                    token: loginData!.token!));
+                    token: loginData!.userData!.token!));
               },
             ),
           ),
@@ -373,7 +369,7 @@ class _AddressManagerPageState extends State<AddressManagerPage> {
                 _setDefaultAddressBloc.add(SetDefaultAddresssDetails(
                     addressId: address[index].id.toString(),
                     addressType: "shipping",
-                    token: loginData!.token!));
+                    token: loginData!.userData!.token!));
 
                 setState(() {
                   secondShippingValue = value;

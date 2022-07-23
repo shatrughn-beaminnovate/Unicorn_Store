@@ -22,7 +22,7 @@ final double? priceSuffixFontSize;
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         Text(
-         "₹ "+price,
+         "₹ $price",
          
           style: TextStyle(
             overflow: TextOverflow.ellipsis,

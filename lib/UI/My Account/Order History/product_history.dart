@@ -3,9 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:unicorn_store/Business_Logic/bloc/my_account/order%20history/order_history_product_details_bloc.dart';
 import 'package:unicorn_store/Data/Models/Login%20and%20Signup/Login/login_data.dart';
 import 'package:unicorn_store/Data/Models/MyAccount/Order%20History/order_history_details.dart';
-import 'package:unicorn_store/UI/Components/loading_indicator_bar.dart';
+import 'package:unicorn_store/UI/Components/linear_indicator.dart';
 import 'package:unicorn_store/UI/HomePage/Components/build_app_bar.dart';
-import 'package:unicorn_store/UI/My%20Account/Checkout%20Page/Components/order_details.dart';
 import 'package:unicorn_store/UI/size_config.dart';
 
 import '../../constant.dart';
@@ -37,7 +36,7 @@ class _ProductHistoryState extends State<ProductHistory> {
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
     loginData = userLoginData["loginData"];
     orderHistoryProductDetailsBloc
-        .add(LoadOrderHistoryDetailsApiFetch(token: loginData!.token!));
+        .add(LoadOrderHistoryDetailsApiFetch(token: loginData!.userData!.token!));
 
     super.didChangeDependencies();
   }
@@ -53,7 +52,7 @@ class _ProductHistoryState extends State<ProductHistory> {
           builder: (context, state) {
 
             if (state is OrderHistoryProductDetailsLoading) {
-              return LoadingIndicatorBar();
+              return const LinearIndicatorBar();
             }
             else if(state is OrderHistoryProductDetailsLoaded){
                return _buildOrderHistory(context,state.orderHistoryDetails);     

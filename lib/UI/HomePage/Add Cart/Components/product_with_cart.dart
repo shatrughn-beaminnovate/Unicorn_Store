@@ -38,14 +38,14 @@ class ProductWithCart extends StatelessWidget {
               Container(
                 padding: EdgeInsets.all(getProportionateScreenWidth(10.0)),
                 width: double.infinity,
-                child: Text(
-                  "Order Summary",
-                  style: TextStyle(fontSize: getProportionateScreenWidth(15.0)),
-                ),
                 decoration: const BoxDecoration(
                   border: Border(
                     bottom: BorderSide(color: kDefaultBorderColor),
                   ),
+                ),
+                child: Text(
+                  "Order Summary",
+                  style: TextStyle(fontSize: getProportionateScreenWidth(15.0)),
                 ),
               ),
               Container(
@@ -96,11 +96,6 @@ class ProductWithCart extends StatelessWidget {
                         onPressed: () {
                           Navigator.pushNamed(context, BillingAddress.id);
                         },
-                        child: Text(
-                          "Continue Checkout",
-                          style: TextStyle(
-                              fontSize: getProportionateScreenWidth(15.0)),
-                        ),
                         style: ElevatedButton.styleFrom(
                           primary: kDefaultSecondaryButtonColor, // background
                           onPrimary: Colors.white,
@@ -109,6 +104,11 @@ class ProductWithCart extends StatelessWidget {
                               Radius.circular(3.0),
                             ), // <-- Radius
                           ), // foreground
+                        ),
+                        child: Text(
+                          "Continue Checkout",
+                          style: TextStyle(
+                              fontSize: getProportionateScreenWidth(15.0)),
                         ),
                       ),
                     )
@@ -131,14 +131,14 @@ class ProductWithCart extends StatelessWidget {
               Container(
                 padding: EdgeInsets.all(getProportionateScreenWidth(10.0)),
                 width: double.infinity,
-                child: Text(
-                  "Coupon Discount",
-                  style: TextStyle(fontSize: getProportionateScreenWidth(15.0)),
-                ),
                 decoration: const BoxDecoration(
                   border: Border(
                     bottom: BorderSide(color: kDefaultBorderColor),
                   ),
+                ),
+                child: Text(
+                  "Coupon Discount",
+                  style: TextStyle(fontSize: getProportionateScreenWidth(15.0)),
                 ),
               ),
               Container(

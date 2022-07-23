@@ -1,6 +1,5 @@
-import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:unicorn_store/Data/Data_Providers/My%20Account/Order%20History/order_history_product_details_api.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:unicorn_store/Data/Models/MyAccount/Order%20History/order_history_details.dart';
 import 'package:unicorn_store/Data/Repositories/my_account/Order%20History/order_history_product_details_repository.dart';
 
@@ -17,10 +16,10 @@ class OrderHistoryProductDetailsBloc extends Bloc<
     on<LoadOrderHistoryDetailsApiFetch>((event, emit) async {
       try {
         emit(OrderHistoryProductDetailsLoading());
-        final _orderHistoyDetails = await orderHistoryProductDetailsRepository
-            .getWishlistProductDetails(event.token);
-
-        emit(OrderHistoryProductDetailsLoaded(_orderHistoyDetails));
+        final orderHistoyDetails = await orderHistoryProductDetailsRepository
+            .getOrderHistoryProductDetails(event.token);
+        await Future.delayed(const Duration(seconds: 2));
+        emit(OrderHistoryProductDetailsLoaded(orderHistoyDetails));
       } catch (e) {
         emit(OrderHistoryProductDetailsError(e.toString()));
       }

@@ -23,10 +23,6 @@ class LoginButton extends StatelessWidget {
         onPressed: () {
       onPress();
         },
-        child: Text(
-      title,
-      style: TextStyle(fontSize: getProportionateScreenWidth(15.0)),
-        ),
         style: ElevatedButton.styleFrom(
       primary: color, // background
       onPrimary: onPrimary,
@@ -35,6 +31,10 @@ class LoginButton extends StatelessWidget {
           Radius.circular(5.0),
         ), // <-- Radius
       ), // foreground
+        ),
+        child: Text(
+      title,
+      style: TextStyle(fontSize: getProportionateScreenWidth(15.0)),
         ),
       ),
     );

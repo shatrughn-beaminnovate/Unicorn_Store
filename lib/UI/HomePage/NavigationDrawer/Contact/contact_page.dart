@@ -55,18 +55,18 @@ class _ContactPageState extends State<ContactPage> {
                     ),
                     OutlinedButton(
                       onPressed: () {},
-                      child: Text(
-                        "Go to Our FAQs",
-                        style: TextStyle(
-                            color: const Color(0xFF0B78A8),
-                            fontSize: getProportionateScreenWidth(15.0)),
-                      ),
                       style: ButtonStyle(
                         side: MaterialStateProperty.resolveWith<BorderSide>(
                             (Set<MaterialState> states) {
                           return const BorderSide(
                               color: Color(0xFF0B78A8), width: 2);
                         }),
+                      ),
+                      child: Text(
+                        "Go to Our FAQs",
+                        style: TextStyle(
+                            color: const Color(0xFF0B78A8),
+                            fontSize: getProportionateScreenWidth(15.0)),
                       ),
                     ),
                     SizedBox(

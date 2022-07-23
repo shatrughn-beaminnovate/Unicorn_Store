@@ -8,6 +8,7 @@ import 'package:unicorn_store/Business_Logic/bloc/my_account/Wishlist/Wishlist%2
 import 'package:unicorn_store/Data/Models/Category/AccessoriesCategory/accessories_product.dart';
 import 'package:unicorn_store/Data/Models/Login%20and%20Signup/Login/login_data.dart';
 import 'package:unicorn_store/Data/Models/Product/Product%20Type/type_images.dart';
+import 'package:unicorn_store/UI/Components/linear_indicator.dart';
 import 'package:unicorn_store/UI/Components/loading_indicator_bar.dart';
 import 'package:unicorn_store/UI/HomePage/Add%20Cart/add_to_cart.dart';
 import 'package:unicorn_store/UI/HomePage/Components/price_tag.dart';
@@ -18,6 +19,7 @@ import 'package:unicorn_store/UI/size_config.dart';
 import '../constant.dart';
 import '../main_screen.dart';
 
+// ignore: must_be_immutable
 class ProductPage extends StatefulWidget {
   static String id = "ProductPage";
   final String? productPageId;
@@ -70,15 +72,11 @@ class _ProductPageState extends State<ProductPage> {
           ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
 
       widget.token = accessoriesData["token"];
-      print("??????????????????????? ${widget.token}");
       if (widget.token != null) {
-        print("Here token is not empty");
         _accessoriesDataFetchBloc.add(LoadAccessoriesProductDetailsFetch(
             productId: accessoriesData["productDetails"].id.toString(),
             token: widget.token!));
       } else {
-        print("Here token is not empty");
-
         _accessoriesDataFetchBloc.add(LoadAccessoriesProductDetailsFetch(
             productId: accessoriesData["productDetails"].id.toString(),
             token: " "));
@@ -125,7 +123,7 @@ class _ProductPageState extends State<ProductPage> {
                       return _buildAccessoriesProduct(
                           state.accessoriesWishlistProductDetails.data);
                     } else if (state is AccessoriesDataFetchLoading) {
-                      return LoadingIndicatorBar();
+                      return const LinearIndicatorBar();
                     } else {
                       return Container();
                     }
@@ -414,14 +412,14 @@ class _ProductPageState extends State<ProductPage> {
                                                     productId:
                                                         accessoriesProduct.id
                                                             .toString(),
-                                                    token: loginData!.token!));
+                                                    token: loginData!.userData!.token!));
                                           } else {
                                             wishlistProductDetailsFetchingBloc.add(
                                                 AddOrDeleteProductFromWishlistEvent(
                                                     productId:
                                                         accessoriesProduct.id
                                                             .toString(),
-                                                    token: loginData!.token!));
+                                                    token: loginData!.userData!.token!));
                                           }
                                         },
                                         child: Icon(
@@ -491,14 +489,14 @@ class _ProductPageState extends State<ProductPage> {
   }
 
   //This is list of Product Images
-  Widget _buildImageList(List<TypeImages> _typeImages, int index) {
+  Widget _buildImageList(List<TypeImages> typeImages, int index) {
     return InkWell(
       splashColor: Colors.white,
       highlightColor: Colors.white,
       onTap: () {
         setState(() {
           imageSrc =
-              "$imageDefaultURL$imageSecondUrl${_typeImages[index].filename}";
+              "$imageDefaultURL$imageSecondUrl${typeImages[index].filename}";
         });
       },
       child: Container(
@@ -511,7 +509,7 @@ class _ProductPageState extends State<ProductPage> {
             border: Border.all(color: kDefaultBorderColor)),
         child: CachedNetworkImage(
             imageUrl:
-                "$imageDefaultURL$imageSecondUrl${_typeImages[index].filename}",
+                "$imageDefaultURL$imageSecondUrl${typeImages[index].filename}",
             placeholder: (context, url) => Container(),
             errorWidget: (context, url, error) => const Image(
                   image: AssetImage("assets/NoImage.jpg"),

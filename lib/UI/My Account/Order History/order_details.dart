@@ -7,10 +7,12 @@ import 'package:unicorn_store/UI/size_config.dart';
 import '../../constant.dart';
 import 'Components/items_inside_single_order.dart';
 
+// ignore: must_be_immutable
 class OrderDetails extends StatelessWidget {
   static String id = "Order_Details";
    OrderDetails({Key? key}) : super(key: key);
 
+  // ignore: prefer_typing_uninitialized_variables
   var productDataList;
 
   late List<OrderItems>? orderItems;

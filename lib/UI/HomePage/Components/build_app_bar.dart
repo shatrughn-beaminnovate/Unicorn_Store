@@ -17,6 +17,7 @@ class BuildAppBar extends StatelessWidget with PreferredSizeWidget {
     return AppBar(
       backgroundColor: Colors.black,
       actions: [
+        const Spacer(),
         Expanded(flex: 5, child: SvgPicture.asset("assets/Unicorn-logo.svg")),
         Expanded(
           flex: 5,

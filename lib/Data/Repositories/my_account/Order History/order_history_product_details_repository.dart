@@ -5,7 +5,7 @@ class OrderHistoryProductDetailsRepository {
   final _orderHistoryProductDetailsApi = OrderHistoryProductDetailsApi();
 
   //Load List of user order
-  Future<OrderHistoryDetails> getWishlistProductDetails(String token) {
+  Future<OrderHistoryDetails> getOrderHistoryProductDetails(String token) {
     return _orderHistoryProductDetailsApi.getOrderHistoryProductDetails(token);
   }
 }

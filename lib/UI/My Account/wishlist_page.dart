@@ -5,7 +5,7 @@ import 'package:unicorn_store/Business_Logic/bloc/my_account/Wishlist/Wishlist%2
 import 'package:unicorn_store/Data/Models/Login%20and%20Signup/Login/login_data.dart';
 import 'package:unicorn_store/Data/Models/MyAccount/Wishlist/images_list.dart';
 import 'package:unicorn_store/Data/Models/MyAccount/Wishlist/wishlist_details.dart';
-import 'package:unicorn_store/UI/Components/loading_indicator_bar.dart';
+import 'package:unicorn_store/UI/Components/linear_indicator.dart';
 import 'package:unicorn_store/UI/HomePage/Components/build_app_bar.dart';
 import 'package:unicorn_store/UI/LoginPage/Components/custom_submit_button.dart';
 import 'package:unicorn_store/UI/constant.dart';
@@ -41,8 +41,8 @@ class _WishlistPageState extends State<WishlistPage> {
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
     loginData = userLoginData["loginData"];
 
-    wishlistProductDetailsFetchingBloc
-        .add(LoadWishlistProductDetailsApiFetch(token: loginData!.token!));
+    wishlistProductDetailsFetchingBloc.add(
+        LoadWishlistProductDetailsApiFetch(token: loginData!.userData!.token!));
 
     super.didChangeDependencies();
   }
@@ -80,15 +80,18 @@ class _WishlistPageState extends State<WishlistPage> {
               WishlistProductDetailsFetchingState>(
             builder: (context, state) {
               if (state is WishlistProductDetailsFetchingLoading) {
-                return LoadingIndicatorBar();
+                return const LinearIndicatorBar();
               } else if (state is AddOrRemoveProductFromWishlistSuccess) {
+                return _buildWishlistProduct();
+              } else if (state is WishlistProductDetailsFetchingLoaded) {
                 return _buildWishlistProduct();
               } else if (state is WishlistProductDetailsFetchingError) {
                 return Center(
                   child: Text(state.message.toString()),
                 );
               }
-              return _buildWishlistProduct();
+            //  print(state);
+              return Container();
             },
           ),
         ),
@@ -165,7 +168,6 @@ class _WishlistPageState extends State<WishlistPage> {
                                 ),
                               ),
                             ),
-
                             SizedBox(
                               height: getProportionateScreenHeight(25.0),
                             ),
@@ -184,8 +186,6 @@ class _WishlistPageState extends State<WishlistPage> {
                             SizedBox(
                               height: getProportionateScreenHeight(15.0),
                             ),
-
-
                             (wishlistDetails
                                         ?.data?[index].productDetails?.quantity
                                         .toString() !=
@@ -219,7 +219,7 @@ class _WishlistPageState extends State<WishlistPage> {
                                     productId: wishlistDetails!
                                         .data![index].productId
                                         .toString(),
-                                    token: loginData!.token!));
+                                    token: loginData!.userData!.token!));
                           },
                           child: Icon(
                             Icons.cancel_outlined,

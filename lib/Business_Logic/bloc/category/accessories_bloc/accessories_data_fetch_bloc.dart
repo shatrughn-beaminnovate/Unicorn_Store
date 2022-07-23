@@ -1,3 +1,5 @@
+// ignore_for_file: depend_on_referenced_packages
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:unicorn_store/Data/Models/Category/AccessoriesCategory/accessories_list_data.dart';
@@ -10,16 +12,16 @@ part 'accessories_data_fetch_state.dart';
 class AccessoriesDataFetchBloc
     extends Bloc<AccessoriesDataFetchEvent, AccessoriesDataFetchState> {
   AccessoriesDataFetchBloc() : super(AccessoriesDataFetchInitial()) {
-    final SubCategoryRepository _subcategoryRepository =
+    final SubCategoryRepository subcategoryRepository =
         SubCategoryRepository();
 
     on<LoadAccessoriesDataFetch>((event, emit) async {
       try {
         //emit(AccessoriesDataFetchLoading());
-        final _accessoriesData = await _subcategoryRepository
-            .getAccessoriesCategoryData(event.subCategoryId,event.token);
+        final accessoriesData = await subcategoryRepository
+            .getAccessoriesCategoryData(event.subCategoryId);
 
-        emit(AccessoriesDataFetchLoaded(_accessoriesData));
+        emit(AccessoriesDataFetchLoaded(accessoriesData));
       } catch (e) {
         emit(AccessoriesDataFetchError(e.toString()));
       }
@@ -28,10 +30,10 @@ class AccessoriesDataFetchBloc
     on<LoadAccessoriesProductDetailsFetch>((event, emit) async {
       try {
         emit(AccessoriesDataFetchLoading());
-        final _accessoriesData = await _subcategoryRepository
+        final accessoriesData = await subcategoryRepository
             .getAccessoriesProductDetails(event.productId,event.token);
-
-        emit(AccessoriesProductDetailsFetchSuccess(_accessoriesData));
+        await Future.delayed(const Duration(seconds: 2));
+        emit(AccessoriesProductDetailsFetchSuccess(accessoriesData));
       } catch (e) {
         emit(AccessoriesDataFetchError(e.toString()));
       }

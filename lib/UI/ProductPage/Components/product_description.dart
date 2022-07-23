@@ -1,7 +1,4 @@
 import 'dart:convert';
-
-import 'package:flutter/foundation.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -25,9 +22,9 @@ class ProductDescription extends StatelessWidget {
     </html>"""));
     return WebView(
       // ignore: prefer_collection_literals
-      gestureRecognizers: Set()
-        ..add(Factory<VerticalDragGestureRecognizer>(
-            () => VerticalDragGestureRecognizer())),
+      // gestureRecognizers: Set()
+      //   ..add(Factory<VerticalDragGestureRecognizer>(
+      //       () => VerticalDragGestureRecognizer())),
       initialUrl: 'data:text/html;base64,$contentBase64',
     );
   }
