@@ -19,5 +19,7 @@ const imageDefaultURL = "http://192.168.1.18/shop.unicornstore.in";
 
 //const imageDefaultURL ="http://mum01.beaminnovate.com/shop.unicornstore.in";
 
+const categoryImageUrl="http://192.168.1.18/beam_mw/public/categories/small/";
+
 const imageSecondUrl = "/uploads/images/medium/";
 const imageThirdUrl = "/uploads/images/thumbnails/";

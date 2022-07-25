@@ -12,7 +12,7 @@ class CategoryApiFetchInitial extends CategoryApiFetchState {}
 class CategoryApiFetchLoading extends CategoryApiFetchState {}
 
 class CategoryApiFetchLoaded extends CategoryApiFetchState {
-  final List<Category> category;
+  final List<CategoryData> category;
 
   const CategoryApiFetchLoaded(this.category);
 }

@@ -6,6 +6,7 @@ import 'package:unicorn_store/Business_Logic/bloc/category/category_bloc/categor
 import 'package:unicorn_store/Business_Logic/bloc/login%20and%20signup/authentication/authentication_bloc.dart';
 import 'package:unicorn_store/Data/Models/Category/AccessoriesCategory/accessories_children.dart';
 import 'package:unicorn_store/Data/Models/Category/AccessoriesCategory/accessories_list_data.dart';
+import 'package:unicorn_store/Data/Models/Category/NewCategory/category_data.dart';
 import 'package:unicorn_store/Data/Models/Category/Subcategory/sub_category.dart';
 import 'package:unicorn_store/Data/Models/Category/category.dart';
 import 'package:unicorn_store/UI/Components/linear_indicator.dart';
@@ -40,7 +41,7 @@ class _ProductCategoriesState extends State<ProductCategories> {
   late AuthenticationBloc authenticationBloc;
 
   //Load Category
-  List<Category>? cat;
+  List<CategoryData>? cat;
 
   //Load accessories data
   AccessoriesListData? accessoriesListData;
@@ -114,6 +115,8 @@ class _ProductCategoriesState extends State<ProductCategories> {
                               return const LinearIndicatorBar();
                             }
                             if (state is CategoryApiFetchLoaded) {
+                              print(state.category);
+
                               return _buildCategory(context, state.category);
                             } else if (state is CategoryApiFetchError) {
                               return Center(
@@ -144,7 +147,7 @@ class _ProductCategoriesState extends State<ProductCategories> {
   }
 
   //List of categories
-  Widget _buildCategory(BuildContext context, List<Category> category) {
+  Widget _buildCategory(BuildContext context, List<CategoryData> category) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -165,7 +168,7 @@ class _ProductCategoriesState extends State<ProductCategories> {
           itemCount: category.length,
           physics: const NeverScrollableScrollPhysics(),
           itemBuilder: (context, index) {
-            return (category[index].isNavigable.toString() == "1")
+            return (category[index].is_navigable.toString() == "1")
                 ? Container(
                     margin: EdgeInsets.only(
                         bottom: getProportionateScreenHeight(10.0)),
@@ -184,7 +187,7 @@ class _ProductCategoriesState extends State<ProductCategories> {
                         // ignore: avoid_unnecessary_containers
                         trailing: CachedNetworkImage(
                             imageUrl:
-                                "$imageDefaultURL$imageThirdUrl${category[index].image}",
+                                "$categoryImageUrl${category[index].image}",
                             placeholder: (context, url) => const SizedBox(
                                   height: 50,
                                   width: 50,
@@ -238,34 +241,35 @@ class _ProductCategoriesState extends State<ProductCategories> {
                           ],
                         ),
                         children: [
-                          (category[index].name == "Accessories")
-                              ? BlocListener<AccessoriesDataFetchBloc,
-                                  AccessoriesDataFetchState>(
-                                  listener: (context, state) {
-                                    if (state is AccessoriesDataFetchLoaded) {
-                                      setState(() {
-                                        accessoriesListData =
-                                            state.accessoriesListData;
-                                      });
-                                    }
-                                  },
-                                  child: BlocBuilder<AccessoriesDataFetchBloc,
-                                      AccessoriesDataFetchState>(
-                                    builder: (context, state) {
-                                      if (state is AccessoriesDataFetchLoaded) {
-                                        accessoriesListData =
-                                            state.accessoriesListData;
-                                        return _buildAccessoriesSubcategories(
-                                            context,
-                                            category[index].id.toString());
-                                      } else {
-                                        return Container();
-                                      }
-                                    },
-                                  ),
-                                )
-                              : _buildSubcategories(
-                                  context, category[index].children)
+                          // (category[index].name == "Accessories")
+                          //     ? BlocListener<AccessoriesDataFetchBloc,
+                          //         AccessoriesDataFetchState>(
+                          //         listener: (context, state) {
+                          //           if (state is AccessoriesDataFetchLoaded) {
+                          //             setState(() {
+                          //               accessoriesListData =
+                          //                   state.accessoriesListData;
+                          //             });
+                          //           }
+                          //         },
+                          //         child: BlocBuilder<AccessoriesDataFetchBloc,
+                          //             AccessoriesDataFetchState>(
+                          //           builder: (context, state) {
+                          //             if (state is AccessoriesDataFetchLoaded) {
+                          //               accessoriesListData =
+                          //                   state.accessoriesListData;
+                          //               return _buildAccessoriesSubcategories(
+                          //                   context,
+                          //                   category[index].id.toString());
+                          //             } else {
+                          //               return Container();
+                          //             }
+                          //           },
+                          //         ),
+                          //       )
+                          //     :
+                          _buildSubcategories(
+                              context, category[index].children!)
                         ],
                       ),
                     ),
@@ -279,8 +283,7 @@ class _ProductCategoriesState extends State<ProductCategories> {
 
   //List of Subcategories
   Widget _buildSubcategories(
-      BuildContext context, List<Subcategory> subcategoryList) {
-    
+      BuildContext context, List<CategoryData> subcategoryList) {
     if (subcategoryList.isEmpty) {
       return const Padding(
         padding: EdgeInsets.only(bottom: 35.0),
@@ -292,24 +295,15 @@ class _ProductCategoriesState extends State<ProductCategories> {
         itemCount: subcategoryList.length,
         physics: const NeverScrollableScrollPhysics(),
         itemBuilder: (context, index) {
-          return (subcategoryList[index].isNavigable.toString() == "1")
+          return (subcategoryList[index].is_navigable.toString() == "1")
               ? GestureDetector(
                   onTap: () {
-                    if (subcategoryList[index].name == "Accessories") {
-                      Navigator.pushNamed(context, ListOfChildren.id,
-                          arguments: {
-                            "id": subcategoryList[index].id,
-                            "name": subcategoryList[index].name.toString(),
-                            "token": token,
-                          });
-                    } else {
-                      Navigator.pushNamed(context, ListOfSpecificProduct.id,
-                          arguments: {
-                            "id": subcategoryList[index].id.toString(),
-                            "name": subcategoryList[index].name.toString(),
-                            "token":token,
-                          });
-                    }
+                    Navigator.pushNamed(context, ListOfChildren.id, arguments: {
+                      "id": subcategoryList[index].id.toString(),
+                      "name": subcategoryList[index].name.toString(),
+                      "subcategoryData": subcategoryList[index].children,
+                      "token": token,
+                    });
                   },
                   child: Padding(
                     padding: EdgeInsets.only(

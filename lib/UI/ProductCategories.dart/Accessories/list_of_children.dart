@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:unicorn_store/Data/Models/Category/AccessoriesCategory/accessories_children.dart';
+import 'package:unicorn_store/Data/Models/Category/NewCategory/category_data.dart';
 import 'package:unicorn_store/UI/HomePage/Components/build_app_bar.dart';
 import 'package:unicorn_store/UI/ProductCategories.dart/Accessories/list_of_product.dart';
 
@@ -20,7 +21,7 @@ class _ListOfChildrenState extends State<ListOfChildren> {
   // ignore: prefer_typing_uninitialized_variables
   var accessoriesData;
 
-  List<AccessoriesChildren>? accessoriesChildren;
+  List<CategoryData>? accessoriesChildren;
 
   String? imageHeader = "https://shop.unicornstore.in/uploads/images/medium/";
 
@@ -79,12 +80,12 @@ class _ListOfChildrenState extends State<ListOfChildren> {
                             "token": accessoriesData["token"]
                           });
                     } else {
-                      Navigator.pushNamed(context, ListOfProduct.id,
-                          arguments: {
-                            "name": accessoriesChildren![index].name,
-                            "productData": accessoriesChildren![index].products,
-                            "token": accessoriesData["token"]
-                          });
+                      // Navigator.pushNamed(context, ListOfProduct.id,
+                      //     arguments: {
+                      //       "name": accessoriesChildren![index].name,
+                      //       "productData": accessoriesChildren![index].,
+                      //       "token": accessoriesData["token"]
+                      //     });
                     }
                   },
                   child: Column(
@@ -93,7 +94,7 @@ class _ListOfChildrenState extends State<ListOfChildren> {
                           height: getProportionateScreenHeight(200),
                           width: getProportionateScreenWidth(200),
                           imageUrl:
-                              "$imageHeader${accessoriesChildren![index].image}",
+                              "$categoryImageUrl${accessoriesChildren![index].image}",
                           placeholder: (context, url) => Container(),
                           errorWidget: (context, url, error) => const Image(
                               image: AssetImage("assets/NoImage.jpg"))),
