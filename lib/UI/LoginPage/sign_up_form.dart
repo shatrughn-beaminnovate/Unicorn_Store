@@ -73,7 +73,7 @@ class _SignUpFormState extends State<SignUpForm> {
             builder: (context, state) {
               if(state is LoginLoading)
               {
-                return LoadingIndicatorBar();
+                return const LoadingIndicatorBar();
               }
               return SingleChildScrollView(
                 child: Form(

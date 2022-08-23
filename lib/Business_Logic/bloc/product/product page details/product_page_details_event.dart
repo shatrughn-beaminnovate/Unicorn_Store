@@ -8,12 +8,11 @@ abstract class ProductPageDetailsEvent extends Equatable {
 }
 
 class LoadProductDataBasedOnValueEvent extends ProductPageDetailsEvent {
-  final Map<String,String> productValue;
-  final String productId;
-  final String token;
+ final List<dynamic> productValue;
+  final String productTypeId;
 
-  const LoadProductDataBasedOnValueEvent({required this.productValue,required this.productId,required this.token});
+  const LoadProductDataBasedOnValueEvent({required this.productValue,required this.productTypeId});
 
   @override
-  List<Object> get props => [productValue,productId];
+  List<Object> get props => [productValue,productTypeId];
 }

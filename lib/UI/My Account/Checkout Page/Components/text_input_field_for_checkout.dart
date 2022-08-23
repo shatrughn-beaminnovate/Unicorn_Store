@@ -8,10 +8,12 @@ class TextInputFieldForCheckout extends StatelessWidget {
   final bool obscureText;
   final bool isMandatory;
   final String? hintText;
+  final TextEditingController controller;
   const TextInputFieldForCheckout(
       {Key? key,
       required this.title,
       this.hintText,
+      required this.controller,
       required this.isMandatory,
       required this.obscureText})
       : super(key: key);
@@ -41,11 +43,12 @@ class TextInputFieldForCheckout extends StatelessWidget {
           height: getProportionateScreenHeight(5.0),
         ),
         SizedBox(
-          height: getProportionateScreenHeight(35.0),
+          height: 40.0,
           child: TextFormField(
             obscureText: obscureText,
             cursorColor: Colors.black,
-          
+            controller: controller,
+            style:const TextStyle(fontSize: 15,color: Colors.black87),
             decoration: InputDecoration(
               hintText: hintText,
               contentPadding: EdgeInsets.all(getProportionateScreenWidth(10.0)),

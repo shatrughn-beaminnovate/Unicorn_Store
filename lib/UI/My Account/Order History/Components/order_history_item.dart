@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:unicorn_store/Data/Models/MyAccount/Order%20History/order_data.dart';
+import 'package:unicorn_store/Data/Models/MyAccount/Order%20History/order_history_data.dart';
 
 import '../../../size_config.dart';
 import '../../../constant.dart';
@@ -7,7 +7,7 @@ import '../order_details.dart';
 import 'title_and_data.dart';
 
 class OderHistoryItem extends StatelessWidget {
-  final OrderData? orderData;
+  final OrderHistoryData? orderData;
   const OderHistoryItem({Key? key, this.orderData}) : super(key: key);
 
   @override
@@ -17,7 +17,7 @@ class OderHistoryItem extends StatelessWidget {
         GestureDetector(
           onTap: () {
             Navigator.pushNamed(context, OrderDetails.id,
-                arguments: {"productDataList": orderData!.orderedProduct});
+                arguments: {"productDataList": orderData!.product});
           },
           child: Container(
             width: double.infinity,
@@ -37,20 +37,20 @@ class OderHistoryItem extends StatelessWidget {
               children: [
                 TitleAndData(
                   title: "Order ID: ",
-                  data: orderData!.orderNumber.toString(),
+                  data: orderData!.order_number.toString(),
                 ),
                 SizedBox(
                   height: getProportionateScreenHeight(10.0),
                 ),
                 TitleAndData(
                     title: "No Of Items: ",
-                    data: orderData!.orderedProduct!.length.toString()),
+                    data: orderData!.product!.length.toString()),
                 SizedBox(
                   height: getProportionateScreenHeight(10.0),
                 ),
                 TitleAndData(
                     title: "Order Date: ",
-                    data: orderData!.orderedOn.toString()),
+                    data: orderData!.ordered_on.toString()),
                 SizedBox(
                   height: getProportionateScreenHeight(10.0),
                 ),
@@ -64,6 +64,7 @@ class OderHistoryItem extends StatelessWidget {
             right: getProportionateScreenWidth(15.0),
             top: getProportionateScreenHeight(15.0),
             child: Container(
+              width: 100,
               padding: EdgeInsets.all(getProportionateScreenWidth(2.0)),
               decoration: BoxDecoration(
                 border: Border.all(color: kDefaultSecondaryButtonColor),
@@ -71,6 +72,7 @@ class OderHistoryItem extends StatelessWidget {
               ),
               child: Text(
                 orderData!.status.toString(),
+                maxLines: 1,
                 style: TextStyle(
                     fontSize: getProportionateScreenWidth(15.0),
                     color: kDefaultSecondaryButtonColor),

@@ -7,9 +7,8 @@ import 'package:unicorn_store/UI/HomePage/home_page.dart';
 import 'package:unicorn_store/UI/HomePage/NavigationDrawer/Contact/contact_page.dart';
 import 'package:unicorn_store/UI/HomePage/NavigationDrawer/Hot%20Deals/hot_deals_page.dart';
 import 'package:unicorn_store/UI/LoginPage/Components/custom_submit_button.dart';
+import 'package:unicorn_store/UI/LoginPage/sign_up_form.dart';
 import 'package:unicorn_store/UI/My%20Account/my_account_page.dart';
-import 'package:unicorn_store/UI/ProductCategories.dart/Accessories/list_of_children.dart';
-import 'package:unicorn_store/UI/ProductCategories.dart/Accessories/list_of_product.dart';
 import 'package:unicorn_store/UI/ProductCategories.dart/product_categories.dart';
 import 'package:unicorn_store/UI/constant.dart';
 import 'HomePage/NavigationDrawer/Components/navigation_bar_list_item.dart';
@@ -55,7 +54,7 @@ class _MainScreenState extends State<MainScreen> {
           return AlertDialog(
             title: const Center(
               child: Text(
-                'Login !!!',
+                'Login !!',
                 style: TextStyle(color: Colors.red),
               ),
             ),
@@ -70,16 +69,15 @@ class _MainScreenState extends State<MainScreen> {
                     title: "Login",
                     color: kDefaultSecondaryButtonColor,
                     onPress: () {
-                      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(
-                        builder: (context) {
-                          return BlocProvider.value(
-                            value: BlocProvider.of<AuthenticationBloc>(context),
-                            child: const LoginScreen(
-                              myAccountRedirect: "true",
-                            ),
-                          );
-                        }
-                      ),(Route<dynamic> route) => true);
+                      Navigator.pushAndRemoveUntil(context,
+                          MaterialPageRoute(builder: (context) {
+                        return BlocProvider.value(
+                          value: BlocProvider.of<AuthenticationBloc>(context),
+                          child: const LoginScreen(
+                            myAccountRedirect: "true",
+                          ),
+                        );
+                      }), (Route<dynamic> route) => true);
                     }),
               )
             ],
@@ -174,7 +172,7 @@ class _MainScreenState extends State<MainScreen> {
           },
         ),
 
-        body: _widgetOptions.elementAt(widget.selectedIndex),
+        body: SafeArea(child: _widgetOptions.elementAt(widget.selectedIndex)),
       ),
     );
   }
@@ -182,159 +180,237 @@ class _MainScreenState extends State<MainScreen> {
   //Navigation Drawer
   Drawer navigationDrawer(BuildContext context) {
     return Drawer(
-      backgroundColor: kDefaultNavigationDrawerBackgroundColor,
-      child: SafeArea(
-        child: ListView(
-          shrinkWrap: true,
-          // Important: Remove any padding from the ListView.
-          padding: EdgeInsets.zero,
-          children: [
-            //Dropdown for Currency
-            Container(
-              padding: EdgeInsets.symmetric(
-                  vertical: getProportionateScreenHeight(5.0),
-                  horizontal: getProportionateScreenWidth(10.0)),
-              decoration: BoxDecoration(
-                border: Border.all(color: kDefaultBorderColor, width: 0.0),
-              ),
-              child: ButtonTheme(
-                alignedDropdown: true,
-                child: DropdownButtonFormField<String>(
-                  isExpanded: true,
-                  value: dropdownValue,
-                  decoration: const InputDecoration.collapsed(hintText: ''),
-                  icon: const Icon(
-                    Icons.unfold_more,
-                    color: kDefaultBorderColor,
+      backgroundColor: Colors.white,
+      child: ListView(
+        shrinkWrap: true,
+        // Important: Remove any padding from the ListView.
+        padding: EdgeInsets.zero,
+        children: [
+          BlocBuilder<AuthenticationBloc, AuthenticationState>(
+            builder: (context, state) {
+              if (state is AuthenticationAuthenticated) {
+                return UserAccountsDrawerHeader(
+                  accountName: Text(
+                    "${state.loginData.userData!.firstname!} ${state.loginData.userData!.lastname!}",
+                    style: const TextStyle(fontSize: 14.0, color: Colors.white),
                   ),
-                  selectedItemBuilder: (_) {
-                    return currency
-                        .map((e) => Text(
-                              e,
-                              style: TextStyle(
-                                  color: kDefaultNavigationDrawerTitleColor,
-                                  fontSize: getProportionateScreenWidth(15.0)),
-                            ))
-                        .toList();
-                  },
-                  elevation: 0,
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      dropdownValue = newValue!;
-                    });
-                  },
-                  items: currency.map((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(
-                        value,
-                        style: const TextStyle(color: kDefaultHeaderFontColor),
+                  decoration: const BoxDecoration(color: Colors.black),
+                  accountEmail: Text(
+                    state.loginData.userData!.email!,
+                    style: const TextStyle(fontSize: 14.0, color: Colors.white),
+                  ),
+                  currentAccountPicture: CircleAvatar(
+                    backgroundColor:
+                        Theme.of(context).platform == TargetPlatform.iOS
+                            ? kDefaultSecondaryButtonColor
+                            : Colors.white,
+                    child: Text(
+                      state.loginData.userData!.firstname!.substring(0, 1),
+                      style: const TextStyle(fontSize: 40.0),
+                    ),
+                  ),
+                );
+              }
+              return UserAccountsDrawerHeader(
+                accountName: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) {
+                          return BlocProvider.value(
+                            value: authenticationBloc,
+                            child: const LoginScreen(
+                              myAccountRedirect: "false",
+                            ),
+                          );
+                        }));
+                      },
+                      child:const Text(
+                        "Login",
+                        style: TextStyle(fontSize: 14.0, color: Colors.white),
+                      ),
+                    ),
+                   const SizedBox(
+                      width: 5.0,
+                    ),
+                  const Icon(
+                      Icons.circle,
+                      color: Colors.white,
+                      size: 5,
+                    ),
+                  const  SizedBox(
+                      width: 5.0,
+                    ),
+                  GestureDetector(
+                    onTap: (){
+                        Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return BlocProvider.value(
+                      value: authenticationBloc,
+                      child: const SignUpForm(
+                        
                       ),
                     );
-                  }).toList(),
-                ),
-              ),
-            ),
-
-            //Login
-            BlocBuilder<AuthenticationBloc, AuthenticationState>(
-              builder: (context, state) {
-                if (state is AuthenticationAuthenticated) {
-                  return NavigationDrawerListItem(
-                    title: "My Account",
-                    onPress: () {
-                      //Here we are using anonymous route for main Screen because
-                      //we need to pass index value through constructor
-                      Navigator.pushAndRemoveUntil(context,
-                          MaterialPageRoute(builder: (context) {
-                        return BlocProvider.value(
-                          value: authenticationBloc,
-                          child: MainScreen(selectedIndex: 2),
-                        );
-                      }),(Route<dynamic> route) => true);
+                  }));
                     },
-                  );
-                }
+                    child: const  Text(
+                        "Sign Up",
+                        style: TextStyle(fontSize: 14.0, color: Colors.white),
+                      ),
+                  ),
+                  ],
+                ),
+                decoration: const BoxDecoration(color: Colors.black),
+                accountEmail: const Text(
+                  "",
+                  style: TextStyle(fontSize: 14.0, color: Colors.white),
+                ),
+                currentAccountPicture: CircleAvatar(
+                  backgroundColor:
+                      Theme.of(context).platform == TargetPlatform.iOS
+                          ? kDefaultSecondaryButtonColor
+                          : Colors.white,
+                  child: const Text(
+                    "L",
+                    style: TextStyle(fontSize: 40.0),
+                  ),
+                ),
+              );
+            },
+          ),
+          // //Dropdown for Currency
+          // Container(
+          //   padding: EdgeInsets.symmetric(
+          //       vertical: getProportionateScreenHeight(5.0),
+          //       horizontal: getProportionateScreenWidth(10.0)),
+          //   decoration: BoxDecoration(
+          //     border: Border.all(color: kDefaultBorderColor, width: 0.0),
+          //   ),
+          //   child: ButtonTheme(
+          //     alignedDropdown: true,
+          //     child: DropdownButtonFormField<String>(
+          //       isExpanded: true,
+          //       value: dropdownValue,
+          //       decoration: const InputDecoration.collapsed(hintText: ''),
+          //       icon: const Icon(
+          //         Icons.unfold_more,
+          //         color: kDefaultBorderColor,
+          //       ),
+          //       selectedItemBuilder: (_) {
+          //         return currency
+          //             .map((e) => Text(
+          //                   e,
+          //                   style: TextStyle(
+          //                       color: kDefaultNavigationDrawerTitleColor,
+          //                       fontSize: getProportionateScreenWidth(15.0)),
+          //                 ))
+          //             .toList();
+          //       },
+          //       elevation: 0,
+          //       onChanged: (String? newValue) {
+          //         setState(() {
+          //           dropdownValue = newValue!;
+          //         });
+          //       },
+          //       items: currency.map((String value) {
+          //         return DropdownMenuItem<String>(
+          //           value: value,
+          //           child: Text(
+          //             value,
+          //             style: const TextStyle(color: kDefaultHeaderFontColor),
+          //           ),
+          //         );
+          //       }).toList(),
+          //     ),
+          //   ),
+          // ),
+
+          //Login
+          BlocBuilder<AuthenticationBloc, AuthenticationState>(
+            builder: (context, state) {
+              if (state is AuthenticationAuthenticated) {
                 return NavigationDrawerListItem(
-                  title: "Login",
+                  title: "My Account",
                   onPress: () {
-                    Navigator.push(context,
+                    //Here we are using anonymous route for main Screen because
+                    //we need to pass index value through constructor
+                    Navigator.pushAndRemoveUntil(context,
                         MaterialPageRoute(builder: (context) {
                       return BlocProvider.value(
                         value: authenticationBloc,
-                        child: const LoginScreen(
-                          myAccountRedirect: "false",
-                        ),
+                        child: MainScreen(selectedIndex: 2),
                       );
-                    }));
+                    }), (Route<dynamic> route) => true);
                   },
                 );
-              },
-            ),
+              }
+              return Container();
+            },
+          ),
 
-            //Home
-            NavigationDrawerListItem(
-                title: "Home",
-                onPress: () {
-                  Navigator.of(context).pop();
-                  //Navigator.pushNamed(context, StudentOfferScreen.id);
-                }),
+          //Home
+          NavigationDrawerListItem(
+              title: "Home",
+              onPress: () {
+                Navigator.of(context).pop();
+                //Navigator.pushNamed(context, StudentOfferScreen.id);
+              }),
 
-            //Student Offer
-            NavigationDrawerListItem(
-                title: "Student Offer",
-                onPress: () {
-                  Navigator.pushNamed(context, StudentOfferScreen.id);
-                }),
+          //Student Offer
+          NavigationDrawerListItem(
+              title: "Student Offer",
+              onPress: () {
+                Navigator.pushNamed(context, StudentOfferScreen.id);
+              }),
 
-            //Training
-            NavigationDrawerListItem(
-                title: "Training",
-                onPress: () {
-                  Navigator.pushNamed(context, ListOfChildren.id);
-                }),
+          //Training
+          NavigationDrawerListItem(
+              title: "Training",
+              onPress: () {
+                //Navigator.pushNamed(context, ListOfChildren.id);
+              }),
 
-            //Support
-            NavigationDrawerListItem(
-                title: "Support",
-                onPress: () {
-                  Navigator.pushNamed(context, ListOfProduct.id);
-                }),
+          //Support
+          NavigationDrawerListItem(
+              title: "Support",
+              onPress: () {
+                //Navigator.pushNamed(context, ListOfProduct.id);
+              }),
 
-            //Personal Shopper
-            NavigationDrawerListItem(title: "Personal Shopper", onPress: () {}),
+          //Personal Shopper
+          NavigationDrawerListItem(title: "Personal Shopper", onPress: () {}),
 
-            //Contact
-            NavigationDrawerListItem(
-                title: "Contact",
-                onPress: () {
-                  Navigator.pushNamed(context, ContactPage.id);
-                }),
+          //Contact
+          NavigationDrawerListItem(
+              title: "Contact",
+              onPress: () {
+                Navigator.pushNamed(context, ContactPage.id);
+              }),
 
-            //Hot Deals
-            NavigationDrawerListItem(
-                title: "Hot Deals",
-                onPress: () {
-                  Navigator.pushNamed(context, HotDealsPage.id);
-                }),
+          //Hot Deals
+          NavigationDrawerListItem(
+              title: "Hot Deals",
+              onPress: () {
+                Navigator.pushNamed(context, HotDealsPage.id);
+              }),
 
-            //Logout
-            BlocBuilder<AuthenticationBloc, AuthenticationState>(
-              builder: (context, state) {
-                if (state is AuthenticationAuthenticated) {
-                  return NavigationDrawerListItem(
-                    title: "Logout",
-                    onPress: () {
-                      authenticationBloc.add(LoggedOut(
-                          state.loginData.userData!.token.toString()));
-                    },
-                  );
-                }
-                return Container();
-              },
-            ),
-          ],
-        ),
+          //Logout
+          BlocBuilder<AuthenticationBloc, AuthenticationState>(
+            builder: (context, state) {
+              if (state is AuthenticationAuthenticated) {
+                return NavigationDrawerListItem(
+                  title: "Logout",
+                  onPress: () {
+                    authenticationBloc.add(
+                        LoggedOut(state.loginData.userData!.token.toString()));
+                  },
+                );
+              }
+              return Container();
+            },
+          ),
+        ],
       ),
     );
   }

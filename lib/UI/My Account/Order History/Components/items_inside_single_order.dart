@@ -1,18 +1,20 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:unicorn_store/Data/Models/MyAccount/Order%20History/order_items.dart';
+import 'package:unicorn_store/Data/Models/MyAccount/Order%20History/order_history_product.dart';
 import 'package:unicorn_store/UI/HomePage/Components/price_tag.dart';
 
+import '../../../Components/image_path.dart';
 import '../../../size_config.dart';
 import '../../../constant.dart';
 import 'title_and_data.dart';
 
 class ItemsInsideSingleOrder extends StatelessWidget {
-  final OrderItems? orderItems;
+  final OrderHistoryProduct? orderItems;
   const ItemsInsideSingleOrder({Key? key, this.orderItems}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+ 
     return Container(
       //height: 150,
       width: double.infinity,
@@ -30,14 +32,14 @@ class ItemsInsideSingleOrder extends StatelessWidget {
             height: getProportionateScreenHeight(90.0),
             width: getProportionateScreenWidth(90.0),
             imageUrl:
-                "$imageDefaultURL$imageSecondUrl${orderItems!.contents!.images[0].filename!}",
+                "$categoryImageUrl/product/medium/${ImagePath.getPrimaryImageSrc(orderItems!.contents!.images!)}",
             placeholder: (context, url) => Container(),
             errorWidget: (context, url, error) => SizedBox(
               height: getProportionateScreenHeight(300),
               width: getProportionateScreenWidth(300),
               child: const Image(
                 fit: BoxFit.fill,
-                image: AssetImage("assets/NoImage.jpg"),
+                image: AssetImage(errorImageUrl),
               ),
             ),
           ),
@@ -66,7 +68,7 @@ class ItemsInsideSingleOrder extends StatelessWidget {
                 TitleAndData(
                   title: "Amount: ",
                   priceTag: PriceTag(
-                    price: orderItems!.contents!.saleprice.toString(),
+                    price: orderItems!.contents!.price.toString(),
                   ),
                 ),
               ],

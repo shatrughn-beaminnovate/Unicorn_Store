@@ -13,8 +13,9 @@ class StateDataApiFetchLoading extends StateDataApiFetchState {}
 
 class StateDataApiFetchLoaded extends StateDataApiFetchState {
   final StateList stateList;
+  final bool eventChecker;
+  const StateDataApiFetchLoaded(this.stateList,this.eventChecker);
 
-  const StateDataApiFetchLoaded(this.stateList);
 }
 
 class StateDataApiFetchError extends StateDataApiFetchState {

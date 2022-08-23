@@ -4,17 +4,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:unicorn_store/Business_Logic/bloc/category/accessories_bloc/accessories_data_fetch_bloc.dart';
 import 'package:unicorn_store/Business_Logic/bloc/category/category_bloc/category_api_fetch_bloc.dart';
 import 'package:unicorn_store/Business_Logic/bloc/login%20and%20signup/authentication/authentication_bloc.dart';
-import 'package:unicorn_store/Data/Models/Category/AccessoriesCategory/accessories_children.dart';
 import 'package:unicorn_store/Data/Models/Category/AccessoriesCategory/accessories_list_data.dart';
 import 'package:unicorn_store/Data/Models/Category/NewCategory/category_data.dart';
-import 'package:unicorn_store/Data/Models/Category/Subcategory/sub_category.dart';
-import 'package:unicorn_store/Data/Models/Category/category.dart';
 import 'package:unicorn_store/UI/Components/linear_indicator.dart';
 import 'package:unicorn_store/UI/ProductCategories.dart/Accessories/list_of_children.dart';
 import '../size_config.dart';
 import '../constant.dart';
-import 'Accessories/list_of_product.dart';
-import 'list_of_specific_product.dart';
 
 class ProductCategories extends StatefulWidget {
   static String id = "ProductCategories_Screen";
@@ -115,7 +110,7 @@ class _ProductCategoriesState extends State<ProductCategories> {
                               return const LinearIndicatorBar();
                             }
                             if (state is CategoryApiFetchLoaded) {
-                              print(state.category);
+                              //print(state.category);
 
                               return _buildCategory(context, state.category);
                             } else if (state is CategoryApiFetchError) {
@@ -187,7 +182,7 @@ class _ProductCategoriesState extends State<ProductCategories> {
                         // ignore: avoid_unnecessary_containers
                         trailing: CachedNetworkImage(
                             imageUrl:
-                                "$categoryImageUrl${category[index].image}",
+                                "$categoryImageUrl/categories/small/${category[index].image}",
                             placeholder: (context, url) => const SizedBox(
                                   height: 50,
                                   width: 50,
@@ -332,66 +327,72 @@ class _ProductCategoriesState extends State<ProductCategories> {
   }
 
   //List of Subcategories
-  Widget _buildAccessoriesSubcategories(
-      BuildContext context, String? categoryId) {
-    List<AccessoriesChildren>? subcategoryList =
-        accessoriesListData!.data!.children!;
-    if (subcategoryList.isEmpty) {
-      return const Padding(
-        padding: EdgeInsets.only(bottom: 35.0),
-        child: Text("No Subcategory Found."),
-      );
-    }
-    return ListView.builder(
-        shrinkWrap: true,
-        itemCount: subcategoryList.length,
-        physics: const NeverScrollableScrollPhysics(),
-        itemBuilder: (context, index) {
-          return (subcategoryList[index].isNavigable.toString() == "1")
-              ? GestureDetector(
-                  onTap: () {
-                    if (accessoriesListData!
-                        .data!.children![index].children!.isNotEmpty) {
-                      Navigator.pushNamed(context, ListOfChildren.id,
-                          arguments: {
-                            "name": subcategoryList[index].name.toString(),
-                            "subcategoryData": accessoriesListData!
-                                .data!.children![index].children,
-                            "token": token,
-                          });
-                    } else {
-                      Navigator.pushNamed(context, ListOfProduct.id,
-                          arguments: {
-                            "name": subcategoryList[index].name.toString(),
-                            "productData": accessoriesListData!
-                                .data!.children![index].products,
-                            "token": token,
-                          });
-                    }
-                  },
-                  child: Padding(
-                    padding: EdgeInsets.only(
-                        left: getProportionateScreenWidth(25.0)),
-                    child: Column(
-                      children: [
-                        ListTile(
-                          title: Text(
-                            subcategoryList[index].name.toString(),
-                            style: TextStyle(
-                                fontSize: getProportionateScreenWidth(15.0),
-                                color: kDefaultTitleFontColor),
-                          ),
-                          dense: true,
-                        ),
-                        const Divider(
-                          color: kDefaultBorderColor,
-                          thickness: 1,
-                        ),
-                      ],
-                    ),
-                  ),
-                )
-              : Container();
-        });
-  }
+  // Widget _buildAccessoriesSubcategories(
+  //     BuildContext context, String? categoryId) {
+  //   List<AccessoriesChildren>? subcategoryList =
+  //       accessoriesListData!.data!.children!;
+  //   if (subcategoryList.isEmpty) {
+  //     return const Padding(
+  //       padding: EdgeInsets.only(bottom: 35.0),
+  //       child: Text("No Subcategory Found."),
+  //     );
+  //   }
+  //   return ListView.builder(
+  //       shrinkWrap: true,
+  //       itemCount: subcategoryList.length,
+  //       physics: const NeverScrollableScrollPhysics(),
+  //       itemBuilder: (context, index) {
+  //         return (subcategoryList[index].isNavigable.toString() == "1")
+  //             ? GestureDetector(
+  //                 onTap: () {
+  //                   if (accessoriesListData!
+  //                       .data!.children![index].children!.isNotEmpty) {
+  //                     Navigator.pushNamed(context, ListOfChildren.id,
+  //                         arguments: {
+  //                           "name": subcategoryList[index].name.toString(),
+  //                           "subcategoryData": accessoriesListData!
+  //                               .data!.children![index].children,
+  //                           "token": token,
+  //                         });
+  //                   } else {
+  //                     Navigator.pushNamed(context, ListOfProduct.id,
+  //                         arguments: {
+  //                           "name": subcategoryList[index].name.toString(),
+  //                           "productData": accessoriesListData!
+  //                               .data!.children![index].products,
+  //                           "token": token,
+  //                         });
+  //                   }
+  //                 },
+  //                 child: Padding(
+  //                   padding: EdgeInsets.only(
+  //                       left: getProportionateScreenWidth(25.0)),
+  //                   child: Column(
+  //                     children: [
+  //                       ListTile(
+  //                         title: Text(
+  //                           subcategoryList[index].name.toString(),
+  //                           style: TextStyle(
+  //                               fontSize: getProportionateScreenWidth(15.0),
+  //                               color: kDefaultTitleFontColor),
+  //                         ),
+  //                         dense: true,
+  //                       ),
+  //                       const Divider(
+  //                         color: kDefaultBorderColor,
+  //                         thickness: 1,
+  //                       ),
+  //                     ],
+  //                   ),
+  //                 ),
+  //               )
+  //             : Container();
+  //       });
+  // }
+
+
+
+
+
+
 }

@@ -21,6 +21,7 @@ class AddressManagerDetailsApiFetchBloc extends Bloc<
         await Future.delayed(const Duration(seconds: 2));
         emit(AddressManagerDetailsApiFetchLoaded(addressDetails));
       } catch (e) {
+       // print(e);
         emit(AddressManagerDetailsApiFetchError(e.toString()));
       }
     });

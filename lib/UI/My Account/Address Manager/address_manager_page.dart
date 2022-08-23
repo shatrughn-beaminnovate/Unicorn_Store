@@ -148,12 +148,10 @@ class _AddressManagerPageState extends State<AddressManagerPage> {
                   itemCount: address!.length,
                   physics: const NeverScrollableScrollPhysics(),
                   itemBuilder: (context, index) {
-                    if (address![index].defaultBillingAddress ==
-                        address![index].id) {
+                    if (address![index].defaultBillingAddress!) {
                       billing = address![index].id.toString();
                     }
-                    if (address![index].defaultsShippingAddress ==
-                        address![index].id) {
+                    if (address![index].defaultsShippingAddress!) {
                       shipping = address![index].id.toString();
                     }
                     return Column(

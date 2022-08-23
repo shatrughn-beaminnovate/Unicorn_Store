@@ -77,7 +77,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
           child: BlocBuilder<ForgotPasswordBloc, ForgotPasswordState>(
             builder: (context, state) {
               if (state is ForgotPasswordLoading) {
-                return LoadingIndicatorBar();
+                return const LoadingIndicatorBar();
               }
               return SafeArea(
                 child: Container(

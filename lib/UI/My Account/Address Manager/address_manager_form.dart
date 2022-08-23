@@ -105,7 +105,7 @@ class _AddressManagerFormState extends State<AddressManagerForm> {
     _stateDataApiFetchBloc.add(LoadStateData(
         countryID: editAddressList.addressData!.fieldDataEditAddress!.countryId
             .toString(),
-        token: loginData!.userData!.token!));
+        token: loginData!.userData!.token!,eventChecker: false));
   }
 
   void setFormDataBasedOnZip(SearchZipAddress searchZipAddress) {
@@ -114,7 +114,7 @@ class _AddressManagerFormState extends State<AddressManagerForm> {
     secondDropdownvalueForCountry = searchZipAddress.countryId.toString();
     _stateDataApiFetchBloc.add(LoadStateData(
         countryID: searchZipAddress.countryId.toString(),
-        token: loginData!.userData!.token!));
+        token: loginData!.userData!.token!,eventChecker: false));
   }
 
   //Creating instance for user details after login
@@ -141,7 +141,7 @@ class _AddressManagerFormState extends State<AddressManagerForm> {
     } else {
       _countryDataApiFetchBloc.add(LoadCountryDataFetchApi(loginData!.userData!.token!));
       _stateDataApiFetchBloc
-          .add(LoadStateData(countryID: "99", token: loginData!.userData!.token!));
+          .add(LoadStateData(countryID: "99", token: loginData!.userData!.token!,eventChecker: false));
     }
     super.didChangeDependencies();
   }
@@ -515,7 +515,7 @@ class _AddressManagerFormState extends State<AddressManagerForm> {
 
   StateData stateNameDetailsSearch(String? stateId) {
     late StateData stateDetails;
-    for (var element in stateList!.state!) {
+    for (var element in stateList!.state) {
       if (element.id.toString() == stateId) {
         stateDetails = element;
       }
@@ -574,7 +574,7 @@ class _AddressManagerFormState extends State<AddressManagerForm> {
                     });
 
                     _stateDataApiFetchBloc.add(LoadStateData(
-                        countryID: newValue ?? " ", token: loginData!.userData!.token!));
+                        countryID: newValue ?? " ", token: loginData!.userData!.token!,eventChecker: false));
                   },
                   hint: Text("Select Country",
                       style: TextStyle(
@@ -655,7 +655,7 @@ class _AddressManagerFormState extends State<AddressManagerForm> {
                           color: const Color(0xFF454545),
                           fontSize: getProportionateScreenWidth(15.0))),
                   isExpanded: true,
-                  items: stateList?.state!.map((item) {
+                  items: stateList?.state.map((item) {
                     return DropdownMenuItem(
                       value: item.id.toString(),
                       child: Text(item.name.toString()),

@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:unicorn_store/Business_Logic/bloc/cart/total%20product%20count/total_product_count_bloc.dart';
 import 'package:unicorn_store/Business_Logic/bloc/login%20and%20signup/authentication/authentication_bloc.dart';
 import 'package:unicorn_store/UI/Components/loading_indicator_bar.dart';
 import 'package:unicorn_store/UI/OnBoarding%20Screen/on_boarding_page.dart';
@@ -13,7 +14,7 @@ import 'package:unicorn_store/UI/routes.dart';
 import 'Business_Logic/bloc/my_account/Wishlist/Wishlist Product Details/wishlist_product_details_fetching_bloc.dart';
 
 void main() {
-  runApp( const MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {
@@ -27,7 +28,8 @@ class MyApp extends StatefulWidget {
       {Key? key,
       this.myAccountRedirect,
       this.productValue,
-      this.productTypeId,      this.productTypeSlug,
+      this.productTypeId,
+      this.productTypeSlug,
       this.productPageId})
       : super(key: key);
 
@@ -40,6 +42,7 @@ class _MyAppState extends State<MyApp> {
   AuthenticationBloc authenticationBloc = AuthenticationBloc();
   final WishlistProductDetailsFetchingBloc wishlistProductDetailsFetchingBloc =
       WishlistProductDetailsFetchingBloc();
+  final TotalProductCountBloc totalProductCountBloc = TotalProductCountBloc();
 
   @override
   void initState() {
@@ -58,6 +61,9 @@ class _MyAppState extends State<MyApp> {
         BlocProvider(
           create: (context) => wishlistProductDetailsFetchingBloc,
         ),
+        BlocProvider(
+          create: (context) => totalProductCountBloc,
+        ),
       ],
       child: MaterialApp(
         // useInheritedMediaQuery: true,
@@ -71,6 +77,7 @@ class _MyAppState extends State<MyApp> {
         home: BlocListener<AuthenticationBloc, AuthenticationState>(
           listener: (context, state) {
             if (state is AuthenticationAuthenticated) {
+              totalProductCountBloc.add(LoadTotalCartProductCount(state.loginData.userData!.token!));
               if (widget.myAccountRedirect == "goToProductPageType") {
                 wishlistProductDetailsFetchingBloc.add(
                     AddProductToWishlistEvent(
@@ -90,14 +97,13 @@ class _MyAppState extends State<MyApp> {
               if (state is AuthenticationUninitialized) {
                 print("Authentication Unintialiazed............");
 
-                return Scaffold(body: LoadingIndicatorBar());
-              } else
-                if (state is AuthenticationLoading) {
+                return const LoadingIndicatorBar();
+              } else if (state is AuthenticationLoading) {
                 print("AuthenticationLoading............");
 
-                return Scaffold(body: LoadingIndicatorBar());
+                return const LoadingIndicatorBar();
               }
-               if (state is AuthenticatedOnboardingIncomplete) {
+              if (state is AuthenticatedOnboardingIncomplete) {
                 print("OnBoardingPage............");
 
                 return const OnBoardingPage();
@@ -118,15 +124,9 @@ class _MyAppState extends State<MyApp> {
                     ),
                   );
                 } else if (widget.myAccountRedirect == "goToProductPageType") {
-               
                   return BlocProvider.value(
                     value: authenticationBloc,
-                    child: ProductDetailsScreen(
-                      productTypeSlug: widget.productTypeSlug,
-                      productValue: widget.productValue,
-                      productTypeId: widget.productTypeId!,
-                      token: state.loginData.userData!.token.toString(),
-                    ),
+                    child: const ProductDetailsScreen(),
                   );
                 } else if (widget.myAccountRedirect ==
                     "goToAccessoriesProductPage") {
@@ -144,8 +144,7 @@ class _MyAppState extends State<MyApp> {
                     selectedIndex: 0,
                   ),
                 );
-              } 
-             else if (state is AuthenticationUnauthenticated) {
+              } else if (state is AuthenticationUnauthenticated) {
                 print("AuthenticationUnauthenticated............");
 
                 return BlocProvider(

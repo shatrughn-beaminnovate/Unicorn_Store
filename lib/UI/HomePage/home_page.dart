@@ -1,5 +1,8 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../Business_Logic/bloc/category/category_bloc/category_api_fetch_bloc.dart';
+import '../ProductCategories.dart/list_of_specific_product.dart';
 import '../size_config.dart';
 import '../constant.dart';
 import 'Components/best_seller_product.dart';
@@ -109,314 +112,378 @@ class _HomePageState extends State<HomePage> {
         imgPath: "assets/SmartAccessories/iPhone13SiliconeCase.jpeg"),
   ];
 
+  //Creating object for category bloc
+  final CategoryApiFetchBloc _categoryApiFetchBloc = CategoryApiFetchBloc();
+
   @override
   void initState() {
     //  AddressManagerDetailsApi().getCountryList();
-    //  AddressManagerDetailsApi().getStateList("1");
+    //  AddressManagerDetailsApi().getStateList("1")
+    _categoryApiFetchBloc.add(LoadCategoryApiFetch());
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          Image(
-            image: AssetImage("assets/adImage.jpeg"),
-            width: double.infinity,
-           // height: getProportionateScreenHeight(200),
-          ),
-        
-          //Best sellers
-          HeaderText(header: "BEST SELLERS"),
-          Container(
-            margin: EdgeInsets.symmetric(horizontal: 15.0),
-            height: getProportionateScreenHeight(300),
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: bestSeller.length,
-              shrinkWrap: true,
-              itemBuilder: (context, index) {
-                return BestSellersProduct(
-                    title: bestSeller[index].title,
-                    imgPath: bestSeller[index].imgPath);
+    return BlocProvider(
+      create: (context) => _categoryApiFetchBloc,
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            BlocBuilder<CategoryApiFetchBloc, CategoryApiFetchState>(
+              builder: (context, state) {
+                if (state is CategoryApiFetchLoaded) {
+                  return Container(
+                    height: 110,
+                    margin: EdgeInsets.only(top: 10.0),
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: state.category.length,
+                      itemBuilder: ((context, index) {
+                        return GestureDetector(
+                          onTap: (() {
+                            Navigator.pushNamed(
+                                context, ListOfSpecificProduct.id,
+                                arguments: {
+                                  "categorySlug":state.category[index].slug,
+                                  "homeScreen":true,
+                                  // "filterProductList": state.filterProductList,
+                                  // "selectedAttributeData":
+                                  //     state.selectedAttributesData,
+                                  // "selectedCheckboxAttributes":
+                                  //     selectedAttributeValue,
+                                  // "checkedAttribute": checkedAttribute,
+                                  // "selectedItemList": selectedItemList
+                                }
+                                
+                                );
+                          }),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12.0, vertical: 10.0),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                CircleAvatar(
+                                  radius: 30,
+                                  backgroundImage: NetworkImage(
+                                      "$categoryImageUrl/categories/small/${state.category[index].image}"),
+                                ),
+                                SizedBox(
+                                  height: 10.0,
+                                ),
+                                Text(state.category[index].name!),
+                              ],
+                            ),
+                          ),
+                        );
+                      }),
+                    ),
+                  );
+                }
+                return Container();
               },
             ),
-          ),
+            // Image(
+            //   image: AssetImage("assets/adImage.jpeg"),
+            //   width: double.infinity,
+            //  // height: getProportionateScreenHeight(200),
+            // ),
 
-          //Buy New
-          Container(
-            width: double.infinity,
-            height: getProportionateScreenHeight(930),
-            margin: EdgeInsets.only(top: getProportionateScreenHeight(15.0)),
-            color: Colors.white,
-            child: Column(
-              // ignore: prefer_const_literals_to_create_immutables
-              children: [
-                Padding(
-                  padding: EdgeInsets.only(
-                      top: getProportionateScreenHeight(15.0),
-                      bottom: getProportionateScreenHeight(5.0)),
-                  child: Text("BUY NEW",
-                      style: TextStyle(
-                          fontSize: getProportionateScreenWidth(25.0),
-                          color: kDefaultHeaderFontColor)),
-                ),
-                Container(
-                  margin: EdgeInsets.all(getProportionateScreenWidth(10.0)),
-                  color: Colors.grey[300],
-                  height: getProportionateScreenHeight(150),
-                ),
-                Container(
-                  margin: EdgeInsets.all(getProportionateScreenWidth(10.0)),
-                  color: Colors.grey[300],
-                  height: getProportionateScreenHeight(150),
-                ),
+            //Best sellers
+            HeaderText(header: "BEST SELLERS"),
+            Container(
+              margin: EdgeInsets.symmetric(horizontal: 15.0),
+              height: getProportionateScreenHeight(300),
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: bestSeller.length,
+                shrinkWrap: true,
+                itemBuilder: (context, index) {
+                  return BestSellersProduct(
+                      title: bestSeller[index].title,
+                      imgPath: bestSeller[index].imgPath);
+                },
+              ),
+            ),
 
-                Divider(
-                  color: kDefaultBorderColor,
-                  thickness: 1,
-                ),
-
-                //Hot Deals
+            //Buy New
+            Container(
+              width: double.infinity,
+              height: getProportionateScreenHeight(930),
+              margin: EdgeInsets.only(top: getProportionateScreenHeight(15.0)),
+              color: Colors.white,
+              child: Column(
                 // ignore: prefer_const_literals_to_create_immutables
-                Column(
-                  children: [
-                    HeaderText(header: "HOT DEALS"),
-                    Container(
-                      height: getProportionateScreenHeight(380),
-                      margin: const EdgeInsets.symmetric(horizontal: 10.0),
-                      child: ListView.builder(
-                        itemCount: hotDeals.length,
-                        shrinkWrap: true,
-                        scrollDirection: Axis.horizontal,
-                        itemBuilder: (context, index) {
-                          return HotDeals(
-                            title: hotDeals[index].title,
-                            imgPath: hotDeals[index].imgPath,
-                            price: hotDeals[index].price,
-                            discount: hotDeals[index].discount,
-                            cutPrice: hotDeals[index].cutPrice,
-                          );
-                        },
-                      ),
-                    ),
-                  ],
-                )
-              ],
-            ),
-          ),
-
-          //Smart Accessories
-          Container(
-            margin: EdgeInsets.only(
-                left: getProportionateScreenWidth(15.0),
-                right: getProportionateScreenWidth(15.0),
-                bottom: getProportionateScreenHeight(15.0)),
-            child: Column(
-              children: [
-                HeaderText(header: "SMART ACCESSORIES"),
-                SizedBox(
-                  height: getProportionateScreenWidth(250),
-                  child: ListView.builder(
-                    itemCount: smartAccessoriesList.length,
-                    shrinkWrap: true,
-                    scrollDirection: Axis.horizontal,
-                    itemBuilder: (context, index) {
-                      return SmartAccessories(
-                        title: smartAccessoriesList[index].title,
-                        imgPath: smartAccessoriesList[index].imgPath,
-                        onPress: () {},
-                      );
-                    },
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(
+                        top: getProportionateScreenHeight(15.0),
+                        bottom: getProportionateScreenHeight(5.0)),
+                    child: Text("BUY NEW",
+                        style: TextStyle(
+                            fontSize: getProportionateScreenWidth(25.0),
+                            color: kDefaultHeaderFontColor)),
                   ),
-                ),
-              ],
-            ),
-          ),
-
-          //Trade-In And Personal Shopper
-          Column(
-            children: [
-              //TRADE-IN / BUY BACK
-              Container(
-                width: double.infinity,
-                color: Colors.white,
-                padding: EdgeInsets.all(getProportionateScreenWidth(15.0)),
-                child: Column(
-                  children: [
-                    Image(
-                      image: AssetImage("assets/trade-in.png"),
-                      width: getProportionateScreenWidth(110.0),
-                      height: getProportionateScreenHeight(110.0),
-                    ),
-                    Text("TRADE-IN / BUY BACK",
-                        style: TextStyle(
-                            fontSize: getProportionateScreenWidth(20.0),
-                            color: kDefaultHeaderFontColor)),
-                    Container(
-                      margin: EdgeInsets.only(
-                          top: getProportionateScreenHeight(10.0)),
-                      child: Text(
-                        "Take your old iPhone, Mac or iPad to your local unicorn  store and get instant in-store credit towards the purchase of a new Apple device.",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            height: 1.5,
-                            fontSize: getProportionateScreenWidth(14.0),
-                            color: kDefaultTitleColor),
-                      ),
-                    ),
-                    SizedBox(
-                      height: getProportionateScreenHeight(15.0),
-                    ),
-                    OutlinedButtonContainer(
-                      title: "Learn More",
-                      //width: getProportionateScreenWidth(105.0),
-                      height: getProportionateScreenHeight(33.0),
-                    ),
-                  ],
-                ),
-              ),
-
-              //Personal Shopper
-              Container(
-                width: double.infinity,
-                color: Colors.white,
-                padding: EdgeInsets.all(getProportionateScreenWidth(20.0)),
-                child: Column(
-                  children: [
-                    Image(
-                      image: AssetImage("assets/personal-shopper.png"),
-                      width: getProportionateScreenWidth(110.0),
-                      height: getProportionateScreenHeight(110.0),
-                    ),
-                    Text("PERSONAL SHOPPER",
-                        style: TextStyle(
-                            fontSize: getProportionateScreenWidth(20.0),
-                            color: kDefaultHeaderFontColor)),
-                    Container(
-                      margin: EdgeInsets.only(
-                          top: getProportionateScreenHeight(10.0)),
-                      child: Text(
-                        "An online appointment service where you can book a consultation with your personal Apple Expert from Unicorn Store.",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            height: 1.5,
-                            fontSize: getProportionateScreenWidth(14.0),
-                            color: kDefaultTitleColor),
-                      ),
-                    ),
-                    SizedBox(
-                      height: getProportionateScreenHeight(15.0),
-                    ),
-                    OutlinedButtonContainer(
-                      title: "Book Now",
-                      width: getProportionateScreenWidth(105.0),
-                      height: getProportionateScreenHeight(33.0),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-
-          //Newsletter
-          Container(
-            margin: EdgeInsets.symmetric(
-                vertical: getProportionateScreenHeight(25.0)),
-            padding: EdgeInsets.symmetric(
-                horizontal: getProportionateScreenWidth(15.0)),
-            child: Column(
-              children: [
-                Text("NEWSLETTER",
-                    style: TextStyle(
-                        fontSize: getProportionateScreenWidth(20.0),
-                        color: kDefaultHeaderFontColor)),
-                SizedBox(
-                  height: getProportionateScreenHeight(10.0),
-                ),
-                Text(
-                  "GET WEEKLY UPDATES BY SUBSCRIBING TO OUR NEWSLETTER",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      height: 1.5,
-                      color: kDefaultTitleColor,
-                      fontSize: getProportionateScreenWidth(15.0)),
-                ),
-                SizedBox(
-                  height: getProportionateScreenHeight(20.0),
-                ),
-                Text(
-                  "Receive updates on news, events and special offers via email newsletter.",
-                  style: TextStyle(
-                      fontSize: getProportionateScreenWidth(14.0), height: 1.5),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(
-                  height: getProportionateScreenHeight(15.0),
-                ),
-
-                //NEWSLETTER SEARCH BOX WITH BUTTON
-                Stack(clipBehavior: Clip.none, children: [
                   Container(
-                    color: Colors.white,
-                    width: getProportionateScreenWidth(350),
-                    height: getProportionateScreenHeight(40),
-                    child: TextFormField(
-                      cursorColor: Colors.black,
-                      decoration: InputDecoration(
-                        hintStyle: TextStyle(
-                            color: Color(0xFF6C757D),
-                            fontSize: getProportionateScreenWidth(13.0)),
-                        hintText: "Enter Your Email Address",
-                        contentPadding: EdgeInsets.all(
-                            getProportionateScreenWidth(
-                                getProportionateScreenWidth(7.0))),
-                        border: OutlineInputBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(5.0))),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                              color: kDefaultBorderColor, width: 1.0),
-                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                    margin: EdgeInsets.all(getProportionateScreenWidth(10.0)),
+                    color: Colors.grey[300],
+                    height: getProportionateScreenHeight(150),
+                  ),
+                  Container(
+                    margin: EdgeInsets.all(getProportionateScreenWidth(10.0)),
+                    color: Colors.grey[300],
+                    height: getProportionateScreenHeight(150),
+                  ),
+
+                  Divider(
+                    color: kDefaultBorderColor,
+                    thickness: 1,
+                  ),
+
+                  //Hot Deals
+                  // ignore: prefer_const_literals_to_create_immutables
+                  Column(
+                    children: [
+                      HeaderText(header: "HOT DEALS"),
+                      Container(
+                        height: getProportionateScreenHeight(380),
+                        margin: const EdgeInsets.symmetric(horizontal: 10.0),
+                        child: ListView.builder(
+                          itemCount: hotDeals.length,
+                          shrinkWrap: true,
+                          scrollDirection: Axis.horizontal,
+                          itemBuilder: (context, index) {
+                            return HotDeals(
+                              title: hotDeals[index].title,
+                              imgPath: hotDeals[index].imgPath,
+                              price: hotDeals[index].price,
+                              discount: hotDeals[index].discount,
+                              cutPrice: hotDeals[index].cutPrice,
+                            );
+                          },
                         ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide:
-                              BorderSide(color: Color(0xFF1F99CF), width: 1.0),
-                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                      ),
+                    ],
+                  )
+                ],
+              ),
+            ),
+
+            //Smart Accessories
+            Container(
+              margin: EdgeInsets.only(
+                  left: getProportionateScreenWidth(15.0),
+                  right: getProportionateScreenWidth(15.0),
+                  bottom: getProportionateScreenHeight(15.0)),
+              child: Column(
+                children: [
+                  HeaderText(header: "SMART ACCESSORIES"),
+                  SizedBox(
+                    height: getProportionateScreenWidth(250),
+                    child: ListView.builder(
+                      itemCount: smartAccessoriesList.length,
+                      shrinkWrap: true,
+                      scrollDirection: Axis.horizontal,
+                      itemBuilder: (context, index) {
+                        return SmartAccessories(
+                          title: smartAccessoriesList[index].title,
+                          imgPath: smartAccessoriesList[index].imgPath,
+                          onPress: () {},
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            //Trade-In And Personal Shopper
+            Column(
+              children: [
+                //TRADE-IN / BUY BACK
+                Container(
+                  width: double.infinity,
+                  color: Colors.white,
+                  padding: EdgeInsets.all(getProportionateScreenWidth(15.0)),
+                  child: Column(
+                    children: [
+                      Image(
+                        image: AssetImage("assets/trade-in.png"),
+                        width: getProportionateScreenWidth(110.0),
+                        height: getProportionateScreenHeight(110.0),
+                      ),
+                      Text("TRADE-IN / BUY BACK",
+                          style: TextStyle(
+                              fontSize: getProportionateScreenWidth(20.0),
+                              color: kDefaultHeaderFontColor)),
+                      Container(
+                        margin: EdgeInsets.only(
+                            top: getProportionateScreenHeight(10.0)),
+                        child: Text(
+                          "Take your old iPhone, Mac or iPad to your local unicorn  store and get instant in-store credit towards the purchase of a new Apple device.",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              height: 1.5,
+                              fontSize: getProportionateScreenWidth(14.0),
+                              color: kDefaultTitleColor),
+                        ),
+                      ),
+                      SizedBox(
+                        height: getProportionateScreenHeight(15.0),
+                      ),
+                      OutlinedButtonContainer(
+                        title: "Learn More",
+                        //width: getProportionateScreenWidth(105.0),
+                        height: getProportionateScreenHeight(33.0),
+                      ),
+                    ],
+                  ),
+                ),
+
+                //Personal Shopper
+                Container(
+                  width: double.infinity,
+                  color: Colors.white,
+                  padding: EdgeInsets.all(getProportionateScreenWidth(20.0)),
+                  child: Column(
+                    children: [
+                      Image(
+                        image: AssetImage("assets/personal-shopper.png"),
+                        width: getProportionateScreenWidth(110.0),
+                        height: getProportionateScreenHeight(110.0),
+                      ),
+                      Text("PERSONAL SHOPPER",
+                          style: TextStyle(
+                              fontSize: getProportionateScreenWidth(20.0),
+                              color: kDefaultHeaderFontColor)),
+                      Container(
+                        margin: EdgeInsets.only(
+                            top: getProportionateScreenHeight(10.0)),
+                        child: Text(
+                          "An online appointment service where you can book a consultation with your personal Apple Expert from Unicorn Store.",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              height: 1.5,
+                              fontSize: getProportionateScreenWidth(14.0),
+                              color: kDefaultTitleColor),
+                        ),
+                      ),
+                      SizedBox(
+                        height: getProportionateScreenHeight(15.0),
+                      ),
+                      OutlinedButtonContainer(
+                        title: "Book Now",
+                        width: getProportionateScreenWidth(105.0),
+                        height: getProportionateScreenHeight(33.0),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+
+            //Newsletter
+            Container(
+              margin: EdgeInsets.symmetric(
+                  vertical: getProportionateScreenHeight(25.0)),
+              padding: EdgeInsets.symmetric(
+                  horizontal: getProportionateScreenWidth(15.0)),
+              child: Column(
+                children: [
+                  Text("NEWSLETTER",
+                      style: TextStyle(
+                          fontSize: getProportionateScreenWidth(20.0),
+                          color: kDefaultHeaderFontColor)),
+                  SizedBox(
+                    height: getProportionateScreenHeight(10.0),
+                  ),
+                  Text(
+                    "GET WEEKLY UPDATES BY SUBSCRIBING TO OUR NEWSLETTER",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        height: 1.5,
+                        color: kDefaultTitleColor,
+                        fontSize: getProportionateScreenWidth(15.0)),
+                  ),
+                  SizedBox(
+                    height: getProportionateScreenHeight(20.0),
+                  ),
+                  Text(
+                    "Receive updates on news, events and special offers via email newsletter.",
+                    style: TextStyle(
+                        fontSize: getProportionateScreenWidth(14.0),
+                        height: 1.5),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(
+                    height: getProportionateScreenHeight(15.0),
+                  ),
+
+                  //NEWSLETTER SEARCH BOX WITH BUTTON
+                  Stack(clipBehavior: Clip.none, children: [
+                    Container(
+                      color: Colors.white,
+                      width: getProportionateScreenWidth(350),
+                      height: getProportionateScreenHeight(40),
+                      child: TextFormField(
+                        cursorColor: Colors.black,
+                        decoration: InputDecoration(
+                          hintStyle: TextStyle(
+                              color: Color(0xFF6C757D),
+                              fontSize: getProportionateScreenWidth(13.0)),
+                          hintText: "Enter Your Email Address",
+                          contentPadding: EdgeInsets.all(
+                              getProportionateScreenWidth(
+                                  getProportionateScreenWidth(7.0))),
+                          border: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(5.0))),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                                color: kDefaultBorderColor, width: 1.0),
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(5.0)),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                                color: Color(0xFF1F99CF), width: 1.0),
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(5.0)),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  Positioned(
-                    right: 0,
-                    child: SizedBox(
-                        // width: getProportionateScreenWidth(115),
-                        height: getProportionateScreenHeight(40),
-                        child: ElevatedButton(
-                          onPressed: () {},
-                          style: ElevatedButton.styleFrom(
-                            primary: Color(0xFF1F99CF), // background
-                            onPrimary: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.only(
-                                  topRight: Radius.circular(5.0),
-                                  bottomRight:
-                                      Radius.circular(5.0)), // <-- Radius
-                            ), // foreground
-                          ),
-                          child: Text(
-                            "SUBSCRIBE",
-                            style: TextStyle(
-                                fontSize: getProportionateScreenWidth(15.0)),
-                          ),
-                        )),
-                  ),
-                ]),
-              ],
+                    Positioned(
+                      right: 0,
+                      child: SizedBox(
+                          // width: getProportionateScreenWidth(115),
+                          height: getProportionateScreenHeight(40),
+                          child: ElevatedButton(
+                            onPressed: () {},
+                            style: ElevatedButton.styleFrom(
+                              primary: Color(0xFF1F99CF), // background
+                              onPrimary: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.only(
+                                    topRight: Radius.circular(5.0),
+                                    bottomRight:
+                                        Radius.circular(5.0)), // <-- Radius
+                              ), // foreground
+                            ),
+                            child: Text(
+                              "SUBSCRIBE",
+                              style: TextStyle(
+                                  fontSize: getProportionateScreenWidth(15.0)),
+                            ),
+                          )),
+                    ),
+                  ]),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

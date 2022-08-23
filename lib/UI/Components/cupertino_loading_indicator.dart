@@ -9,6 +9,6 @@ class CupertinoLoadingIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LoadingIndicatorBar();
+    return const LoadingIndicatorBar();
   }
 }

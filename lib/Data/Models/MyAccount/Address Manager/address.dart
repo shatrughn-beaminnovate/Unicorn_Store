@@ -18,10 +18,10 @@ class Address {
   final AddressFieldData? addressFieldData;
 
   @JsonKey(name: "default_billing_address")
-  final int? defaultBillingAddress;
+  final bool? defaultBillingAddress;
 
   @JsonKey(name: "default_shipping_address")
-  final int? defaultsShippingAddress;
+  final bool? defaultsShippingAddress;
 
 
   Address(this.id, this.customerId, this.entryName, this.addressFieldData,this.defaultBillingAddress,this.defaultsShippingAddress);

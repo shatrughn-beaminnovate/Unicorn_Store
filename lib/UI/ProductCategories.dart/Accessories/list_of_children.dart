@@ -1,10 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:unicorn_store/Data/Models/Category/AccessoriesCategory/accessories_children.dart';
 import 'package:unicorn_store/Data/Models/Category/NewCategory/category_data.dart';
 import 'package:unicorn_store/UI/HomePage/Components/build_app_bar.dart';
-import 'package:unicorn_store/UI/ProductCategories.dart/Accessories/list_of_product.dart';
-
+import '../../ProductPage/product_type_page.dart';
 import '../../constant.dart';
 import '../../size_config.dart';
 
@@ -23,8 +21,6 @@ class _ListOfChildrenState extends State<ListOfChildren> {
 
   List<CategoryData>? accessoriesChildren;
 
-  String? imageHeader = "https://shop.unicornstore.in/uploads/images/medium/";
-
   @override
   Widget build(BuildContext context) {
     accessoriesData =
@@ -39,12 +35,35 @@ class _ListOfChildrenState extends State<ListOfChildren> {
             padding: EdgeInsets.all(getProportionateScreenHeight(15.0)),
             child: Column(
               children: [
-                Align(
-                  alignment: Alignment.topLeft,
-                  child: Text(accessoriesData["name"],
-                      style: TextStyle(
-                          fontSize: getProportionateScreenWidth(25.0),
-                          color: kDefaultHeaderFontColor)),
+                SizedBox(
+                  height: 40,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(accessoriesData["name"],
+                          style: TextStyle(
+                              fontSize: getProportionateScreenWidth(25.0),
+                              color: kDefaultHeaderFontColor)),
+                      // TextButton.icon(
+                      //   onPressed: () {
+                      //     Navigator.push(context,
+                      //         MaterialPageRoute(builder: (context) {
+                      //       return const FilterScreen();
+                      //     }));
+                      //   },
+                      //   icon: const Icon(
+                      //     Icons.filter_list_rounded,
+                      //     size: 22,
+                      //     color: kDefaultHeaderFontColor,
+                      //   ),
+                      //   label: Text("Filter",
+                      //       style: TextStyle(
+                      //           fontSize: getProportionateScreenWidth(16.0),
+                      //           color: kDefaultHeaderFontColor)),
+                      // )
+               
+                    ],
+                  ),
                 ),
                 const Divider(
                   color: kDefaultBorderColor,
@@ -80,6 +99,11 @@ class _ListOfChildrenState extends State<ListOfChildren> {
                             "token": accessoriesData["token"]
                           });
                     } else {
+                      Navigator.pushNamed(context, ProductDetailsScreen.id,
+                          arguments: {
+                            "productTypeSlug": accessoriesChildren![index].slug,
+                            "filterProductData": false,
+                          });
                       // Navigator.pushNamed(context, ListOfProduct.id,
                       //     arguments: {
                       //       "name": accessoriesChildren![index].name,
@@ -94,7 +118,7 @@ class _ListOfChildrenState extends State<ListOfChildren> {
                           height: getProportionateScreenHeight(200),
                           width: getProportionateScreenWidth(200),
                           imageUrl:
-                              "$categoryImageUrl${accessoriesChildren![index].image}",
+                              "$categoryImageUrl/categories/small/${accessoriesChildren![index].image}",
                           placeholder: (context, url) => Container(),
                           errorWidget: (context, url, error) => const Image(
                               image: AssetImage("assets/NoImage.jpg"))),

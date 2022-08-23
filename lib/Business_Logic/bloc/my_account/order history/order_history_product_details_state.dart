@@ -14,9 +14,9 @@ class OrderHistoryProductDetailsLoading
     extends OrderHistoryProductDetailsState {}
 
 class OrderHistoryProductDetailsLoaded extends OrderHistoryProductDetailsState {
-  final OrderHistoryDetails orderHistoryDetails;
+  final OrderHistory orderHistory;
 
-  const OrderHistoryProductDetailsLoaded(this.orderHistoryDetails);
+  const OrderHistoryProductDetailsLoaded(this.orderHistory);
 }
 
 class OrderHistoryProductDetailsError extends OrderHistoryProductDetailsState {

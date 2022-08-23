@@ -17,7 +17,7 @@ class StateDataApiFetchBloc
         emit(StateDataApiFetchLoading());
         final stateList = await addressManagerDetailsRepository
             .getStateList(event.countryID,event.token);
-        emit(StateDataApiFetchLoaded(stateList));
+        emit(StateDataApiFetchLoaded(stateList,event.eventChecker));
       } catch (e) {
         emit(StateDataApiFetchError(e.toString()));
       }

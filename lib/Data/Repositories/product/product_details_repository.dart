@@ -1,15 +1,16 @@
 import 'package:unicorn_store/Data/Data_Providers/Product/product_details_api.dart';
-import 'package:unicorn_store/Data/Models/Product/Product%20Type/product_details.dart';
+import 'package:unicorn_store/Data/Models/Product/New%20Product%20Type/product_info_data.dart';
+import 'package:unicorn_store/Data/Models/Product/New%20Product/single_product_data.dart';
 
 class ProductDetailsRepository {
   final _productDetailsServiceApi = ProductDetailsServiceApi();
 
-  Future<ProductDetails> getProductDetails(String productDetailsId) {
-    return _productDetailsServiceApi.getProductDetails(productDetailsId);
+  Future<ProductInfoData> getProductDetails(String productNameSlug) {
+    return _productDetailsServiceApi.getProductDetails(productNameSlug);
   }
 
-  Future<dynamic> getProductPageDetails(Map<String,String> productValue,String productTypeId,String token){
-    return _productDetailsServiceApi.getProductPageDetails(productValue,productTypeId,token);
+  Future<SingleProductData> getProductPageDetails(List<dynamic> productValue, String productTypeId){
+    return _productDetailsServiceApi.getProductPageDetails(productValue,productTypeId);
   }
 
 }

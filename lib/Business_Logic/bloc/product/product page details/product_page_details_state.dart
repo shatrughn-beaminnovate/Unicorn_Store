@@ -12,7 +12,7 @@ class ProductPageDetailsInitial extends ProductPageDetailsState {}
 class ProductPageDetailsLoading extends ProductPageDetailsState {}
 
 class ProductPageDetailsLoaded extends ProductPageDetailsState {
-  final dynamic productPageDetail;
+  final SingleProductData productPageDetail;
 
   const ProductPageDetailsLoaded(this.productPageDetail);
 }

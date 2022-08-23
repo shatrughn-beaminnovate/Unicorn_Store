@@ -1,6 +1,6 @@
 
 import 'package:flutter/material.dart';
-import 'package:unicorn_store/Data/Models/MyAccount/Order%20History/order_items.dart';
+import 'package:unicorn_store/Data/Models/MyAccount/Order%20History/order_history_product.dart';
 import 'package:unicorn_store/UI/HomePage/Components/build_app_bar.dart';
 import 'package:unicorn_store/UI/size_config.dart';
 
@@ -15,12 +15,13 @@ class OrderDetails extends StatelessWidget {
   // ignore: prefer_typing_uninitialized_variables
   var productDataList;
 
-  late List<OrderItems>? orderItems;
+  late List<OrderHistoryProduct>? orderItems;
 
   @override
   Widget build(BuildContext context) {
     productDataList=ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
     orderItems=productDataList["productDataList"];
+   
     return Scaffold(
       appBar: const BuildAppBar(),
       body: SafeArea(
@@ -41,6 +42,8 @@ class OrderDetails extends StatelessWidget {
                 SizedBox(
                   height: getProportionateScreenHeight(15.0),
                 ),
+
+                
               
               
               //List of the Product Inside Single Orders
@@ -49,6 +52,7 @@ class OrderDetails extends StatelessWidget {
                   shrinkWrap: true,
                   itemCount: orderItems!.length,
                   itemBuilder: (context, index) {
+                    print(orderItems!.length);
                   return ItemsInsideSingleOrder(orderItems: orderItems![index],);
                 })
               ],

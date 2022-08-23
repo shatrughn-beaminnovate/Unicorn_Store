@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:unicorn_store/Business_Logic/bloc/my_account/order%20history/order_history_product_details_bloc.dart';
 import 'package:unicorn_store/Data/Models/Login%20and%20Signup/Login/login_data.dart';
-import 'package:unicorn_store/Data/Models/MyAccount/Order%20History/order_history_details.dart';
+import 'package:unicorn_store/Data/Models/MyAccount/Order%20History/order_history.dart';
 import 'package:unicorn_store/UI/Components/linear_indicator.dart';
 import 'package:unicorn_store/UI/HomePage/Components/build_app_bar.dart';
 import 'package:unicorn_store/UI/size_config.dart';
@@ -55,7 +55,7 @@ class _ProductHistoryState extends State<ProductHistory> {
               return const LinearIndicatorBar();
             }
             else if(state is OrderHistoryProductDetailsLoaded){
-               return _buildOrderHistory(context,state.orderHistoryDetails);     
+               return _buildOrderHistory(context,state.orderHistory);     
             }
             return const Center(child: Text("No order history Available."),);
 
@@ -68,7 +68,7 @@ class _ProductHistoryState extends State<ProductHistory> {
     );
   }
 
-  Widget _buildOrderHistory(BuildContext context,OrderHistoryDetails orderHistoryDetails) {
+  Widget _buildOrderHistory(BuildContext context,OrderHistory orderHistoryDetails) {
     return SafeArea(
             child: SingleChildScrollView(
               child: Container(
@@ -95,9 +95,9 @@ class _ProductHistoryState extends State<ProductHistory> {
                     ListView.builder(
                         physics: const NeverScrollableScrollPhysics(),
                         shrinkWrap: true,
-                        itemCount:orderHistoryDetails.data!.length,
+                        itemCount:orderHistoryDetails.data.length,
                         itemBuilder: (context, index) {
-                          return OderHistoryItem(orderData: orderHistoryDetails.data![index],);
+                          return OderHistoryItem(orderData: orderHistoryDetails.data[index],);
                         })
                   ],
                 ),

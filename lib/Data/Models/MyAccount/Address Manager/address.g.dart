@@ -14,8 +14,8 @@ Address _$AddressFromJson(Map<String, dynamic> json) => Address(
           ? null
           : AddressFieldData.fromJson(
               json['field_data'] as Map<String, dynamic>),
-      json['default_billing_address'] as int?,
-      json['default_shipping_address'] as int?,
+      json['default_billing_address'] as bool?,
+      json['default_shipping_address'] as bool?,
     );
 
 Map<String, dynamic> _$AddressToJson(Address instance) => <String, dynamic>{

@@ -12,14 +12,21 @@ const kDefaultParagraphTextFontColor = Color(0xFF666666);
 
 //Base Url for Api
 const kDefaultBaseUrl = "http://192.168.1.18/bics_front";
+const kSecondDefaultBaseUrl="http://192.168.1.18:9021";
 
 //const kDefaultBaseUrl="http://mum01.beaminnovate.com/bics_front";
+//const kSecondDefaultBaseUrl="http://mum01.beaminnovate.com:9021";
 
-const imageDefaultURL = "http://192.168.1.18/shop.unicornstore.in";
 
-//const imageDefaultURL ="http://mum01.beaminnovate.com/shop.unicornstore.in";
+//const imageDefaultURL = "http://192.168.1.18/shop.unicornstore.in";
+const imageDefaultURL ="http://mum01.beaminnovate.com/shop.unicornstore.in";
 
-const categoryImageUrl="http://192.168.1.18/beam_mw/public/categories/small/";
+//API KEY
+const kDefaultApiKey="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRfbmFtZSI6ImFkbWluIiwiaWF0IjoxNjYwMTEyODY3LjAsIm5iZiI6MTY2MDExMjg2OCwiZXhwIjoxNjYwMzcyMDY4fQ.prNyC0W0wY1_1qNtSWXyT30QkyEmMKdVR3EYxc-eROc";
 
+//const categoryImageUrl="http://192.168.1.18/beam_mw/public";
+const categoryImageUrl="http://mum01.beaminnovate.com/beam_mw/public";
+
+const errorImageUrl="assets/no-image-found.png";
 const imageSecondUrl = "/uploads/images/medium/";
 const imageThirdUrl = "/uploads/images/thumbnails/";

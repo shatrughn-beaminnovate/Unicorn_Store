@@ -14,6 +14,7 @@ import 'package:unicorn_store/UI/HomePage/Components/build_app_bar.dart';
 import 'package:unicorn_store/UI/LoginPage/sign_up_form.dart';
 import 'package:unicorn_store/UI/constant.dart';
 import 'package:unicorn_store/main.dart';
+import '../Components/default_snackbar.dart';
 import 'Components/button_with_logo.dart';
 import 'Components/custom_submit_button.dart';
 import 'Components/form_validation.dart';
@@ -53,6 +54,8 @@ class _LoginScreenState extends State<LoginScreen> {
   String? otpBorderColorError = "false";
   Map<String, dynamic>? sendOtpResponse;
 
+  bool isProgress = false;
+
   //This is key for form that uniquely identifies form
   final _formKey = GlobalKey<FormState>();
   final _formSecondkey = GlobalKey<FormState>();
@@ -70,288 +73,298 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
-    return Scaffold(
-      appBar: const BuildAppBar(),
-      body: BlocProvider<LoginBloc>(
-        create: (context) => loginBloc,
-        child: BlocListener<LoginBloc, LoginState>(listener: (context, state) {
-          if (state is LoginInitial) {
-            if (widget.myAccountRedirect == "false") {
-              Navigator.pushAndRemoveUntil(context,
-                  MaterialPageRoute(builder: (context) {
-                return const MyApp(
-                  myAccountRedirect: "true",
+    return Stack(
+      children: [
+        Scaffold(
+          appBar: const BuildAppBar(),
+          body: BlocProvider<LoginBloc>(
+            create: (context) => loginBloc,
+            child:
+                BlocListener<LoginBloc, LoginState>(listener: (context, state) {
+              if (state is LoginLoading) {
+                setState(() {
+                  isProgress = true;
+                });
+              }
+              if (state is LoginInitial) {
+                if (widget.myAccountRedirect == "false") {
+                  Navigator.pushAndRemoveUntil(context,
+                      MaterialPageRoute(builder: (context) {
+                    return const MyApp(
+                      myAccountRedirect: "true",
+                    );
+                  }), (Route<dynamic> route) => false);
+                } else if (widget.myAccountRedirect == "true") {
+                  Navigator.pushAndRemoveUntil(context,
+                      MaterialPageRoute(builder: (context) {
+                    return const MyApp(
+                      myAccountRedirect: "false",
+                    );
+                  }), (Route<dynamic> route) => false);
+                } else if (widget.myAccountRedirect == "goToProductPageType") {
+                  Navigator.pushAndRemoveUntil(context,
+                      MaterialPageRoute(builder: (context) {
+                    return MyApp(
+                      myAccountRedirect: "goToProductPageType",
+                      productValue: widget.productValue,
+                      productTypeSlug: widget.productTypeSlug,
+                      productPageId: widget.productPageId,
+                      productTypeId: widget.productTypeId,
+                    );
+                  }), (Route<dynamic> route) => false);
+                } else if (widget.myAccountRedirect ==
+                    "goToAccessoriesProductPage") {
+                  Navigator.pushAndRemoveUntil(context,
+                      MaterialPageRoute(builder: (context) {
+                    return MyApp(
+                      myAccountRedirect: "goToAccessoriesProductPage",
+                      productPageId: widget.productPageId,
+                    );
+                  }), (Route<dynamic> route) => false);
+                }
+              }
+              if (state is LoginFailure) {
+                setState(() {
+                  isProgress = false;
+                });
+                //  print(state);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  // ignore: prefer_const_constructors
+                  defaultSnackBar("Incorrect username or password", Colors.red,
+                      Colors.white, 2000),
                 );
-              }), (Route<dynamic> route) => false);
-            } else if (widget.myAccountRedirect == "true") {
-              Navigator.pushAndRemoveUntil(context,
-                  MaterialPageRoute(builder: (context) {
-                return const MyApp(
-                  myAccountRedirect: "false",
-                );
-              }), (Route<dynamic> route) => false);
-            } else if (widget.myAccountRedirect == "goToProductPageType") {
-              Navigator.pushAndRemoveUntil(context,
-                  MaterialPageRoute(builder: (context) {
-                return MyApp(
-                  myAccountRedirect: "goToProductPageType",
-                  productValue: widget.productValue,
-                  productTypeSlug: widget.productTypeSlug,
-                  productPageId: widget.productPageId,
-                  productTypeId: widget.productTypeId,
-                );
-              }), (Route<dynamic> route) => false);
-            } else if (widget.myAccountRedirect ==
-                "goToAccessoriesProductPage") {
-              Navigator.pushAndRemoveUntil(context,
-                  MaterialPageRoute(builder: (context) {
-                return MyApp(
-                  myAccountRedirect: "goToAccessoriesProductPage",
-                  productPageId: widget.productPageId,
-                );
-              }), (Route<dynamic> route) => false);
-            }
-          }
-          if (state is LoginFailure) {
-          //  print(state);
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.error),
-                backgroundColor: Colors.red,
-                duration: const Duration(milliseconds: 2000),
-                // behavior: SnackBarBehavior.floating,
-              ),
-            );
-          }
-          
-        }, child: BlocBuilder<LoginBloc, LoginState>(
-          builder: (context, state) {
-            if(state is LoginLoading)
-            {
-              return LoadingIndicatorBar();
-            }
-            return SafeArea(
-              child: SingleChildScrollView(
-                child: Container(
-                  padding: EdgeInsets.symmetric(
-                      horizontal: getProportionateScreenWidth(20.0),
-                      vertical: getProportionateScreenHeight(20.0)),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      children: [
-                        SizedBox(
-                          height: getProportionateScreenHeight(15.0),
-                        ),
-
-                        //Login Page
-                        Text(
-                          "Login",
-                          style: TextStyle(
-                              fontSize: getProportionateScreenWidth(25)),
-                        ),
-                        const Divider(
-                          color: kDefaultBorderColor,
-                          thickness: 1,
-                        ),
-                        SizedBox(
-                          height: getProportionateScreenHeight(35.0),
-                        ),
-
-                        //Email Field
-                        TextInputField(
-                          textInputType: TextInputType.emailAddress,
-                          title: "E-Mail",
-                          validator: (value) {
-                            return FormValidation.emailValidation(value);
-                          },
-                          textEditingController: _email,
-                          isMandatory: true,
-                          obscureText: false,
-                        ),
-                        SizedBox(
-                          height: getProportionateScreenHeight(25.0),
-                        ),
-
-                        //Password Field
-                        TextInputField(
-                          title: "Password",
-                          validator: (value) {
-                            return FormValidation.passwordValidation(value);
-                          },
-                          textInputType: TextInputType.text,
-                          textEditingController: _password,
-                          isMandatory: true,
-                          obscureText: true,
-                        ),
-                        SizedBox(
-                          height: getProportionateScreenHeight(10.0),
-                        ),
-
-                        //Forgot Password
-                        Row(
+              }
+            }, child: BlocBuilder<LoginBloc, LoginState>(
+              builder: (context, state) {
+                // if(state is LoginLoading)
+                // {
+                //   return const LoadingIndicatorBar();
+                // }
+                return SafeArea(
+                  child: SingleChildScrollView(
+                    child: Container(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: getProportionateScreenWidth(20.0),
+                          vertical: getProportionateScreenHeight(20.0)),
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
                           children: [
-                            GestureDetector(
-                              onTap: () {
-                                Navigator.pushNamed(context, MainScreen.id);
-                              },
-                              child: Text(
-                                "Return To Store",
-                                style: TextStyle(
-                                    color: Colors.green,
-                                    fontSize:
-                                        getProportionateScreenWidth(14.0)),
-                              ),
+                            SizedBox(
+                              height: getProportionateScreenHeight(15.0),
                             ),
-                            const Spacer(),
-                            GestureDetector(
-                              onTap: () {
-                                Navigator.pushNamed(
-                                  context,
-                                  ForgotPassword.id,
-                                );
-                              },
-                              child: Text(
-                                "Forgot Password?",
-                                style: TextStyle(
-                                    color: Colors.green,
-                                    fontSize:
-                                        getProportionateScreenWidth(14.0)),
-                              ),
+
+                            //Login Page
+                            Text(
+                              "Login",
+                              style: TextStyle(
+                                  fontSize: getProportionateScreenWidth(25)),
                             ),
-                          ],
-                        ),
+                            const Divider(
+                              color: kDefaultBorderColor,
+                              thickness: 1,
+                            ),
+                            SizedBox(
+                              height: getProportionateScreenHeight(35.0),
+                            ),
 
-                        const Divider(
-                          color: kDefaultBorderColor,
-                          thickness: 1,
-                        ),
+                            //Email Field
+                            TextInputField(
+                              textInputType: TextInputType.emailAddress,
+                              title: "E-Mail",
+                              validator: (value) {
+                                return FormValidation.emailValidation(value);
+                              },
+                              textEditingController: _email,
+                              isMandatory: true,
+                              obscureText: false,
+                            ),
+                            SizedBox(
+                              height: getProportionateScreenHeight(25.0),
+                            ),
 
-                        SizedBox(
-                          height: getProportionateScreenHeight(35.0),
-                        ),
+                            //Password Field
+                            TextInputField(
+                              title: "Password",
+                              validator: (value) {
+                                return FormValidation.passwordValidation(value);
+                              },
+                              textInputType: TextInputType.text,
+                              textEditingController: _password,
+                              isMandatory: true,
+                              obscureText: true,
+                            ),
+                            SizedBox(
+                              height: getProportionateScreenHeight(10.0),
+                            ),
 
-                        //Login Button
-                        LoginButton(
-                          title: "Login",
-                          onPress: () {
-                            if (_formKey.currentState!.validate()) {
-                              loginBloc.add(LoginButtonPressed(
-                                  username: _email.text,
-                                  password: _password.text));
-                            }
-                          },
-                          color: const Color(0xFF1F99CF),
-                          height: 40.0,
-                          width: double.infinity,
-                        ),
+                            //Forgot Password
+                            Row(
+                              children: [
+                                GestureDetector(
+                                  onTap: () {
+                                    Navigator.pushNamed(context, MainScreen.id);
+                                  },
+                                  child: Text(
+                                    "Return To Store",
+                                    style: TextStyle(
+                                        color: Colors.green,
+                                        fontSize:
+                                            getProportionateScreenWidth(14.0)),
+                                  ),
+                                ),
+                                const Spacer(),
+                                GestureDetector(
+                                  onTap: () {
+                                    Navigator.pushNamed(
+                                      context,
+                                      ForgotPassword.id,
+                                    );
+                                  },
+                                  child: Text(
+                                    "Forgot Password?",
+                                    style: TextStyle(
+                                        color: Colors.green,
+                                        fontSize:
+                                            getProportionateScreenWidth(14.0)),
+                                  ),
+                                ),
+                              ],
+                            ),
 
-                        SizedBox(
-                          height: getProportionateScreenHeight(25.0),
-                        ),
+                            const Divider(
+                              color: kDefaultBorderColor,
+                              thickness: 1,
+                            ),
 
-                        //Sign in With
-                        Text("- OR -",
-                            style: TextStyle(
-                              fontSize: getProportionateScreenWidth(15.0),
-                            )),
-                        SizedBox(
-                          height: getProportionateScreenHeight(15.0),
-                        ),
-                        Text(
-                          "Sign in with",
-                          style: TextStyle(
-                              fontSize: getProportionateScreenWidth(15.0)),
-                        ),
-                        SizedBox(
-                          height: getProportionateScreenHeight(25.0),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            //Login With Google Button
+                            SizedBox(
+                              height: getProportionateScreenHeight(35.0),
+                            ),
+
+                            //Login Button
+                            LoginButton(
+                              title: "Login",
+                              onPress: () {
+                                if (_formKey.currentState!.validate()) {
+                                  loginBloc.add(LoginButtonPressed(
+                                      username: _email.text,
+                                      password: _password.text));
+                                }
+                              },
+                              color: const Color(0xFF1F99CF),
+                              height: 40.0,
+                              width: double.infinity,
+                            ),
+
+                            SizedBox(
+                              height: getProportionateScreenHeight(25.0),
+                            ),
+
+                            //Sign in With
+                            Text("- OR -",
+                                style: TextStyle(
+                                  fontSize: getProportionateScreenWidth(15.0),
+                                )),
+                            SizedBox(
+                              height: getProportionateScreenHeight(15.0),
+                            ),
+                            Text(
+                              "Sign in with",
+                              style: TextStyle(
+                                  fontSize: getProportionateScreenWidth(15.0)),
+                            ),
+                            SizedBox(
+                              height: getProportionateScreenHeight(25.0),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                //Login With Google Button
+                                ButtonWithLogo(
+                                  title: "Google",
+                                  imageSrc: "assets/google_logo.png",
+                                  onPress: () {},
+                                ),
+
+                                //Login With OTP Button
+                                SizedBox(
+                                  height: 40,
+                                  child: ElevatedButton.icon(
+                                    onPressed: () {
+                                      _buildOTPForm(context);
+                                    },
+                                    icon: Icon(
+                                      Icons.message_sharp,
+                                      size: getProportionateScreenWidth(20.0),
+                                    ),
+                                    label: Text(
+                                      "OTP",
+                                      style: TextStyle(
+                                          fontSize: getProportionateScreenWidth(
+                                              15.0)),
+                                    ),
+                                    style: ElevatedButton.styleFrom(
+                                      primary:
+                                          const Color(0xFF1F99CF), // background
+                                      onPrimary: Colors.white,
+                                      shape: const RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.all(
+                                          Radius.circular(5.0),
+                                        ), // <-- Radius
+                                      ), // foreground
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(
+                              height: getProportionateScreenHeight(25.0),
+                            ),
+                            //Login With Apple Button
                             ButtonWithLogo(
-                              title: "Google",
-                              imageSrc: "assets/google_logo.png",
+                              width: double.infinity,
+                              title: "Sign in with Apple Id",
+                              imageSrc: "assets/apple_logo.png",
                               onPress: () {},
                             ),
 
-                            //Login With OTP Button
                             SizedBox(
-                              height: 40,
-                              child: ElevatedButton.icon(
-                                onPressed: () {
-                                  _buildOTPForm(context);
-                                },
-                                icon: Icon(
-                                  Icons.message_sharp,
-                                  size: getProportionateScreenWidth(20.0),
-                                ),
-                                label: Text(
-                                  "OTP",
-                                  style: TextStyle(
-                                      fontSize:
-                                          getProportionateScreenWidth(15.0)),
-                                ),
-                                style: ElevatedButton.styleFrom(
-                                  primary:
-                                      const Color(0xFF1F99CF), // background
-                                  onPrimary: Colors.white,
-                                  shape: const RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.all(
-                                      Radius.circular(5.0),
-                                    ), // <-- Radius
-                                  ), // foreground
-                                ),
-                              ),
+                              height: getProportionateScreenHeight(25.0),
                             ),
+                            RichText(
+                              text: TextSpan(
+                                text: 'Don\'t have an Account? ',
+                                style: TextStyle(
+                                    fontSize: getProportionateScreenWidth(15.0),
+                                    color: Colors.black),
+                                children: <TextSpan>[
+                                  TextSpan(
+                                      text: 'Sign Up',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize:
+                                              getProportionateScreenWidth(15.0),
+                                          color: Colors.green),
+                                      recognizer: TapGestureRecognizer()
+                                        ..onTap = () {
+                                          Navigator.pushNamed(
+                                              context, SignUpForm.id);
+                                        }),
+                                ],
+                              ),
+                            )
                           ],
                         ),
-                        SizedBox(
-                          height: getProportionateScreenHeight(25.0),
-                        ),
-                        //Login With Apple Button
-                        ButtonWithLogo(
-                          width: double.infinity,
-                          title: "Sign in with Apple Id",
-                          imageSrc: "assets/apple_logo.png",
-                          onPress: () {},
-                        ),
-
-                        SizedBox(
-                          height: getProportionateScreenHeight(25.0),
-                        ),
-                        RichText(
-                          text: TextSpan(
-                            text: 'Don\'t have an Account? ',
-                            style: TextStyle(
-                                fontSize: getProportionateScreenWidth(15.0),
-                                color: Colors.black),
-                            children: <TextSpan>[
-                              TextSpan(
-                                  text: 'Sign Up',
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize:
-                                          getProportionateScreenWidth(15.0),
-                                      color: Colors.green),
-                                  recognizer: TapGestureRecognizer()
-                                    ..onTap = () {
-                                      Navigator.pushNamed(
-                                          context, SignUpForm.id);
-                                    }),
-                            ],
-                          ),
-                        )
-                      ],
+                      ),
                     ),
                   ),
-                ),
-              ),
-            );
-          },
-        )),
-      ),
+                );
+              },
+            )),
+          ),
+        ),
+        (isProgress) ? const LoadingIndicatorBar() : Container()
+      ],
     );
   }
 
@@ -361,7 +374,7 @@ class _LoginScreenState extends State<LoginScreen> {
       backgroundColor: Colors.transparent,
       //isScrollControlled: true,
       builder: (BuildContext context) {
-       // print("loginWithOtpBloc:  ${loginWithOtpBloc.state}");
+        // print("loginWithOtpBloc:  ${loginWithOtpBloc.state}");
         return BlocProvider.value(
           value: loginWithOtpBloc,
           child: BlocListener<LoginWithOtpBloc, LoginWithOtpState>(
@@ -371,7 +384,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   error = state.response["status"];
                   sendOtpResponse = state.response;
                 });
-            //    print(sendOtpResponse);
+                //    print(sendOtpResponse);
               }
               if (state is LoginWithOtpVerify) {
                 if (widget.myAccountRedirect == "false") {
@@ -419,7 +432,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   otpErrorMessage = "Incorrect OTP details";
                   otpBorderColorError = "true";
                 });
-             //   print("..............................$otpBorderColorError");
+                //   print("..............................$otpBorderColorError");
 
                 // ScaffoldMessenger.of(context).showSnackBar(
                 //   const SnackBar(
@@ -432,7 +445,7 @@ class _LoginScreenState extends State<LoginScreen> {
               }
 
               if (state is LoginWithOtpError) {
-           //     print(state);
+                //     print(state);
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(state.error),
@@ -733,50 +746,48 @@ class _LoginScreenState extends State<LoginScreen> {
         SizedBox(
           height: getProportionateScreenHeight(100.0),
         ),
-    
-       
         Container(
           margin: const EdgeInsets.symmetric(horizontal: 30.0),
-          child:    PhoneFieldHint(
+          child: PhoneFieldHint(
             controller: _otpInput,
-          decoration: InputDecoration(
-            //isDense: true,
-            errorText: (error!)
-                ? null
-                : sendOtpResponse!["Error"] ?? sendOtpResponse!["response"],
-            errorStyle: const TextStyle(
-              fontFamily: "Roboto",
-              color: Colors.red,
-              fontSize: 14.0,
-            ),
-            floatingLabelStyle:
-                MaterialStateTextStyle.resolveWith((Set<MaterialState> states) {
-              final Color color = states.contains(MaterialState.error)
-                  ? Colors.red
-                  : const Color(0xFF1F99CF);
-              return TextStyle(
-                color: color,
-                fontSize: 14.0,
+            decoration: InputDecoration(
+              //isDense: true,
+              errorText: (error!)
+                  ? null
+                  : sendOtpResponse!["Error"] ?? sendOtpResponse!["response"],
+              errorStyle: const TextStyle(
                 fontFamily: "Roboto",
-              );
-            }),
-            label: const Text("Enter Mobile Number"),
+                color: Colors.red,
+                fontSize: 14.0,
+              ),
+              floatingLabelStyle: MaterialStateTextStyle.resolveWith(
+                  (Set<MaterialState> states) {
+                final Color color = states.contains(MaterialState.error)
+                    ? Colors.red
+                    : const Color(0xFF1F99CF);
+                return TextStyle(
+                  color: color,
+                  fontSize: 14.0,
+                  fontFamily: "Roboto",
+                );
+              }),
+              label: const Text("Enter Mobile Number"),
 
-            labelStyle:
-                TextStyle(fontSize: 14.0, color: Colors.black.withOpacity(0.6)),
-            contentPadding: EdgeInsets.all(getProportionateScreenWidth(12.0)),
-            border: const OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(5.0))),
-            enabledBorder: const OutlineInputBorder(
-              borderSide: BorderSide(color: Color(0xFF1F99CF), width: 1.0),
-              borderRadius: BorderRadius.all(Radius.circular(5.0)),
-            ),
-            focusedBorder: const OutlineInputBorder(
-              borderSide: BorderSide(color: Color(0xFF1F99CF), width: 1.0),
-              borderRadius: BorderRadius.all(Radius.circular(5.0)),
+              labelStyle: TextStyle(
+                  fontSize: 14.0, color: Colors.black.withOpacity(0.6)),
+              contentPadding: EdgeInsets.all(getProportionateScreenWidth(12.0)),
+              border: const OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(5.0))),
+              enabledBorder: const OutlineInputBorder(
+                borderSide: BorderSide(color: Color(0xFF1F99CF), width: 1.0),
+                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+              ),
+              focusedBorder: const OutlineInputBorder(
+                borderSide: BorderSide(color: Color(0xFF1F99CF), width: 1.0),
+                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+              ),
             ),
           ),
-        ),
           //  TextFormField(
           //   controller: _otpInput,
           //   keyboardType: TextInputType.number,
@@ -836,8 +847,8 @@ class _LoginScreenState extends State<LoginScreen> {
             width: SizeConfig.screenWidth! / 0.8,
             title: "Request OTP",
             onPress: () async {
-            //  final appSignatureCode = await SmsAutoFill().getAppSignature;
-           //   print("Appsignature: $appSignatureCode");
+              //  final appSignatureCode = await SmsAutoFill().getAppSignature;
+              //   print("Appsignature: $appSignatureCode");
               loginWithOtpBloc.add(SendOtpEvent(_otpInput.text));
             },
             color: const Color(0xFF1F99CF),

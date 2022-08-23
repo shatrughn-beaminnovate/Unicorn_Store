@@ -10,7 +10,7 @@ import 'package:unicorn_store/Data/Models/Login%20and%20Signup/Login/login_data.
 import 'package:unicorn_store/Data/Models/Product/Product%20Type/type_images.dart';
 import 'package:unicorn_store/UI/Components/linear_indicator.dart';
 import 'package:unicorn_store/UI/Components/loading_indicator_bar.dart';
-import 'package:unicorn_store/UI/HomePage/Add%20Cart/add_to_cart.dart';
+import 'package:unicorn_store/UI/HomePage/Cart/add_to_cart.dart';
 import 'package:unicorn_store/UI/HomePage/Components/price_tag.dart';
 import 'package:unicorn_store/UI/HomePage/Search%20Button/custom_search_delegate.dart';
 import 'package:unicorn_store/UI/LoginPage/Components/custom_submit_button.dart';
@@ -471,7 +471,7 @@ class _ProductPageState extends State<ProductPage> {
               ),
             ),
           ),
-          (isProgress) ? LoadingIndicatorBar() : const Center()
+          (isProgress) ? const LoadingIndicatorBar() : const Center()
         ],
       ),
     );
@@ -554,7 +554,9 @@ class _ProductPageState extends State<ProductPage> {
                       ),
                       tooltip: 'Shopping_cart',
                       onPressed: () {
-                        Navigator.pushNamed(context, AddToCartPage.id);
+                        Navigator.push(context,MaterialPageRoute(builder: (context){
+                          return const AddToCartPage();
+                        }));
                       },
                     ),
                     Positioned(

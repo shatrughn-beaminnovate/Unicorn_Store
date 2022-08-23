@@ -67,6 +67,8 @@ dependencies:
   #package for sms auto detection
   sms_autofill: ^2.2.0
 
+  enhance_stepper: ^0.1.1
+
 
 dev_dependencies:
   flutter_test:

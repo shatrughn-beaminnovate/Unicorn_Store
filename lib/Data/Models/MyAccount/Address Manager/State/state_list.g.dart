@@ -7,8 +7,8 @@ part of 'state_list.dart';
 // **************************************************************************
 
 StateList _$StateListFromJson(Map<String, dynamic> json) => StateList(
-      (json['data'] as List<dynamic>?)
-          ?.map((e) => StateData.fromJson(e as Map<String, dynamic>))
+      (json['data'] as List<dynamic>)
+          .map((e) => StateData.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
 

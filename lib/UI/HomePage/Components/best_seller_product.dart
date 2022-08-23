@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:unicorn_store/UI/ProductPage/product_type_page.dart';
 import '../../size_config.dart';
 
 class BestSellersProduct extends StatelessWidget {
@@ -14,7 +13,7 @@ class BestSellersProduct extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(context, ProductDetailsScreen.id);
+     //   Navigator.pushNamed(context, ProductDetailsScreen.id);
       },
       child: Container(
         width: getProportionateScreenWidth(290.0),
