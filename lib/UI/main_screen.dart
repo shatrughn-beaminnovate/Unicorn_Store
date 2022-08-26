@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:unicorn_store/Business_Logic/bloc/login%20and%20signup/authentication/authentication_bloc.dart';
+import 'package:unicorn_store/Business_Logic/bloc/login%20and%20signup/login/login_bloc.dart';
+import 'package:unicorn_store/Data/Repositories/cart/add_to_local_cart_repository.dart';
+import 'package:unicorn_store/UI/Components/default_snackbar.dart';
 import 'package:unicorn_store/UI/HomePage/Components/build_app_bar.dart';
 import 'package:unicorn_store/UI/HomePage/home_page.dart';
 import 'package:unicorn_store/UI/HomePage/NavigationDrawer/Contact/contact_page.dart';
@@ -11,6 +15,7 @@ import 'package:unicorn_store/UI/LoginPage/sign_up_form.dart';
 import 'package:unicorn_store/UI/My%20Account/my_account_page.dart';
 import 'package:unicorn_store/UI/ProductCategories.dart/product_categories.dart';
 import 'package:unicorn_store/UI/constant.dart';
+import 'package:unicorn_store/main.dart';
 import 'HomePage/NavigationDrawer/Components/navigation_bar_list_item.dart';
 import 'HomePage/NavigationDrawer/Student Offer/student_offer_screen.dart';
 import 'LoginPage/login_form.dart';
@@ -35,10 +40,17 @@ class _MainScreenState extends State<MainScreen> {
   String dropdownValue = 'INR';
 
   late AuthenticationBloc authenticationBloc;
+  late LoginBloc loginBloc;
 
   @override
   void initState() {
     authenticationBloc = BlocProvider.of<AuthenticationBloc>(context);
+    loginBloc = LoginBloc(
+        RepositoryProvider.of<AddToLocalCartRepository>(context),
+        BlocProvider.of<AuthenticationBloc>(context));
+    print(loginBloc.isClosed);
+    FlutterNativeSplash.remove();
+
     super.initState();
   }
 
@@ -87,26 +99,6 @@ class _MainScreenState extends State<MainScreen> {
     ),
   ];
 
-  final List<String> currency = [
-    'INR',
-    'USD',
-    'EUR',
-    'AUD',
-    "NOK",
-    "BRL",
-    "BGN",
-    "CAD",
-    "CNY",
-    "NZD",
-    "CZK",
-    "DKK",
-    "GBP",
-    "HUF",
-    "ISK",
-    "JPY",
-    "MXN",
-  ];
-
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
@@ -124,55 +116,71 @@ class _MainScreenState extends State<MainScreen> {
         }
         return false;
       },
-      child: Scaffold(
-        appBar: const BuildAppBar(),
-        drawer: navigationDrawer(context),
+      child: BlocProvider(
+        create: (context) => loginBloc,
+        child: Scaffold(
+          appBar: const BuildAppBar(),
+          drawer: navigationDrawer(context),
 
-        //Bottom Navigation Bar
-        bottomNavigationBar: BottomNavigationBar(
-          currentIndex: widget.selectedIndex,
-          unselectedItemColor: Colors.grey,
-          selectedItemColor: kDefaultTitleColor,
-          iconSize: getProportionateScreenWidth(25),
-          selectedFontSize: getProportionateScreenWidth(12),
-          unselectedFontSize: getProportionateScreenWidth(12),
-          showSelectedLabels: true,
-          showUnselectedLabels: true,
-          // ignore: prefer_const_literals_to_create_immutables
-          items: [
-            const BottomNavigationBarItem(
-              icon: Icon(
-                Icons.home,
+          //Bottom Navigation Bar
+          bottomNavigationBar: BottomNavigationBar(
+            currentIndex: widget.selectedIndex,
+            unselectedItemColor: Colors.grey,
+            selectedItemColor: kDefaultTitleColor,
+            iconSize: getProportionateScreenWidth(25),
+            selectedFontSize: getProportionateScreenWidth(12),
+            unselectedFontSize: getProportionateScreenWidth(12),
+            showSelectedLabels: true,
+            showUnselectedLabels: true,
+            // ignore: prefer_const_literals_to_create_immutables
+            items: [
+              const BottomNavigationBarItem(
+                icon: Icon(
+                  Icons.home,
+                ),
+                label: 'HOME',
               ),
-              label: 'HOME',
-            ),
-            const BottomNavigationBarItem(
-              icon: Icon(
-                Icons.category_rounded,
+              const BottomNavigationBarItem(
+                icon: Icon(
+                  Icons.category_rounded,
+                ),
+                label: 'Categories',
               ),
-              label: 'Categories',
-            ),
-            // const BottomNavigationBarItem(
-            //   icon: Icon(
-            //     Icons.circle,
-            //   ),
-            //   label: 'Discover',
-            // ),
-            const BottomNavigationBarItem(
-              icon: Icon(
-                Icons.account_circle_rounded,
+              // const BottomNavigationBarItem(
+              //   icon: Icon(
+              //     Icons.circle,
+              //   ),
+              //   label: 'Discover',
+              // ),
+              const BottomNavigationBarItem(
+                icon: Icon(
+                  Icons.account_circle_rounded,
+                ),
+                label: 'Account',
               ),
-              label: 'Account',
-            ),
-          ],
-          onTap: (index) {
-            setState(() {
-              widget.selectedIndex = index;
-            });
-          },
+            ],
+            onTap: (index) {
+              setState(() {
+                widget.selectedIndex = index;
+              });
+            },
+          ),
+
+          body: BlocListener<LoginBloc, LoginState>(
+              listener: (context, state) {
+                if (state is LoginFailure) {
+                  ScaffoldMessenger.of(context).showSnackBar(defaultSnackBar(
+                      state.error, Colors.red, Colors.white, 2000));
+                }
+                if (state is LoginInitial) {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return const MyApp();
+                  }));
+                }
+              },
+              child: SafeArea(
+                  child: _widgetOptions.elementAt(widget.selectedIndex))),
         ),
-
-        body: SafeArea(child: _widgetOptions.elementAt(widget.selectedIndex)),
       ),
     );
   }
@@ -227,38 +235,37 @@ class _MainScreenState extends State<MainScreen> {
                           );
                         }));
                       },
-                      child:const Text(
+                      child: const Text(
                         "Login",
                         style: TextStyle(fontSize: 14.0, color: Colors.white),
                       ),
                     ),
-                   const SizedBox(
+                    const SizedBox(
                       width: 5.0,
                     ),
-                  const Icon(
+                    const Icon(
                       Icons.circle,
                       color: Colors.white,
                       size: 5,
                     ),
-                  const  SizedBox(
+                    const SizedBox(
                       width: 5.0,
                     ),
-                  GestureDetector(
-                    onTap: (){
-                        Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return BlocProvider.value(
-                      value: authenticationBloc,
-                      child: const SignUpForm(
-                        
-                      ),
-                    );
-                  }));
-                    },
-                    child: const  Text(
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) {
+                          return BlocProvider.value(
+                            value: authenticationBloc,
+                            child: const SignUpForm(),
+                          );
+                        }));
+                      },
+                      child: const Text(
                         "Sign Up",
                         style: TextStyle(fontSize: 14.0, color: Colors.white),
                       ),
-                  ),
+                    ),
                   ],
                 ),
                 decoration: const BoxDecoration(color: Colors.black),
@@ -279,52 +286,6 @@ class _MainScreenState extends State<MainScreen> {
               );
             },
           ),
-          // //Dropdown for Currency
-          // Container(
-          //   padding: EdgeInsets.symmetric(
-          //       vertical: getProportionateScreenHeight(5.0),
-          //       horizontal: getProportionateScreenWidth(10.0)),
-          //   decoration: BoxDecoration(
-          //     border: Border.all(color: kDefaultBorderColor, width: 0.0),
-          //   ),
-          //   child: ButtonTheme(
-          //     alignedDropdown: true,
-          //     child: DropdownButtonFormField<String>(
-          //       isExpanded: true,
-          //       value: dropdownValue,
-          //       decoration: const InputDecoration.collapsed(hintText: ''),
-          //       icon: const Icon(
-          //         Icons.unfold_more,
-          //         color: kDefaultBorderColor,
-          //       ),
-          //       selectedItemBuilder: (_) {
-          //         return currency
-          //             .map((e) => Text(
-          //                   e,
-          //                   style: TextStyle(
-          //                       color: kDefaultNavigationDrawerTitleColor,
-          //                       fontSize: getProportionateScreenWidth(15.0)),
-          //                 ))
-          //             .toList();
-          //       },
-          //       elevation: 0,
-          //       onChanged: (String? newValue) {
-          //         setState(() {
-          //           dropdownValue = newValue!;
-          //         });
-          //       },
-          //       items: currency.map((String value) {
-          //         return DropdownMenuItem<String>(
-          //           value: value,
-          //           child: Text(
-          //             value,
-          //             style: const TextStyle(color: kDefaultHeaderFontColor),
-          //           ),
-          //         );
-          //       }).toList(),
-          //     ),
-          //   ),
-          // ),
 
           //Login
           BlocBuilder<AuthenticationBloc, AuthenticationState>(
@@ -402,7 +363,7 @@ class _MainScreenState extends State<MainScreen> {
                 return NavigationDrawerListItem(
                   title: "Logout",
                   onPress: () {
-                    authenticationBloc.add(
+                    loginBloc.add(
                         LoggedOut(state.loginData.userData!.token.toString()));
                   },
                 );

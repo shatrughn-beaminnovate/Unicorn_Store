@@ -12,11 +12,13 @@ class UpdateCartItem extends UpdateCartItemQuantityEvent
   final int cartItemId;
   final String quantity;
   final String token;
+  final bool isAuthenticate;
+  final int productKey;
 
-  const UpdateCartItem(this.cartItemId,this.quantity,this.token);
+  const UpdateCartItem(this.cartItemId,this.quantity,this.token,this.isAuthenticate,this.productKey);
 
    @override
-  List<Object> get props => [cartItemId,quantity,token];
+  List<Object> get props => [cartItemId,quantity,token,isAuthenticate];
 
 
 

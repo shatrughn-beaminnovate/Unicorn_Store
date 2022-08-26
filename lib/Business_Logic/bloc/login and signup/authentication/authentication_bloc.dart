@@ -5,16 +5,22 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:unicorn_store/Data/Models/Login%20and%20Signup/Login/login_data.dart';
 import 'package:unicorn_store/Data/Models/Login%20and%20Signup/Logout/logout_details.dart';
 import 'package:unicorn_store/Data/Repositories/login%20and%20signup/login_details_repository.dart';
+
+import '../../../../Data/Repositories/cart/add_to_local_cart_repository.dart';
 part 'authentication_event.dart';
 part 'authentication_state.dart';
 
 class AuthenticationBloc
     extends Bloc<AuthenticationEvent, AuthenticationState> {
-  AuthenticationBloc() : super(AuthenticationUninitialized()) {
+  final AddToLocalCartRepository addToLocalCartRepository;
+
+  AuthenticationBloc(this.addToLocalCartRepository)
+      : super(AuthenticationUninitialized()) {
     final LoginDetailsRepository loginDetailsRepository =
         LoginDetailsRepository();
 
     on<AppStarted>((event, emit) async {
+      await addToLocalCartRepository.init();
       final bool hasToken = await loginDetailsRepository.hasToken();
       final bool hasOnBoarding =
           await loginDetailsRepository.hasOnBoardingScreenData();
@@ -29,9 +35,16 @@ class AuthenticationBloc
           emit(AuthenticationUnauthenticated());
         }
       } else {
-        await loginDetailsRepository.addingOnBoardingScreenData();
         emit(AuthenticatedOnboardingIncomplete());
       }
+    });
+
+    on<SaveOnBoardingScreenData>((event, emit) async {
+      emit(AuthenticationLoading());
+
+      await loginDetailsRepository.addingOnBoardingScreenData();
+
+      emit(AuthenticationUnauthenticated());
     });
 
     on<LoggedIn>((event, emit) async {
@@ -42,14 +55,9 @@ class AuthenticationBloc
       emit(AuthenticationAuthenticated(loginData: event.loginData));
     });
 
-    on<LoggedOut>((event, emit) async {
+    on<LoggedOutAuthenticationEvent>((event, emit) async {
       emit(AuthenticationLoading());
-
-      // ignore: unused_local_variable
-      final logoutData = await loginDetailsRepository.getLogoutDetails(
-          event.token);
       await loginDetailsRepository.deleteToken();
-     // emit(AuthenticatedUserLoggedout(logoutDetails: logoutData));
       emit(AuthenticationUnauthenticated());
     });
   }

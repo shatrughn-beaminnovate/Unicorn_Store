@@ -13,11 +13,13 @@ class RemoveCartItemLoading extends RemoveCartItemState {}
 
 class RemoveCartItemSuccess extends RemoveCartItemState {
   final Map<String, dynamic> removeResponse;
-  const RemoveCartItemSuccess(this.removeResponse);
+  final int productIndex;
+  const RemoveCartItemSuccess(this.removeResponse, this.productIndex);
 }
 
 class MoveToWishlistProductSuccess extends RemoveCartItemState {
   final Map<String, dynamic> removeResponse;
+
   const MoveToWishlistProductSuccess(this.removeResponse);
 }
 

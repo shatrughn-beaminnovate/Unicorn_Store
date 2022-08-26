@@ -10,6 +10,7 @@ import 'package:unicorn_store/Business_Logic/bloc/login%20and%20signup/authentic
 import 'package:unicorn_store/Business_Logic/bloc/my_account/Wishlist/Wishlist%20Product%20Details/wishlist_product_details_fetching_bloc.dart';
 import 'package:unicorn_store/Business_Logic/bloc/product/product%20page%20details/product_page_details_bloc.dart';
 import 'package:unicorn_store/Business_Logic/bloc/product/product_details_api_fetch_bloc.dart';
+import 'package:unicorn_store/Data/Models/Cart/View%20Cart/cart_product_data.dart';
 import 'package:unicorn_store/Data/Models/Filter/Filter%20Product%20Details/filter_product_selected_attributes.dart';
 import 'package:unicorn_store/Data/Models/Login%20and%20Signup/Login/login_data.dart';
 import 'package:unicorn_store/Data/Models/Product/New%20Product%20Type/attributes_options.dart';
@@ -17,9 +18,10 @@ import 'package:unicorn_store/Data/Models/Product/New%20Product%20Type/product_a
 import 'package:unicorn_store/Data/Models/Product/New%20Product%20Type/product_info_data.dart';
 import 'package:unicorn_store/Data/Models/Product/New%20Product/single_product_data.dart';
 import 'package:unicorn_store/Data/Models/Product/New%20Product/type_image.dart';
+import 'package:unicorn_store/Data/Repositories/cart/add_to_local_cart_repository.dart';
 import 'package:unicorn_store/UI/Components/default_snackbar.dart';
 import 'package:unicorn_store/UI/Components/image_path.dart';
-import 'package:unicorn_store/UI/Components/loading_indicator_bar.dart';
+import 'package:unicorn_store/UI/Components/loading_indicator_bar_with_no_background.dart';
 import 'package:unicorn_store/UI/HomePage/Cart/add_to_cart.dart';
 import 'package:unicorn_store/UI/HomePage/Components/third_header_text.dart';
 import 'package:unicorn_store/UI/HomePage/Search%20Button/custom_search_delegate.dart';
@@ -70,8 +72,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
   final FilterSingleProductDetailsBloc filterSingleProductDetailsBloc =
       FilterSingleProductDetailsBloc();
 
-  final AddingProductToCartBloc addingProductToCartBloc =
-      AddingProductToCartBloc();
+  late AddingProductToCartBloc addingProductToCartBloc;
+
   late TotalProductCountBloc totalProductCountBloc;
 
   ProductInfoData? productInfoData;
@@ -98,9 +100,12 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
   List<FilterProductSelectedAttributes>? filterProductSelectedAttributes;
 
   String? token;
+  bool? isAuthenticate;
 
   @override
   void initState() {
+    addingProductToCartBloc = AddingProductToCartBloc(
+        RepositoryProvider.of<AddToLocalCartRepository>(context));
     super.initState();
     // _controller = TabController(length: 2, vsync: this);
   }
@@ -143,7 +148,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
 
   @override
   Widget build(BuildContext context) {
-    // authenticationBloc = BlocProvider.of<AuthenticationBloc>(context);
+    authenticationBloc = BlocProvider.of<AuthenticationBloc>(context);
     totalProductCountBloc = BlocProvider.of<TotalProductCountBloc>(context);
     return WillPopScope(
       onWillPop: () async {
@@ -181,9 +186,16 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
               ],
               child: BlocBuilder<AuthenticationBloc, AuthenticationState>(
                 builder: (context, state) {
+                  print(
+                      ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ${authenticationBloc.state}");
                   if (state is AuthenticationAuthenticated) {
                     loginData = state.loginData;
                     token = loginData!.userData!.token;
+                    isAuthenticate = true;
+                  }
+                  if (state is AuthenticationUnauthenticated) {
+                    print("Not logged in user");
+                    isAuthenticate = false;
                   }
                   return BlocListener<FilterSingleProductDetailsBloc,
                       FilterSingleProductDetailsState>(
@@ -264,7 +276,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                 },
               ),
             ),
-            (isProgress) ? LoadingIndicatorBar() : Center()
+            (isProgress) ? LoadingIndicatorBarWithNoBackground() : Center()
           ],
         ),
       ),
@@ -287,8 +299,16 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                 : Navigator.of(context).pop();
           }),
       actions: [
-        const Spacer(),
-        Expanded(flex: 5, child: SvgPicture.asset("assets/Unicorn-logo.svg")),
+        const Spacer(flex: 2),
+        const Expanded(
+            flex: 5,
+            child: Padding(
+              padding: EdgeInsets.all(2.0),
+              child: Image(
+                image: AssetImage("assets/unicornLogo.png"),
+                fit: BoxFit.fitHeight,
+              ),
+            )),
         Expanded(
           flex: 5,
           child: Padding(
@@ -307,7 +327,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                           Navigator.push(context,
                               MaterialPageRoute(builder: (context) {
                             return AddToCartPage(
-                              token: token ?? "",
+                              token: token,
                             );
                           }));
                         },
@@ -357,8 +377,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                       onTap: () {
                         Navigator.push(context,
                             MaterialPageRoute(builder: (context) {
-                          return AddToCartPage(
-                              token: loginData!.userData!.token);
+                          return AddToCartPage(token: token);
                         }));
                       },
                       borderRadius: BorderRadius.circular(50.0),
@@ -707,8 +726,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                         });
                       }
                       if (state is AddingProductToCartLoaded) {
-                        totalProductCountBloc
-                            .add(LoadTotalCartProductCount(token ?? " "));
+                        totalProductCountBloc.add(LoadTotalCartProductCount(
+                            token ?? " ", isAuthenticate!));
                         setState(() {
                           isProgress = false;
                           cartStatus = true;
@@ -747,8 +766,38 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                             color: kDefaultSecondaryButtonColor,
                             onPress: () {
                               if (loginData == null) {
-                                addingProductToCartBloc.add(AddProductToCart(
-                                    singleProductData!.data!.id!, " "));
+                                CartProductData cartProductData =
+                                    CartProductData(
+                                        item_quantity: 1,
+                                        id: singleProductData!.data!.id,
+                                        sku: singleProductData!.data!.sku,
+                                        name: singleProductData!.data!.name,
+                                        slug: singleProductData!.data!.slug,
+                                        description: singleProductData!
+                                            .data!.description,
+                                        excerpt:
+                                            singleProductData!.data!.excerpt,
+                                        price: singleProductData!.data!.price!
+                                            .toDouble(),
+                                        saleprice: singleProductData!
+                                            .data!.saleprice!
+                                            .toDouble(),
+                                        quantity:
+                                            singleProductData!.data!.quantity,
+                                        related_products: singleProductData!
+                                            .data!.related_products,
+                                        images: singleProductData!.data!.images,
+                                        enabled:
+                                            singleProductData!.data!.enabled,
+                                        route_id:
+                                            singleProductData!.data!.route_id,
+                                        fixed_quantity: singleProductData!
+                                            .data!.fixed_quantity);
+
+                                print(singleProductData!.data!.images);
+                                addingProductToCartBloc.add(
+                                    AddProductToLocalCartEvent(
+                                        cartProductData));
                               } else {
                                 addingProductToCartBloc.add(AddProductToCart(
                                     singleProductData!.data!.id!,
@@ -790,8 +839,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
   }
 
   //Select Product Data
-  Widget _buildDataContainer(
-      AttributesOption optionValues, int index, int length) {
+  Widget _buildDataContainer(AttributesOption optionValues, int index, int length) {
     return SelectableContainer(
       //selected: true,
       selected: (selectedIndex[index.toString()]
@@ -840,8 +888,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
   }
 
   //Select Product Color
-  Widget _buildColorContainer(
-      AttributesOption optionValues, int index, int length) {
+  Widget _buildColorContainer(AttributesOption optionValues, int index, int length) {
     return SelectableContainer(
       selected: (selectedIndex[index.toString()]
               .toString()
@@ -849,6 +896,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
           ? true
           : false,
       marginColor: Colors.white,
+    
       onValueChanged: (_) {
         setState(() {
           selectedIndex[index.toString()] = optionValues.id.toString();

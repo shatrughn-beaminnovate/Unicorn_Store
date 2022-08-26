@@ -14,5 +14,12 @@ class AddProductToCart extends AddingProductToCartEvent {
   const AddProductToCart(this.productId, this.token);
 
   @override
-  List<Object> get props => [productId,token];
+  List<Object> get props => [productId, token];
+}
+
+class AddProductToLocalCartEvent extends AddingProductToCartEvent {
+  final CartProductData cartProductData;
+  const AddProductToLocalCartEvent(this.cartProductData);
+  @override
+  List<Object> get props => [cartProductData];
 }

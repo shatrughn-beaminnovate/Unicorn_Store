@@ -9,12 +9,9 @@ abstract class ViewCartProductListEvent extends Equatable {
 
 class LoadCartProductList extends ViewCartProductListEvent
 { 
-
   final String token;
-
-  const LoadCartProductList(this.token);
- 
+  final bool isAuthenticated;
+  const LoadCartProductList(this.token,this.isAuthenticated);
   @override
   List<Object> get props => [token];
-
 }

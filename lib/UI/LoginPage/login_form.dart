@@ -1,11 +1,15 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:unicorn_store/Business_Logic/bloc/login%20and%20signup/authentication/authentication_bloc.dart';
 import 'package:unicorn_store/Business_Logic/bloc/login%20and%20signup/login/login_bloc.dart';
 import 'package:unicorn_store/Business_Logic/bloc/login%20and%20signup/login_with_otp/bloc/login_with_otp_bloc.dart';
 import 'package:unicorn_store/Data/Data_Providers/Login%20and%20Signup/login_details.dart';
 import 'package:sms_autofill/sms_autofill.dart';
+import 'package:unicorn_store/Data/Repositories/cart/add_to_local_cart_repository.dart';
 import 'package:unicorn_store/UI/Components/loading_indicator_bar.dart';
 import 'package:unicorn_store/UI/LoginPage/forgot_password.dart';
 import 'package:unicorn_store/UI/main_screen.dart';
@@ -44,9 +48,24 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   LoginDetailsApi loginDetailsApi = LoginDetailsApi();
 
+  final FirebaseAuth auth = FirebaseAuth.instance;
+
   //Calling login bloc
-  LoginBloc loginBloc = LoginBloc();
-  LoginWithOtpBloc loginWithOtpBloc = LoginWithOtpBloc();
+  late LoginBloc loginBloc;
+  late LoginWithOtpBloc loginWithOtpBloc;
+  late AuthenticationBloc authenticationBloc;
+  @override
+  void initState() {
+    authenticationBloc = BlocProvider.of<AuthenticationBloc>(context);
+
+    loginBloc = LoginBloc(
+        RepositoryProvider.of<AddToLocalCartRepository>(context),
+        BlocProvider.of<AuthenticationBloc>(context));
+
+    loginWithOtpBloc = LoginWithOtpBloc(
+        RepositoryProvider.of<AddToLocalCartRepository>(context));
+    super.initState();
+  }
 
   bool? error = true;
   bool? otpErrorStatus = false;
@@ -64,11 +83,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _password = TextEditingController();
   final TextEditingController _otpInput = TextEditingController();
   final TextEditingController _optNumber = TextEditingController();
-  // final TextEditingController _optInput2 = TextEditingController();
-  // final TextEditingController _optInput3 = TextEditingController();
-  // final TextEditingController _optInput4 = TextEditingController();
-  // final TextEditingController _optInput5 = TextEditingController();
-  // final TextEditingController _optInput6 = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -283,7 +297,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ButtonWithLogo(
                                   title: "Google",
                                   imageSrc: "assets/google_logo.png",
-                                  onPress: () {},
+                                  onPress: () {
+                                    signup(context);
+                                  },
                                 ),
 
                                 //Login With OTP Button
@@ -861,6 +877,33 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _listenAutoOpt() async {
     await SmsAutoFill().listenForCode();
+  }
+
+  Future<void> signup(BuildContext context) async {
+
+    final GoogleSignIn googleSignIn = GoogleSignIn();
+    final GoogleSignInAccount? googleSignInAccount =
+        await googleSignIn.signIn();
+    
+    if (googleSignInAccount != null) {
+      final GoogleSignInAuthentication googleSignInAuthentication =
+          await googleSignInAccount.authentication;
+      final AuthCredential authCredential = GoogleAuthProvider.credential(
+          idToken: googleSignInAuthentication.idToken,
+          accessToken: googleSignInAuthentication.accessToken);
+
+      // Getting users credential
+      UserCredential result = await auth.signInWithCredential(authCredential);
+      User? user = result.user;
+
+      print(user);
+
+      // if (result != null) {
+      //   Navigator.pushReplacement(
+      //       context, MaterialPageRoute(builder: (context) => MainScreen(selectedIndex: 0,)));
+      // }  // if result not null we simply call the MaterialpageRoute,
+        // for go to the HomePage screen
+    }
   }
 }
 

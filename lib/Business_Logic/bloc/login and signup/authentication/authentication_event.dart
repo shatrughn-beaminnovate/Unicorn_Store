@@ -24,15 +24,13 @@ class LoggedIn extends AuthenticationEvent {
   String toString() => 'LoggedIn { token: $loginData }';
 }
 
-class LoggedOut extends AuthenticationEvent {
- 
-  final String token;
-
-  const LoggedOut(this.token);
+class LoggedOutAuthenticationEvent extends AuthenticationEvent {
+  const LoggedOutAuthenticationEvent();
 
   @override
-  List<Object> get props => [token];
+  List<Object> get props => [];
+}
 
-  @override
-  String toString() => 'LoggedOut';
+class SaveOnBoardingScreenData extends AuthenticationEvent {
+  const SaveOnBoardingScreenData();
 }

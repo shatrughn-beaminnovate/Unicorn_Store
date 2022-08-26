@@ -27,6 +27,13 @@ class PaymentModuleTansactionRedirectURLLoaded
   const PaymentModuleTansactionRedirectURLLoaded(this.paymentModule);
 }
 
+class PaymentModuleTansactionCashOnDeliverySuccess
+    extends PaymentModuleTansactionState {
+  final PaymentModule paymentModule;
+  const PaymentModuleTansactionCashOnDeliverySuccess(this.paymentModule);
+}
+
+
 class PaymentModuleTansactionRedirectURLFailure
     extends PaymentModuleTansactionState {
   final String message;

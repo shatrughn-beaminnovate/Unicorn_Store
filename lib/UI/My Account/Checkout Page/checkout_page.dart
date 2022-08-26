@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:selectable_container/selectable_container.dart';
 import 'package:unicorn_store/Business_Logic/bloc/checkout/order%20summary/order_summary_bloc.dart';
@@ -31,6 +32,8 @@ import '../../Components/image_path.dart';
 import '../../HomePage/Components/price_tag.dart';
 import '../../constant.dart';
 import '../../size_config.dart';
+import 'Components/form_validation_mixin.dart';
+import 'Components/payment_success.dart';
 import 'Components/text_input_field_for_checkout.dart';
 
 enum ShippingAddressEnum { billAddress, nearestUnicornStoreAddress, newAddress }
@@ -46,8 +49,10 @@ class CheckoutPage extends StatefulWidget {
 }
 
 class _CheckoutPageState extends State<CheckoutPage>
-    with TickerProviderStateMixin {
+    with TickerProviderStateMixin, FormValidationMixin {
   late AnimationController controller;
+
+  final _formKey = GlobalKey<FormState>();
 
   @override
   initState() {
@@ -124,6 +129,21 @@ class _CheckoutPageState extends State<CheckoutPage>
   final TextEditingController _city = TextEditingController();
   final TextEditingController _zip = TextEditingController();
 
+  //Controller for all billing address textfield values
+  final TextEditingController _shippingAddressFirstName =
+      TextEditingController();
+  final TextEditingController _shippingAddressLastName =
+      TextEditingController();
+  final TextEditingController _shippingAddressEmail = TextEditingController();
+  final TextEditingController _shippingAddressPhone = TextEditingController();
+  final TextEditingController _shippingAddressAddress1 =
+      TextEditingController();
+  final TextEditingController _shippingAddressAddress2 =
+      TextEditingController();
+  final TextEditingController _shippingAddressCity = TextEditingController();
+  final TextEditingController _shippingAddressZip = TextEditingController();
+  BuildContext? dialogContext;
+
   void setFormFieldData(
       DefaultBillingAddress editAddressList,
       DefaultShippingAddress defaultShippingAddress,
@@ -154,14 +174,22 @@ class _CheckoutPageState extends State<CheckoutPage>
           eventChecker: true));
     } else {
       // print("Setting shipping  address data ");
-      _firstName.text = defaultShippingAddress.field_data!.firstname.toString();
-      _lastName.text = defaultShippingAddress.field_data!.lastname.toString();
-      _email.text = defaultShippingAddress.field_data!.email.toString();
-      _phone.text = defaultShippingAddress.field_data!.phone.toString();
-      _address1.text = defaultShippingAddress.field_data!.address1.toString();
-      _address2.text = defaultShippingAddress.field_data!.address2.toString();
-      _city.text = defaultShippingAddress.field_data!.city.toString();
-      _zip.text = defaultShippingAddress.field_data!.zip.toString();
+      _shippingAddressFirstName.text =
+          defaultShippingAddress.field_data!.firstname.toString();
+      _shippingAddressLastName.text =
+          defaultShippingAddress.field_data!.lastname.toString();
+      _shippingAddressEmail.text =
+          defaultShippingAddress.field_data!.email.toString();
+      _shippingAddressPhone.text =
+          defaultShippingAddress.field_data!.phone.toString();
+      _shippingAddressAddress1.text =
+          defaultShippingAddress.field_data!.address1.toString();
+      _shippingAddressAddress2.text =
+          defaultShippingAddress.field_data!.address2.toString();
+      _shippingAddressCity.text =
+          defaultShippingAddress.field_data!.city.toString();
+      _shippingAddressZip.text =
+          defaultShippingAddress.field_data!.zip.toString();
 
       country = Country(
           defaultShippingAddress.field_data!.country_id!,
@@ -806,6 +834,18 @@ class _CheckoutPageState extends State<CheckoutPage>
                                 }));
                               }
                               if (state
+                                  is PaymentModuleTansactionCashOnDeliverySuccess) {
+                                Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: ((context) => PaymentSuccess(
+                                              order_id: paymentModule!
+                                                      .data!.order_id ??
+                                                  " ",
+                                              token: widget.token ?? " ",
+                                            ))));
+                              }
+                              if (state
                                   is PaymentModuleTansactionRedirectURLFailure) {
                                 setState(() {
                                   isProgress = false;
@@ -837,6 +877,11 @@ class _CheckoutPageState extends State<CheckoutPage>
                               }
                               if (state
                                   is PaymentModuleTansactionRedirectURLLoaded) {
+                                paymentModule = state.paymentModule;
+                                return _buildPaymentModule();
+                              }
+                              if (state
+                                  is PaymentModuleTansactionCashOnDeliverySuccess) {
                                 paymentModule = state.paymentModule;
                                 return _buildPaymentModule();
                               }
@@ -885,7 +930,6 @@ class _CheckoutPageState extends State<CheckoutPage>
             physics: const NeverScrollableScrollPhysics(),
             shrinkWrap: true,
             itemBuilder: (context, index) {
-        
               return Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 0.0, vertical: 5.0),
@@ -944,174 +988,208 @@ class _CheckoutPageState extends State<CheckoutPage>
 
   //This is for billing address form input
   Widget _buildAddressForm(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        Text(
-          "Billing Address",
-          style: TextStyle(
-              fontSize: getProportionateScreenWidth(20.0),
-              color: kDefaultTitleFontColor),
-        ),
-        SizedBox(
-          height: getProportionateScreenHeight(15.0),
-        ),
+    return Form(
+      key: _formKey,
+      child: Column(
+        children: <Widget>[
+          Text(
+            "Billing Address",
+            style: TextStyle(
+                fontSize: getProportionateScreenWidth(20.0),
+                color: kDefaultTitleFontColor),
+          ),
+          SizedBox(
+            height: getProportionateScreenHeight(15.0),
+          ),
 
-        //First Name
-        TextInputFieldForCheckout(
-          title: "First Name",
-          controller: _firstName,
-          isMandatory: true,
-          obscureText: false,
-        ),
-        SizedBox(
-          height: getProportionateScreenHeight(15.0),
-        ),
+          //First Name
+          TextInputFieldForCheckout(
+            title: "First Name",
+            validator: isEmpty,
+            controller: _firstName,
+            isMandatory: true,
+            obscureText: false,
+          ),
+          SizedBox(
+            height: getProportionateScreenHeight(15.0),
+          ),
 
-        //Last Name
-        TextInputFieldForCheckout(
-          title: "Last Name",
-          controller: _lastName,
-          isMandatory: true,
-          obscureText: false,
-        ),
-        SizedBox(
-          height: getProportionateScreenHeight(15.0),
-        ),
+          //Last Name
+          TextInputFieldForCheckout(
+            title: "Last Name",
+            validator: isEmpty,
+            controller: _lastName,
+            isMandatory: true,
+            obscureText: false,
+          ),
+          SizedBox(
+            height: getProportionateScreenHeight(15.0),
+          ),
 
-        //Email
-        TextInputFieldForCheckout(
-          title: "E-mail",
-          controller: _email,
-          isMandatory: true,
-          obscureText: false,
-        ),
+          //Email
+          TextInputFieldForCheckout(
+            title: "E-mail",
+            validator: isEmpty,
+            controller: _email,
+            isMandatory: true,
+            obscureText: false,
+          ),
 
-        SizedBox(
-          height: getProportionateScreenHeight(15.0),
-        ),
+          SizedBox(
+            height: getProportionateScreenHeight(15.0),
+          ),
 
-        //Phone No
-        TextInputFieldForCheckout(
-          title: "Phone No.",
-          controller: _phone,
-          isMandatory: true,
-          obscureText: false,
-        ),
+          //Phone No
+          TextInputFieldForCheckout(
+            title: "Phone No.",
+            validator: isEmpty,
+            textInputType: const TextInputType.numberWithOptions(
+              decimal: true,
+              signed: true,
+            ),
+            inputFormatters: <TextInputFormatter>[
+              FilteringTextInputFormatter.digitsOnly,
+              // LengthLimitingTextInputFormatter(
+              //   2,
+              // ),
+            ],
+            controller: _phone,
+            isMandatory: true,
+            obscureText: false,
+          ),
 
-        SizedBox(
-          height: getProportionateScreenHeight(15.0),
-        ),
+          SizedBox(
+            height: getProportionateScreenHeight(15.0),
+          ),
 
-        //Address 1
-        TextInputFieldForCheckout(
-          title: "Address 1",
-          controller: _address1,
-          isMandatory: true,
-          obscureText: false,
-        ),
+          //Address 1
+          TextInputFieldForCheckout(
+            title: "Address 1",
+            validator: isEmpty,
+            controller: _address1,
+            isMandatory: true,
+            obscureText: false,
+          ),
 
-        SizedBox(
-          height: getProportionateScreenHeight(15.0),
-        ),
+          SizedBox(
+            height: getProportionateScreenHeight(15.0),
+          ),
 
-        //Address 2
-        TextInputFieldForCheckout(
-          title: "Address 2",
-          controller: _address2,
-          isMandatory: false,
-          obscureText: false,
-        ),
-        SizedBox(
-          height: getProportionateScreenHeight(15.0),
-        ),
+          //Address 2
+          TextInputFieldForCheckout(
+            title: "Address 2",
+            validator: isEmpty,
+            controller: _address2,
+            isMandatory: false,
+            obscureText: false,
+          ),
+          SizedBox(
+            height: getProportionateScreenHeight(15.0),
+          ),
 
-        //City
-        TextInputFieldForCheckout(
-          title: "City",
-          controller: _city,
-          isMandatory: true,
-          obscureText: false,
-        ),
-        SizedBox(
-          height: getProportionateScreenHeight(15.0),
-        ),
+          //City
+          TextInputFieldForCheckout(
+            title: "City",
+            validator: isEmpty,
+            controller: _city,
+            isMandatory: true,
+            obscureText: false,
+          ),
+          SizedBox(
+            height: getProportionateScreenHeight(15.0),
+          ),
 
-        //Zip
-        TextInputFieldForCheckout(
-          title: "Post Code",
-          controller: _zip,
-          isMandatory: true,
-          obscureText: false,
-        ),
-        SizedBox(
-          height: getProportionateScreenHeight(15.0),
-        ),
+          //Zip
+          TextInputFieldForCheckout(
+            title: "Post Code",
+            validator: isEmpty,
+            textInputType: const TextInputType.numberWithOptions(
+              decimal: false,
+              signed: true,
+            ),
+            inputFormatters: <TextInputFormatter>[
+              FilteringTextInputFormatter.digitsOnly,
+              // LengthLimitingTextInputFormatter(
+              //   2,
+              // ),
+            ],
+            controller: _zip,
+            isMandatory: true,
+            obscureText: false,
+          ),
+          SizedBox(
+            height: getProportionateScreenHeight(15.0),
+          ),
 
-        //Country
-        BlocBuilder<CountryDataApiFetchBloc, CountryDataApiFetchState>(
-          builder: (context, state) {
-            if (state is CountryDataApiFetchLoded) {
-              countryList = state.countryList;
-              return _buildCountryDropDown();
-            }
-            return Container();
-          },
-        ),
+          //Country
+          BlocBuilder<CountryDataApiFetchBloc, CountryDataApiFetchState>(
+            builder: (context, state) {
+              if (state is CountryDataApiFetchLoded) {
+                countryList = state.countryList;
+                return _buildCountryDropDown();
+              }
+              return Container();
+            },
+          ),
 
-        SizedBox(
-          height: getProportionateScreenHeight(15.0),
-        ),
+          SizedBox(
+            height: getProportionateScreenHeight(15.0),
+          ),
 
-        //State
-        BlocConsumer<StateDataApiFetchBloc, StateDataApiFetchState>(
-          listener: (context, state) {
-            if (state is StateDataApiFetchLoaded) {
-              setState(() {
-                if (state.eventChecker) {
-                } else {
-                  stateData = null;
-                }
+          //State
+          BlocConsumer<StateDataApiFetchBloc, StateDataApiFetchState>(
+            listener: (context, state) {
+              if (state is StateDataApiFetchLoaded) {
+                setState(() {
+                  if (state.eventChecker) {
+                  } else {
+                    stateData = null;
+                  }
+                  stateList = state.stateList.state;
+                });
+              }
+            },
+            builder: (context, state) {
+              if (state is StateDataApiFetchLoaded) {
                 stateList = state.stateList.state;
-              });
-            }
-          },
-          builder: (context, state) {
-            if (state is StateDataApiFetchLoaded) {
-              stateList = state.stateList.state;
-            }
-            return _buildStateDropDown();
-          },
-        ),
+              }
+              return _buildStateDropDown();
+            },
+          ),
 
-        SizedBox(
-          height: getProportionateScreenHeight(15.0),
-        ),
-        Container(
-            width: SizeConfig.screenWidth! * 30,
-            margin: EdgeInsets.only(left: SizeConfig.screenWidth! * 0.60),
-            child: ElevatedButton(
-                onPressed: () {
-                  DefaultAddressFieldData defaultAddressFieldData =
-                      DefaultAddressFieldData(
-                          firstname: _firstName.text,
-                          lastname: _lastName.text,
-                          email: _email.text,
-                          phone: int.parse(_phone.text),
-                          address1: _address1.text,
-                          address2: _address2.text,
-                          city: _city.text,
-                          zip: int.parse(_zip.text),
-                          country: country!.name,
-                          country_code: country!.isoCode2,
-                          country_id: country!.id,
-                          zone: stateData!.name,
-                          zone_id: stateData!.id);
-                  //   print(defaultAddressFieldData);
-                  defaultUserAddressBloc.add(UpdateDefaultBillingAddress(
-                      defaultAddressFieldData, widget.token!));
-                },
-                child: const Text("NEXT")))
-      ],
+          SizedBox(
+            height: getProportionateScreenHeight(15.0),
+          ),
+          Container(
+              width: SizeConfig.screenWidth! * 30,
+              margin: EdgeInsets.only(left: SizeConfig.screenWidth! * 0.60),
+              child: ElevatedButton(
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      DefaultAddressFieldData defaultAddressFieldData =
+                          DefaultAddressFieldData(
+                              firstname: _firstName.text,
+                              lastname: _lastName.text,
+                              email: _email.text,
+                              phone: int.parse(_phone.text),
+                              address1: _address1.text,
+                              address2: _address2.text,
+                              city: _city.text,
+                              zip: int.parse(_zip.text),
+                              country: country!.name,
+                              country_code: country!.isoCode2,
+                              country_id: country!.id,
+                              zone: stateData!.name,
+                              zone_id: stateData!.id);
+                      //   print(defaultAddressFieldData);
+
+                      defaultUserAddressBloc.add(UpdateDefaultBillingAddress(
+                          defaultAddressFieldData, widget.token!));
+                    }
+                  },
+                  child: const Text("NEXT")))
+        ],
+      ),
     );
   }
 
@@ -1261,6 +1339,7 @@ class _CheckoutPageState extends State<CheckoutPage>
       context: context,
       transitionAnimationController: controller,
       builder: (BuildContext context) {
+        dialogContext = context;
         return StatefulBuilder(builder: (context, setterState) {
           return BlocProvider.value(
             value: defaultUserAddressBloc,
@@ -1619,7 +1698,7 @@ class _CheckoutPageState extends State<CheckoutPage>
                                 continued();
 
                                 Navigator.pop(context);
-                                Navigator.pop(context);
+                                Navigator.pop(dialogContext!);
 
                                 // Navigator.of(context)
                                 //     .popUntil((_) => count++ >= 2);
@@ -1868,6 +1947,7 @@ class _CheckoutPageState extends State<CheckoutPage>
                                   timer!.cancel();
                                 }
                               }
+                              Navigator.of(context).pop();
                               //This is event to resolve issues when we change coutry and close aleart dialod then open again
                               stateDataApiFetchBloc.add(LoadStateData(
                                   countryID: defaultAddressData!
@@ -1878,7 +1958,6 @@ class _CheckoutPageState extends State<CheckoutPage>
                                       .toString(),
                                   token: widget.token!,
                                   eventChecker: false));
-                              Navigator.of(context).pop();
                             },
                             padding: const EdgeInsets.all(0.0),
                             iconSize: 35.0,
@@ -1903,14 +1982,20 @@ class _CheckoutPageState extends State<CheckoutPage>
                                     DefaultAddressFieldData
                                         defaultAddressFieldData =
                                         DefaultAddressFieldData(
-                                            firstname: _firstName.text,
-                                            lastname: _lastName.text,
-                                            email: _email.text,
-                                            phone: int.parse(_phone.text),
-                                            address1: _address1.text,
-                                            address2: _address2.text,
-                                            city: _city.text,
-                                            zip: int.parse(_zip.text),
+                                            firstname:
+                                                _shippingAddressFirstName.text,
+                                            lastname:
+                                                _shippingAddressLastName.text,
+                                            email: _shippingAddressEmail.text,
+                                            phone: int.parse(
+                                                _shippingAddressPhone.text),
+                                            address1:
+                                                _shippingAddressAddress1.text,
+                                            address2:
+                                                _shippingAddressAddress2.text,
+                                            city: _shippingAddressCity.text,
+                                            zip: int.parse(
+                                                _shippingAddressZip.text),
                                             country: country!.name,
                                             country_code: country!.isoCode2,
                                             country_id: country!.id,
@@ -1955,6 +2040,7 @@ class _CheckoutPageState extends State<CheckoutPage>
                         if (state is DefaultUserAddressLoaded) {
                           settingState(() {
                             defaultAddressData = state.defaultAddressData;
+                            print(defaultAddressData);
                             setFormFieldData(
                                 defaultAddressData!
                                     .data!.default_billing_address!,
@@ -1981,7 +2067,7 @@ class _CheckoutPageState extends State<CheckoutPage>
                           //         "/CheckoutPage_Screen");
                           continued();
                           Navigator.pop(context);
-                          Navigator.pop(context);
+                          Navigator.pop(dialogContext!);
                           // Navigator.of(context).popUntil((_) => count++ >= 2);
                         }
                         if (state is DefaultUserAddressNotFound) {
@@ -2033,7 +2119,7 @@ class _CheckoutPageState extends State<CheckoutPage>
                               //First Name
                               TextInputFieldForCheckout(
                                 title: "First Name",
-                                controller: _firstName,
+                                controller: _shippingAddressFirstName,
                                 isMandatory: true,
                                 obscureText: false,
                               ),
@@ -2044,7 +2130,7 @@ class _CheckoutPageState extends State<CheckoutPage>
                               //Last Name
                               TextInputFieldForCheckout(
                                 title: "Last Name",
-                                controller: _lastName,
+                                controller: _shippingAddressLastName,
                                 isMandatory: true,
                                 obscureText: false,
                               ),
@@ -2055,7 +2141,7 @@ class _CheckoutPageState extends State<CheckoutPage>
                               //Email
                               TextInputFieldForCheckout(
                                 title: "E-mail",
-                                controller: _email,
+                                controller: _shippingAddressEmail,
                                 isMandatory: true,
                                 obscureText: false,
                               ),
@@ -2067,7 +2153,7 @@ class _CheckoutPageState extends State<CheckoutPage>
                               //Phone No
                               TextInputFieldForCheckout(
                                 title: "Phone No.",
-                                controller: _phone,
+                                controller: _shippingAddressPhone,
                                 isMandatory: true,
                                 obscureText: false,
                               ),
@@ -2079,7 +2165,7 @@ class _CheckoutPageState extends State<CheckoutPage>
                               //Address 1
                               TextInputFieldForCheckout(
                                 title: "Address 1",
-                                controller: _address1,
+                                controller: _shippingAddressAddress1,
                                 isMandatory: true,
                                 obscureText: false,
                               ),
@@ -2091,7 +2177,7 @@ class _CheckoutPageState extends State<CheckoutPage>
                               //Address 2
                               TextInputFieldForCheckout(
                                 title: "Address 2",
-                                controller: _address2,
+                                controller: _shippingAddressAddress2,
                                 isMandatory: false,
                                 obscureText: false,
                               ),
@@ -2102,7 +2188,7 @@ class _CheckoutPageState extends State<CheckoutPage>
                               //City
                               TextInputFieldForCheckout(
                                 title: "City",
-                                controller: _city,
+                                controller: _shippingAddressCity,
                                 isMandatory: true,
                                 obscureText: false,
                               ),
@@ -2113,7 +2199,7 @@ class _CheckoutPageState extends State<CheckoutPage>
                               //Zip
                               TextInputFieldForCheckout(
                                 title: "Post Code",
-                                controller: _zip,
+                                controller: _shippingAddressZip,
                                 isMandatory: true,
                                 obscureText: false,
                               ),

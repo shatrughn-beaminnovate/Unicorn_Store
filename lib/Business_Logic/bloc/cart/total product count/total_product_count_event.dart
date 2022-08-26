@@ -9,5 +9,6 @@ abstract class TotalProductCountEvent extends Equatable {
 
 class LoadTotalCartProductCount extends TotalProductCountEvent {
   final String token;
-  const LoadTotalCartProductCount(this.token);
+  final bool isAuthenticate;
+  const LoadTotalCartProductCount(this.token,this.isAuthenticate);
 }

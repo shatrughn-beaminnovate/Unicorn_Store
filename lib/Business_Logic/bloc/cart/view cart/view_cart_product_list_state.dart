@@ -16,6 +16,12 @@ class ViewCartProductListLoaded extends ViewCartProductListState {
 
   const ViewCartProductListLoaded(this.cartProductData);
 }
+
+class ViewLocalCartProductListLoaded extends ViewCartProductListState {
+  final List<CartProductData> cartProductData;
+
+  const ViewLocalCartProductListLoaded(this.cartProductData);
+}
  
 class ViewCartProductListEmpty extends ViewCartProductListState {}
 

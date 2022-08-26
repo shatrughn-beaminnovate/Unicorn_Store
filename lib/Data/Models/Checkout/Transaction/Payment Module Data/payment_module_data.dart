@@ -21,7 +21,6 @@ class PaymentModuleData {
   final PaymentModuleRefunds? refunds;
   final String? order_status;
   final String? order_token;
-  final String? order_note;
   final String? payment_link;
   final String? order_tags;
 
@@ -39,12 +38,11 @@ class PaymentModuleData {
       this.refunds,
       this.order_status,
       this.order_token,
-      this.order_note,
       this.payment_link,
       this.order_tags);
-  // "order_splits": []
 
 
+ 
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
       'cf_order_id': cf_order_id,
@@ -60,7 +58,6 @@ class PaymentModuleData {
       'refunds': refunds?.toJson(),
       'order_status': order_status,
       'order_token': order_token,
-      'order_note': order_note,
       'payment_link': payment_link,
       'order_tags': order_tags,
     };
@@ -81,7 +78,6 @@ class PaymentModuleData {
       map['refunds'] != null ? PaymentModuleRefunds.fromJson(map['refunds'] as Map<String,dynamic>) : null,
       map['order_status'] != null ? map['order_status'] as String : null,
       map['order_token'] != null ? map['order_token'] as String : null,
-      map['order_note'] != null ? map['order_note'] as String : null,
       map['payment_link'] != null ? map['payment_link'] as String : null,
       map['order_tags'] != null ? map['order_tags'] as String : null,
     );
@@ -89,6 +85,6 @@ class PaymentModuleData {
 
   @override
   String toString() {
-    return 'PaymentModuleData(cf_order_id: $cf_order_id, order_id: $order_id, entity: $entity, order_currency: $order_currency, order_amount: $order_amount, order_expiry_time: $order_expiry_time, customer_details: $customer_details, order_meta: $order_meta, settlements: $settlements, payments: $payments, refunds: $refunds, order_status: $order_status, order_token: $order_token, order_note: $order_note, payment_link: $payment_link, order_tags: $order_tags)';
+    return 'PaymentModuleData(cf_order_id: $cf_order_id, order_id: $order_id, entity: $entity, order_currency: $order_currency, order_amount: $order_amount, order_expiry_time: $order_expiry_time, customer_details: $customer_details, order_meta: $order_meta, settlements: $settlements, payments: $payments, refunds: $refunds, order_status: $order_status, order_token: $order_token, payment_link: $payment_link, order_tags: $order_tags)';
   }
 }

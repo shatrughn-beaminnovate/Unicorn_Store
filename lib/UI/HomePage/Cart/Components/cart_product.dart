@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:unicorn_store/Business_Logic/bloc/cart/total%20price%20calculate/total_price_calculate_bloc.dart';
 import 'package:unicorn_store/Data/Models/Cart/View%20Cart/cart_product_data.dart';
+import 'package:unicorn_store/Data/Repositories/cart/add_to_local_cart_repository.dart';
 import 'package:unicorn_store/UI/HomePage/Components/price_tag.dart';
 import '../../../../Business_Logic/bloc/cart/update/update_cart_item_quantity_bloc.dart';
 import '../../../Components/default_snackbar.dart';
@@ -14,7 +15,8 @@ import '../../../constant.dart';
 class CartProduct extends StatefulWidget {
   final CartProductData cartProduct;
   final String token;
-
+  final bool isAuthenticate;
+  final int index;
   final Map<String, dynamic> totalPriceList;
   final ValueSetter<int> onPressed;
   final ValueSetter<int> addToWishlist;
@@ -23,7 +25,9 @@ class CartProduct extends StatefulWidget {
       required this.cartProduct,
       required this.addToWishlist,
       required this.totalPriceList,
+      required this.index,
       required this.token,
+      required this.isAuthenticate,
       required this.onPressed})
       : super(key: key);
 
@@ -37,19 +41,20 @@ class _CartProductState extends State<CartProduct> {
 
   final TextEditingController _quantityController = TextEditingController();
 
-  final UpdateCartItemQuantityBloc updateCartItemQuantityBloc =
-      UpdateCartItemQuantityBloc();
+  late UpdateCartItemQuantityBloc updateCartItemQuantityBloc;
+
   late TotalPriceCalculateBloc totalPriceCalculateBloc;
 
   @override
   void initState() {
     totalPriceCalculateBloc = BlocProvider.of<TotalPriceCalculateBloc>(context);
+    updateCartItemQuantityBloc = UpdateCartItemQuantityBloc(
+        RepositoryProvider.of<AddToLocalCartRepository>(context));
     counter = widget.cartProduct.item_quantity.toString();
 
     //calculate total price of product
-    totalProductPrice =
-        widget.cartProduct.price! * double.parse(counter);
-    widget.totalPriceList[widget.cartProduct.cart_item_id.toString()] =
+    totalProductPrice = widget.cartProduct.price! * double.parse(counter);
+    widget.totalPriceList[widget.cartProduct.id.toString()] =
         totalProductPrice;
     totalPriceCalculateBloc.add(CalculateTotalPrice(widget.totalPriceList));
     super.initState();
@@ -66,7 +71,7 @@ class _CartProductState extends State<CartProduct> {
             setState(() {
               totalProductPrice =
                   widget.cartProduct.price! * double.parse(counter);
-              widget.totalPriceList[widget.cartProduct.cart_item_id
+              widget.totalPriceList[widget.cartProduct.id
                   .toString()] = totalProductPrice;
               totalPriceCalculateBloc
                   .add(CalculateTotalPrice(widget.totalPriceList));
@@ -78,7 +83,7 @@ class _CartProductState extends State<CartProduct> {
           }
         },
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical:5.0),
+          padding: const EdgeInsets.symmetric(vertical: 5.0),
           child: Card(
             color: Colors.white,
             elevation: 2,
@@ -94,8 +99,8 @@ class _CartProductState extends State<CartProduct> {
                         child: Column(
                           children: [
                             Container(
-                              padding:
-                                  EdgeInsets.all(getProportionateScreenWidth(5.0)),
+                              padding: EdgeInsets.all(
+                                  getProportionateScreenWidth(5.0)),
                               height: getProportionateScreenHeight(100.0),
                               width: getProportionateScreenWidth(100.0),
                               // decoration: BoxDecoration(
@@ -107,7 +112,8 @@ class _CartProductState extends State<CartProduct> {
                                       "$categoryImageUrl/product/medium/${ImagePath.getPrimaryImageSrc(widget.cartProduct.images!)}",
                                   placeholder: (context, url) => Container(),
                                   errorWidget: (context, url, error) =>
-                                      const Image(image: AssetImage(errorImageUrl))),
+                                      const Image(
+                                          image: AssetImage(errorImageUrl))),
                             ),
                             const SizedBox(
                               height: 10,
@@ -119,7 +125,8 @@ class _CartProductState extends State<CartProduct> {
                                 if (sortingValue == " ") {
                                   showDialog<String?>(
                                       context: context,
-                                      builder: (BuildContext context) => AlertDialog(
+                                      builder: (BuildContext context) =>
+                                          AlertDialog(
                                             title: const Text('Enter Quantity'),
                                             content: TextFormField(
                                               controller: _quantityController,
@@ -128,7 +135,8 @@ class _CartProductState extends State<CartProduct> {
                                                 decimal: false,
                                                 signed: true,
                                               ),
-                                              inputFormatters: <TextInputFormatter>[
+                                              inputFormatters: <
+                                                  TextInputFormatter>[
                                                 FilteringTextInputFormatter
                                                     .digitsOnly,
                                                 LengthLimitingTextInputFormatter(
@@ -141,23 +149,29 @@ class _CartProductState extends State<CartProduct> {
                                             ),
                                             actions: <Widget>[
                                               TextButton(
-                                                onPressed: () =>
-                                                    Navigator.pop(context, 'Cancel'),
+                                                onPressed: () => Navigator.pop(
+                                                    context, 'Cancel'),
                                                 child: const Text('Cancel'),
                                               ),
                                               TextButton(
                                                 onPressed: () {
                                                   setState(() {
                                                     counter =
-                                                        _quantityController.text;
+                                                        _quantityController
+                                                            .text;
                                                   });
-                                                  updateCartItemQuantityBloc.add(
-                                                      UpdateCartItem(
+                                                  updateCartItemQuantityBloc
+                                                      .add(UpdateCartItem(
                                                           widget.cartProduct
-                                                              .cart_item_id!,
+                                                                  .cart_item_id ??
+                                                              -1,
                                                           counter,
-                                                          widget.token));
-                                                  Navigator.pop(context, 'Cancel');
+                                                          widget.token,
+                                                          widget.isAuthenticate,
+                                                          widget.cartProduct
+                                                              .id!));
+                                                  Navigator.pop(
+                                                      context, 'Cancel');
                                                 },
                                                 child: const Text('OK'),
                                               ),
@@ -168,9 +182,11 @@ class _CartProductState extends State<CartProduct> {
                                     counter = sortingValue!;
                                   });
                                   updateCartItemQuantityBloc.add(UpdateCartItem(
-                                      widget.cartProduct.cart_item_id!,
+                                      widget.cartProduct.cart_item_id ?? -1,
                                       counter,
-                                      widget.token));
+                                      widget.token,
+                                      widget.isAuthenticate,
+                                      widget.cartProduct.id!));
                                 }
                               },
                               itemBuilder: (BuildContext context) => const [
@@ -194,13 +210,16 @@ class _CartProductState extends State<CartProduct> {
                               child: Container(
                                 height: 40,
                                 width: 95,
-                                padding: const EdgeInsets.only(left: 8.0, right: 5),
+                                padding:
+                                    const EdgeInsets.only(left: 8.0, right: 5),
                                 decoration: BoxDecoration(
-                                    border: Border.all(color: kDefaultBorderColor)),
+                                    border:
+                                        Border.all(color: kDefaultBorderColor)),
                                 child: BlocBuilder<UpdateCartItemQuantityBloc,
                                     UpdateCartItemQuantityState>(
                                   builder: (context, state) {
-                                    if (state is UpdateCartItemQuantityLoading) {
+                                    if (state
+                                        is UpdateCartItemQuantityLoading) {
                                       return const Padding(
                                         padding: EdgeInsets.symmetric(
                                             vertical: 10.0, horizontal: 30.0),
@@ -221,7 +240,8 @@ class _CartProductState extends State<CartProduct> {
                                                       .withOpacity(0.8),
                                                   fontSize: 16.0)),
                                           Padding(
-                                            padding: const EdgeInsets.only(top: 2.0),
+                                            padding:
+                                                const EdgeInsets.only(top: 2.0),
                                             child: Text(
                                               counter,
                                               style: TextStyle(
@@ -231,7 +251,8 @@ class _CartProductState extends State<CartProduct> {
                                             ),
                                           ),
                                           const Padding(
-                                            padding: EdgeInsets.only(bottom: 2.0),
+                                            padding:
+                                                EdgeInsets.only(bottom: 2.0),
                                             child: Icon(
                                               Icons.arrow_drop_down,
                                               size: 25,
@@ -251,7 +272,8 @@ class _CartProductState extends State<CartProduct> {
                       flex: 7,
                       child: Padding(
                         padding: EdgeInsets.symmetric(
-                            horizontal: getProportionateScreenWidth(10.0),vertical: 5.0),
+                            horizontal: getProportionateScreenWidth(10.0),
+                            vertical: 5.0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -263,7 +285,7 @@ class _CartProductState extends State<CartProduct> {
                                   fontWeight: FontWeight.bold,
                                   height: 1.5),
                             ),
-          
+
                             //Price Tag
                             SizedBox(
                               height: getProportionateScreenHeight(15.0),
@@ -273,7 +295,8 @@ class _CartProductState extends State<CartProduct> {
                                 const Text(
                                   "Price",
                                   style: TextStyle(
-                                      fontSize: 16, fontWeight: FontWeight.w500),
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500),
                                 ),
                                 const SizedBox(
                                   width: 10.0,
@@ -294,7 +317,8 @@ class _CartProductState extends State<CartProduct> {
                                 const Text(
                                   "Sub-Total",
                                   style: TextStyle(
-                                      fontSize: 16, fontWeight: FontWeight.w500),
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500),
                                 ),
                                 const SizedBox(
                                   width: 10.0,
@@ -304,8 +328,6 @@ class _CartProductState extends State<CartProduct> {
                                 ),
                               ],
                             ),
-                        
-                           
                           ],
                         ),
                       ),
@@ -319,7 +341,8 @@ class _CartProductState extends State<CartProduct> {
                   child: Container(
                     decoration: const BoxDecoration(
                         border: Border.symmetric(
-                            horizontal: BorderSide(color: kDefaultBorderColor))),
+                            horizontal:
+                                BorderSide(color: kDefaultBorderColor))),
                     child: Row(
                       children: [
                         Expanded(
@@ -347,7 +370,8 @@ class _CartProductState extends State<CartProduct> {
                         Expanded(
                           child: TextButton.icon(
                               onPressed: () {
-                                widget.onPressed(widget.cartProduct.cart_item_id!);
+                                widget.onPressed(
+                                    widget.cartProduct.cart_item_id ?? -1);
                               },
                               style: TextButton.styleFrom(primary: Colors.grey),
                               icon: const Icon(

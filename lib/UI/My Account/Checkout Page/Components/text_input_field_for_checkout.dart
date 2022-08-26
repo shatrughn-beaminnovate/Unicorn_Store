@@ -1,19 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../../size_config.dart';
 import '../../../constant.dart';
 
 class TextInputFieldForCheckout extends StatelessWidget {
- final String title;
+  final String title;
   final bool obscureText;
   final bool isMandatory;
   final String? hintText;
+  final TextInputType? textInputType;
+  final List<TextInputFormatter>? inputFormatters;
+  final String? Function(String?)? validator;
   final TextEditingController controller;
   const TextInputFieldForCheckout(
       {Key? key,
       required this.title,
       this.hintText,
-      required this.controller,
+      required this.controller,this.inputFormatters,
+      this.validator,this.textInputType,
       required this.isMandatory,
       required this.obscureText})
       : super(key: key);
@@ -43,13 +48,18 @@ class TextInputFieldForCheckout extends StatelessWidget {
           height: getProportionateScreenHeight(5.0),
         ),
         SizedBox(
-          height: 40.0,
+          // height: 40.0,
           child: TextFormField(
             obscureText: obscureText,
+            validator: validator,
             cursorColor: Colors.black,
             controller: controller,
-            style:const TextStyle(fontSize: 15,color: Colors.black87),
+            keyboardType: textInputType,
+            inputFormatters: inputFormatters,
+            textInputAction: TextInputAction.next,
+            style: const TextStyle(fontSize: 15, color: Colors.black87),
             decoration: InputDecoration(
+              isDense: true,
               hintText: hintText,
               contentPadding: EdgeInsets.all(getProportionateScreenWidth(10.0)),
               border: const OutlineInputBorder(
@@ -63,12 +73,9 @@ class TextInputFieldForCheckout extends StatelessWidget {
                 borderRadius: BorderRadius.all(Radius.circular(5.0)),
               ),
             ),
-            
           ),
         ),
       ],
     );
- 
- 
   }
 }

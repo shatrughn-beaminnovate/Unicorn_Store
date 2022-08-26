@@ -1,10 +1,21 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-class TypeImage {
+import 'package:hive/hive.dart';
+
+
+  part 'type_image.g.dart';
+
+@HiveType(typeId: 1)
+class TypeImage extends HiveObject{
+  @HiveField(0)
   final String? alt;
+  @HiveField(1)
   final String? caption;
+  @HiveField(2)
   final bool? primary;
+  @HiveField(3)
   final String? filename;
   
+
   TypeImage({
     this.alt,
     this.caption,

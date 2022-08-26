@@ -16,7 +16,7 @@ class DefaultUserAddressBloc
         emit(DefaultUserAddressLoading());
         final defaultAddressData =
             await checkoutRepository.getUserDefaultAddress(event.token);
-        await Future.delayed(const Duration(seconds: 1));
+    
         if (defaultAddressData.status!) {
           emit(DefaultUserAddressLoaded(defaultAddressData));
         } else {
@@ -33,7 +33,7 @@ class DefaultUserAddressBloc
         emit(DefaultUserAddressLoading());
         final updatedAddressData = await checkoutRepository
             .updateBillingAddress(event.addressFieldData, event.token);
-        await Future.delayed(const Duration(seconds: 1));
+     
         if (updatedAddressData["status"]) {
           emit(DefaultUserAddressUpdated(
               updatedAddressData, event.addressFieldData));
@@ -53,7 +53,7 @@ class DefaultUserAddressBloc
           emit(const DefaultUserBillingAndShippingAddressSameLoading());
           final updatedAddressData = await checkoutRepository
               .updateShippingAddress(event.addressFieldData, event.token);
-          await Future.delayed(const Duration(seconds: 1));
+       
           if (updatedAddressData["status"]) {
             emit(DefaultUserBillingAndShippingAddressSameUpdated(updatedAddressData));
           } else {
@@ -69,7 +69,6 @@ class DefaultUserAddressBloc
           emit(const DefaultUserShippingAddressUpdateLoading());
           final updatedAddressData = await checkoutRepository
               .updateShippingAddress(event.addressFieldData, event.token);
-          await Future.delayed(const Duration(seconds: 1));
           if (updatedAddressData["status"]) {
             emit(DefaultUserShippingAddressUpdated(updatedAddressData));
           } else {

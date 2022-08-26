@@ -30,3 +30,13 @@ class SignupButtonPressed extends LoginEvent {
         registerData,
       ];
 }
+
+class LoggedOut extends LoginEvent {
+ 
+  final String token;
+
+  const LoggedOut(this.token);
+
+  @override
+  List<Object> get props => [token];
+}

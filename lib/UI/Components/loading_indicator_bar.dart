@@ -9,7 +9,7 @@ class LoadingIndicatorBar extends StatelessWidget {
     return const Scaffold(
       resizeToAvoidBottomInset: false,
       body: SafeArea(
-        child: Center(
+        child:  Center(
           child: CircularProgressIndicator(
             strokeWidth: 5.0,
             color: kDefaultSecondaryButtonColor,
@@ -20,3 +20,5 @@ class LoadingIndicatorBar extends StatelessWidget {
     );
   }
 }
+
+

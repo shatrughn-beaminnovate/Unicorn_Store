@@ -1,25 +1,62 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 // ignore_for_file: non_constant_identifier_names
 
+import 'package:hive/hive.dart';
+
 import '../../Product/New Product/type_image.dart';
 
-class CartProductData {
+part 'cart_product_data.g.dart';
+
+@HiveType(typeId: 0)
+class CartProductData extends HiveObject{
   final int? cart_item_id;
-  final int? item_quantity;
+
+  @HiveField(0)
+  int? item_quantity;
+
+  @HiveField(1)
   final int? id;
+
+  @HiveField(2)
   final String? sku;
+
+  @HiveField(3)
   final String? name;
+
+  @HiveField(4)
   final String? slug;
+
+  @HiveField(5)
   final String? description;
+
+  @HiveField(6)
   final String? excerpt;
+
+  @HiveField(7)
   final double? price;
+
+  @HiveField(8)
   final double? saleprice;
+
+  @HiveField(9)
   final int? quantity;
+
+  @HiveField(10)
   final String? related_products;
+
+  @HiveField(11)
   final List<TypeImage>? images;
+
+  @HiveField(12)
   final int? enabled;
+
+  @HiveField(13)
   final int? route_id;
+  
+
+  @HiveField(14)
   final int? fixed_quantity;
+
   CartProductData({
     this.cart_item_id,
     this.item_quantity,

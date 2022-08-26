@@ -10,7 +10,10 @@ abstract class RemoveCartItemEvent extends Equatable {
 class RemoveItemCart extends RemoveCartItemEvent {
   final int cartItemId;
   final String token;
-  const RemoveItemCart(this.cartItemId, this.token);
+  final bool isAuthenticate;
+  final int productId;
+  final int productIndex;
+  const RemoveItemCart(this.cartItemId, this.token,this.isAuthenticate,this.productId,this.productIndex);
   @override
   List<Object> get props => [cartItemId, token];
 }

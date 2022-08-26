@@ -11,11 +11,11 @@ const kDefaultSecondaryButtonColor = Color(0xFF1F99CF);
 const kDefaultParagraphTextFontColor = Color(0xFF666666);
 
 //Base Url for Api
-const kDefaultBaseUrl = "http://192.168.1.18/bics_front";
-const kSecondDefaultBaseUrl="http://192.168.1.18:9021";
+//const kDefaultBaseUrl = "http://192.168.1.18/bics_front";
+//const kSecondDefaultBaseUrl="http://192.168.1.18:9021";
 
-//const kDefaultBaseUrl="http://mum01.beaminnovate.com/bics_front";
-//const kSecondDefaultBaseUrl="http://mum01.beaminnovate.com:9021";
+const kDefaultBaseUrl="http://mum01.beaminnovate.com/bics_front";
+const kSecondDefaultBaseUrl="http://mum01.beaminnovate.com:9021";
 
 
 //const imageDefaultURL = "http://192.168.1.18/shop.unicornstore.in";

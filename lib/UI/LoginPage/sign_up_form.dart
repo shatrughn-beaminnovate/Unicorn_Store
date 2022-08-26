@@ -2,8 +2,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:unicorn_store/Business_Logic/bloc/login%20and%20signup/authentication/authentication_bloc.dart';
 import 'package:unicorn_store/Business_Logic/bloc/login%20and%20signup/login/login_bloc.dart';
 import 'package:unicorn_store/Data/Models/Login%20and%20Signup/Register/register_data.dart';
+import 'package:unicorn_store/Data/Repositories/cart/add_to_local_cart_repository.dart';
 import 'package:unicorn_store/UI/Components/loading_indicator_bar.dart';
 import 'package:unicorn_store/UI/HomePage/Components/build_app_bar.dart';
 
@@ -26,11 +28,18 @@ class _SignUpFormState extends State<SignUpForm> {
   bool isChecked = false;
 
   //creating instance for login bloc
-  LoginBloc loginBloc = LoginBloc();
+  late LoginBloc loginBloc ;
 
   final _formKey = GlobalKey<FormState>();
 
   int emailSubscribe = 0;
+
+  @override
+  void initState() {
+
+ loginBloc = LoginBloc(RepositoryProvider.of<AddToLocalCartRepository>(context), BlocProvider.of<AuthenticationBloc>(context));
+    super.initState();
+  }
 
   //Creating controller for textInput field
   final TextEditingController _companyName = TextEditingController();
