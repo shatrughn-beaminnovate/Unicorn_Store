@@ -3,18 +3,19 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:unicorn_store/Business_Logic/bloc/filter%20product/filter_product_atrributes_bloc.dart';
+import 'package:unicorn_store/Data/Models/Filter/Filter%20Product%20List/filter_product_details.dart';
+import 'package:unicorn_store/Data/Models/Filter/Filter%20Product%20List/filter_product_list.dart';
 import 'package:unicorn_store/UI/Components/image_path.dart';
 import 'package:unicorn_store/UI/Components/linear_indicator.dart';
 import 'package:unicorn_store/UI/HomePage/Components/build_app_bar.dart';
 import 'package:unicorn_store/UI/HomePage/Components/price_tag.dart';
-import 'package:unicorn_store/UI/ProductCategories.dart/filter_screen.dart';
+import 'package:unicorn_store/UI/ProductCategories/Category%201/filter_screen.dart';
 import 'package:unicorn_store/UI/ProductPage/product_type_page.dart';
+import 'package:unicorn_store/UI/constant.dart';
 import 'package:unicorn_store/UI/main_screen.dart';
-import '../../Business_Logic/bloc/filter product/filter_product_list/filter_product_list_bloc.dart';
-import '../../Data/Models/Filter/Filter Product List/filter_product_details.dart';
-import '../../Data/Models/Filter/Filter Product List/filter_product_list.dart';
-import '../constant.dart';
-import '../size_config.dart';
+
+import '../../../Business_Logic/bloc/filter product/filter_product_list/filter_product_list_bloc.dart';
+import '../../size_config.dart';
 
 class SortingAttributes {
   String name;

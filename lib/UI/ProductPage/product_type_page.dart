@@ -2,7 +2,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:selectable_container/selectable_container.dart';
 import 'package:unicorn_store/Business_Logic/bloc/cart/total%20product%20count/total_product_count_bloc.dart';
 import 'package:unicorn_store/Business_Logic/bloc/filter%20product/filter_single_product_details/filter_single_product_details_bloc.dart';
@@ -186,15 +185,12 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
               ],
               child: BlocBuilder<AuthenticationBloc, AuthenticationState>(
                 builder: (context, state) {
-                  print(
-                      ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ${authenticationBloc.state}");
                   if (state is AuthenticationAuthenticated) {
                     loginData = state.loginData;
                     token = loginData!.userData!.token;
                     isAuthenticate = true;
                   }
                   if (state is AuthenticationUnauthenticated) {
-                    print("Not logged in user");
                     isAuthenticate = false;
                   }
                   return BlocListener<FilterSingleProductDetailsBloc,
@@ -794,7 +790,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
                                         fixed_quantity: singleProductData!
                                             .data!.fixed_quantity);
 
-                                print(singleProductData!.data!.images);
                                 addingProductToCartBloc.add(
                                     AddProductToLocalCartEvent(
                                         cartProductData));
@@ -839,7 +834,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
   }
 
   //Select Product Data
-  Widget _buildDataContainer(AttributesOption optionValues, int index, int length) {
+  Widget _buildDataContainer(
+      AttributesOption optionValues, int index, int length) {
     return SelectableContainer(
       //selected: true,
       selected: (selectedIndex[index.toString()]
@@ -888,7 +884,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
   }
 
   //Select Product Color
-  Widget _buildColorContainer(AttributesOption optionValues, int index, int length) {
+  Widget _buildColorContainer(
+      AttributesOption optionValues, int index, int length) {
     return SelectableContainer(
       selected: (selectedIndex[index.toString()]
               .toString()
@@ -896,7 +893,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen>
           ? true
           : false,
       marginColor: Colors.white,
-    
       onValueChanged: (_) {
         setState(() {
           selectedIndex[index.toString()] = optionValues.id.toString();

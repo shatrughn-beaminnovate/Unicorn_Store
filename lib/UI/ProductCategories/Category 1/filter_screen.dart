@@ -8,7 +8,7 @@ import 'package:unicorn_store/Data/Models/Filter/filter_attributes_options.dart'
 import 'package:unicorn_store/Data/Models/Filter/filter_data.dart';
 import 'package:unicorn_store/UI/Components/linear_indicator.dart';
 import 'package:unicorn_store/UI/Components/loading_indicator_bar.dart';
-import 'package:unicorn_store/UI/ProductCategories.dart/list_of_specific_product.dart';
+import 'package:unicorn_store/UI/ProductCategories/Category%201/list_of_specific_product.dart';
 import 'package:unicorn_store/UI/constant.dart';
 import 'package:unicorn_store/UI/size_config.dart';
 

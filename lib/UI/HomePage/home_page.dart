@@ -1,8 +1,8 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:unicorn_store/UI/ProductCategories/Category%201/list_of_specific_product.dart';
 import '../../Business_Logic/bloc/category/category_bloc/category_api_fetch_bloc.dart';
-import '../ProductCategories.dart/list_of_specific_product.dart';
 import '../size_config.dart';
 import '../constant.dart';
 import 'Components/best_seller_product.dart';

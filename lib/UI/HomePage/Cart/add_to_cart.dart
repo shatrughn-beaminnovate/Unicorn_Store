@@ -55,7 +55,6 @@ class _AddToCartPageState extends State<AddToCartPage> {
         RepositoryProvider.of<AddToLocalCartRepository>(context));
     removeCartItemBloc = RemoveCartItemBloc(
         RepositoryProvider.of<AddToLocalCartRepository>(context));
-    print(widget.token);
     if (widget.token == null) {
       isAuthenticate = false;
     } else {
@@ -229,7 +228,6 @@ class _AddToCartPageState extends State<AddToCartPage> {
                   itemBuilder: (context, index) {
                     totalPriceList
                         .addAll({cartProductData![index].id.toString(): 0.0});
-                    print(totalPriceList);
                     return CartProduct(
                       cartProduct: cartProductData![index],
                       token: widget.token ?? " ",
@@ -510,6 +508,7 @@ class _AddToCartPageState extends State<AddToCartPage> {
                 height: 10.0,
               ),
               //****************Coupon Discount**************//
+              // ignore: avoid_unnecessary_containers
               Container(
                 // width: double.infinity,
                 // margin: EdgeInsets.all(

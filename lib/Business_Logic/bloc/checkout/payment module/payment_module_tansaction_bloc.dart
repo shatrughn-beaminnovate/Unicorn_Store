@@ -34,11 +34,11 @@ class PaymentModuleTansactionBloc
         final particularPaymentModuleData =
             await checkoutRepository.getSpecificPaymentModuleData(
                 event.viewPaymentModuleData, event.token);
-        print(particularPaymentModuleData);
+     //   print(particularPaymentModuleData);
         if (particularPaymentModuleData.status!) {
-          print(particularPaymentModuleData.data!.payment_link);
+      //    print(particularPaymentModuleData.data!.payment_link);
           if (particularPaymentModuleData.data != null) {
-            print(particularPaymentModuleData.data!.payment_link);
+       //     print(particularPaymentModuleData.data!.payment_link);
             emit(PaymentModuleTansactionRedirectURLLoaded(
                 particularPaymentModuleData));
           } else {

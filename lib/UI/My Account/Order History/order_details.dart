@@ -52,7 +52,7 @@ class OrderDetails extends StatelessWidget {
                   shrinkWrap: true,
                   itemCount: orderItems!.length,
                   itemBuilder: (context, index) {
-                    print(orderItems!.length);
+                 //   print(orderItems!.length);
                   return ItemsInsideSingleOrder(orderItems: orderItems![index],);
                 })
               ],

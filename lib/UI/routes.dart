@@ -3,8 +3,8 @@ import 'package:unicorn_store/UI/HomePage/home_page.dart';
 import 'package:unicorn_store/UI/HomePage/NavigationDrawer/Contact/contact_page.dart';
 import 'package:unicorn_store/UI/HomePage/NavigationDrawer/Hot%20Deals/hot_deals_page.dart';
 import 'package:unicorn_store/UI/My%20Account/Order%20History/reviews_and_ratings.dart';
-import 'package:unicorn_store/UI/ProductCategories.dart/Accessories/list_of_children.dart';
-import 'package:unicorn_store/UI/ProductCategories.dart/Accessories/list_of_product.dart';
+import 'package:unicorn_store/UI/ProductCategories/Category%201/list_of_specific_product.dart';
+import 'package:unicorn_store/UI/ProductCategories/Category%201/product_categories.dart';
 import 'package:unicorn_store/UI/initial_screen.dart';
 import 'package:unicorn_store/UI/LoginPage/forgot_password.dart';
 import 'package:unicorn_store/UI/LoginPage/sign_up_form.dart';
@@ -14,8 +14,6 @@ import 'package:unicorn_store/UI/My%20Account/Address%20Manager/address_manager_
 import 'package:unicorn_store/UI/My%20Account/Address%20Manager/address_manager_page.dart';
 import 'package:unicorn_store/UI/My%20Account/wishlist_page.dart';
 import 'package:unicorn_store/UI/OnBoarding%20Screen/on_boarding_page.dart';
-import 'package:unicorn_store/UI/ProductCategories.dart/list_of_specific_product.dart';
-import 'package:unicorn_store/UI/ProductCategories.dart/product_categories.dart';
 import 'package:unicorn_store/UI/ProductPage/product_page.dart';
 import 'package:unicorn_store/UI/ProductPage/product_type_page.dart';
 import 'package:unicorn_store/UI/text_file.dart';
@@ -23,6 +21,7 @@ import 'HomePage/NavigationDrawer/Student Offer/student_offer_screen.dart';
 import 'LoginPage/login_form.dart';
 import 'My Account/Order History/order_details.dart';
 import 'My Account/Order History/product_history.dart';
+import 'ProductCategories/Category 1/list_of_children.dart';
 
 final Map<String, WidgetBuilder> routes = {
   LoginScreen.id: (context) => const LoginScreen(),
@@ -55,5 +54,4 @@ final Map<String, WidgetBuilder> routes = {
   // PaymentMethod.id: (context) => const PaymentMethod(),
   OrderDetails.id: (context) =>  OrderDetails(),
   ListOfChildren.id: (context) => const ListOfChildren(),
-  ListOfProduct.id: (context) => ListOfProduct(),
 };

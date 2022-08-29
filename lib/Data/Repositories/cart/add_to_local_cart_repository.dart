@@ -48,14 +48,14 @@ class AddToLocalCartRepository {
 
   List<CartProductData> getAllLocalCartProduct() {
     final serviceResponseData = _cartProductData.values.toList();
-    print("getting product from cart $serviceResponseData");
+ //   print("getting product from cart $serviceResponseData");
     return serviceResponseData;
   }
 
     //Deleting product from local cart
     Future<void> deleteProductFromLocalCart(int productId) async {
     final taskToRemove = _cartProductData.values.firstWhere((element) => element.id == productId);
-    print(taskToRemove);
+  //  print(taskToRemove);
     await taskToRemove.delete();
   }
 }

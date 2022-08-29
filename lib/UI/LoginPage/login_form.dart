@@ -17,7 +17,7 @@ import 'package:unicorn_store/UI/size_config.dart';
 import 'package:unicorn_store/UI/HomePage/Components/build_app_bar.dart';
 import 'package:unicorn_store/UI/LoginPage/sign_up_form.dart';
 import 'package:unicorn_store/UI/constant.dart';
-import 'package:unicorn_store/main.dart';
+import 'package:unicorn_store/my_app.dart';
 import '../Components/default_snackbar.dart';
 import 'Components/button_with_logo.dart';
 import 'Components/custom_submit_button.dart';
@@ -894,9 +894,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
       // Getting users credential
       UserCredential result = await auth.signInWithCredential(authCredential);
+      
+      // ignore: unused_local_variable
       User? user = result.user;
 
-      print(user);
+     // print(user);
 
       // if (result != null) {
       //   Navigator.pushReplacement(

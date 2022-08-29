@@ -13,9 +13,9 @@ import 'package:unicorn_store/UI/HomePage/NavigationDrawer/Hot%20Deals/hot_deals
 import 'package:unicorn_store/UI/LoginPage/Components/custom_submit_button.dart';
 import 'package:unicorn_store/UI/LoginPage/sign_up_form.dart';
 import 'package:unicorn_store/UI/My%20Account/my_account_page.dart';
-import 'package:unicorn_store/UI/ProductCategories.dart/product_categories.dart';
+import 'package:unicorn_store/UI/ProductCategories/main_category.dart';
 import 'package:unicorn_store/UI/constant.dart';
-import 'package:unicorn_store/main.dart';
+import 'package:unicorn_store/my_app.dart';
 import 'HomePage/NavigationDrawer/Components/navigation_bar_list_item.dart';
 import 'HomePage/NavigationDrawer/Student Offer/student_offer_screen.dart';
 import 'LoginPage/login_form.dart';
@@ -48,7 +48,6 @@ class _MainScreenState extends State<MainScreen> {
     loginBloc = LoginBloc(
         RepositoryProvider.of<AddToLocalCartRepository>(context),
         BlocProvider.of<AuthenticationBloc>(context));
-    print(loginBloc.isClosed);
     FlutterNativeSplash.remove();
 
     super.initState();
@@ -56,7 +55,7 @@ class _MainScreenState extends State<MainScreen> {
 
   final List<Widget> _widgetOptions = <Widget>[
     const HomePage(),
-    const ProductCategories(),
+    const MainCategory(),
     BlocBuilder<AuthenticationBloc, AuthenticationState>(
       builder: (context, state) {
         if (state is AuthenticationAuthenticated) {

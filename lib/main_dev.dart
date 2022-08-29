@@ -8,7 +8,6 @@ import 'package:unicorn_store/my_app.dart';
 void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
 
-  //This will initiate splash screen
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
   // initializing the firebase app
@@ -18,9 +17,8 @@ void main() async {
   await Hive.initFlutter();
 
   const configuredApp = AppConfig(
-    environment: Environment.prod,
-    url: 'testing in prod mode',
-    child: MyApp(),
+    environment: Environment.dev,
+    url: 'testing dev url', child: MyApp(),
   );
 
   runApp(configuredApp);

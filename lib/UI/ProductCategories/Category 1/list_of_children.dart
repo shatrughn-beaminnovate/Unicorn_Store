@@ -2,9 +2,11 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:unicorn_store/Data/Models/Category/NewCategory/category_data.dart';
 import 'package:unicorn_store/UI/HomePage/Components/build_app_bar.dart';
-import '../../ProductPage/product_type_page.dart';
+import 'package:unicorn_store/UI/ProductPage/product_type_page.dart';
+import 'package:unicorn_store/UI/size_config.dart';
+
 import '../../constant.dart';
-import '../../size_config.dart';
+
 
 class ListOfChildren extends StatefulWidget {
   static String id = "ListOfChildren";

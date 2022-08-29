@@ -7,9 +7,10 @@ import 'package:unicorn_store/Business_Logic/bloc/login%20and%20signup/authentic
 import 'package:unicorn_store/Data/Models/Category/AccessoriesCategory/accessories_list_data.dart';
 import 'package:unicorn_store/Data/Models/Category/NewCategory/category_data.dart';
 import 'package:unicorn_store/UI/Components/linear_indicator.dart';
-import 'package:unicorn_store/UI/ProductCategories.dart/Accessories/list_of_children.dart';
-import '../size_config.dart';
-import '../constant.dart';
+import 'package:unicorn_store/UI/ProductCategories/Category%201/list_of_children.dart';
+import 'package:unicorn_store/UI/size_config.dart';
+
+import '../../constant.dart';
 
 class ProductCategories extends StatefulWidget {
   static String id = "ProductCategories_Screen";

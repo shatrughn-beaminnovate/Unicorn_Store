@@ -1562,7 +1562,7 @@ class _CheckoutPageState extends State<CheckoutPage>
                                   right: 15.0, left: 15.0),
                               child: ElevatedButton(
                                   onPressed: () {
-                                    print(selectedStoreAddress["index"]!);
+                                  //  print(selectedStoreAddress["index"]!);
                                     if (selectedStoreAddress["index"] !=
                                         "null") {
                                       searchStoreAddressBloc.add(
@@ -2040,7 +2040,7 @@ class _CheckoutPageState extends State<CheckoutPage>
                         if (state is DefaultUserAddressLoaded) {
                           settingState(() {
                             defaultAddressData = state.defaultAddressData;
-                            print(defaultAddressData);
+                          //  print(defaultAddressData);
                             setFormFieldData(
                                 defaultAddressData!
                                     .data!.default_billing_address!,
